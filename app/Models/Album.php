@@ -21,4 +21,16 @@ class Album extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
+
+    public function detalle_album()
+    {
+        return $this->belongsTo(detalle_album::class, 'id_album');
+    }
+    
+    public function album_favorito()
+    {
+        return $this->belongsToMany(album_favorito::class, 'id_album');
+    }
+
+    
 }

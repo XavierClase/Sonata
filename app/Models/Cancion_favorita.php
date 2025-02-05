@@ -13,4 +13,9 @@ class Cancion_favorita extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
+
+    public function cancion()
+    {
+        return $this->hasMany(Cancion::class, 'id_cancion');
+    }
 }

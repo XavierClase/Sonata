@@ -13,4 +13,10 @@ class Lista_favorita extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario');
     }
+
+    
+    public function lista()
+    {
+        return $this->hasMany(Lista::class, 'id_lista');
+    }
 }
