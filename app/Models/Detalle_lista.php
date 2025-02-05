@@ -5,9 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class detalles_album extends Model
+class Detalle_lista extends Model
 {
     use HasFactory;
-
-    
 }

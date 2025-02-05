@@ -5,7 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class albums_favoritos extends Model
+class Album_favorito extends Model
 {
     use HasFactory;
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
 }

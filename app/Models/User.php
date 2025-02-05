@@ -18,13 +18,42 @@ class User extends Authenticatable implements HasMedia
     use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia;
 
     protected $fillable = [
-        'name',
+        'nombre',
         'email',
-        'password',
-        'surname1',
-        'surname2',
-        'tipo'
+        'password'
     ];
+
+    public function albums()
+    {
+        return $this->hasMany(Album::class, 'id_usuario');
+    }
+
+    public function listas()
+    {
+        return $this->hasMany(Lista::class, 'id_usuario');
+    }
+
+    public function canciones()
+    {
+        return $this->hasMany(Cancion::class, 'id_usuario');
+    }
+
+    public function albums_favoritios()
+    {
+        return $this->belongsToMany(Album_favorito::class, 'id_usuario');
+    }
+
+    public function listas_favoritias()
+    {
+        return $this->belongsToMany(Lista_favorita::class, 'id_usuario');
+    }
+
+    public function canciones_favoritas()
+    {
+        return $this->belongsToMany(Cancion_favorita::class, 'id_usuario');
+    }
+
+    
 
     /**
      * The attributes that should be hidden for serialization.

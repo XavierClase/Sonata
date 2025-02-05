@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class albums extends Model
+class Album extends Model
 {
     use HasFactory;
 
@@ -16,4 +16,9 @@ class albums extends Model
         'tipo',
         'portada'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
 }
