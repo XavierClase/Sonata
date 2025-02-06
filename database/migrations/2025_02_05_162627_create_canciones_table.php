@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('canciones', function (Blueprint $table) {
             $table->id();
-            $table->Varchar('nombre');
-            $table->archivo('archivo');
+            $table->string('nombre');
+            $table->string('archivo');
             $table->date('fecha_subida');
             $table->integer('reproducciones');
             $table->integer('duracion');
