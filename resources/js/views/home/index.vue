@@ -1,5 +1,181 @@
 <template>
+<!DOCTYPE html>
+<html>
+<body>
+  <section class="banner">
+    <div class="overlay"></div>
+    <div class="iniciar_Session_Contenedor">
+        <p class="iniciar_Session_P">¿tienes ya una cuenta? -></p>
+        <button class="iniciar_Session_boton"  >Iniciar Sesión</button>
+    </div>
+    <div class="contenedor">
+      <div class="contenido">
+      <img src="/images/logo.svg" >
+        <p class="descripcion">
+          Sonata es tu nuevo hogar para disfrutar de música ilimitada. Diseñada para ofrecer una experiencia inmersiva, te permite explorar un mundo sonoro sin fronteras. Descubre artistas emergentes y tus clásicos favoritos.
+        </p>
+        <div class="caracteristicas">
+          <div class="caracteristica">
+           <img src="/images/IconoCheck.svg">
+            <span>Biblioteca global accesible</span>
+          </div>
+          <div class="caracteristica">
+            <img src="/images/IconoCheck.svg">
+            <span>Interfaz moderna e intuitiva</span>
+          </div>
+          <div class="caracteristica">
+            <img src="/images/IconoCheck.svg">
+            <span>Música en cualquier dispositivo</span>
+          </div>
+        </div>
+          <button class="boton_banner">Comenzar Gratis</button>
+      </div>
+      <div class="imagen_contenedor">
+        <img src="/images/Captura.JPG" alt="Music Streaming" class="banner-image">
+      </div>
+    </div>
+  </section>
+</body>
+</html>
 </template>
+
+<style scoped>
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .banner {
+      position: relative;
+      height: 80vh;
+      background: linear-gradient(to bottom, #4338ca, #7e22ce);
+      color: white;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .iniciar_Session_Contenedor{
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding: 12px 32px 0  0;
+        gap: 20px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .iniciar_Session_P{
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .iniciar_Session_boton{
+      background: linear-gradient(to right, #ec4899, #a855f7);
+      padding: 12px 32px;
+      border-radius: 500px;
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .iniciar_Session_boton:hover{
+      opacity: 0.7;
+    }
+
+    .contenedor {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .contenido {
+      width: 50%;
+    }
+
+    .contenido > * + * {
+      margin-top: 24px;
+    }
+
+
+
+    .descripcion {
+      font-size: 20px;
+      color: #e5e7eb;
+    }
+
+    .caracteristicas {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .caracteristica {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+  
+
+
+    .boton_banner {
+      background: linear-gradient(to right, #ec4899, #a855f7);
+      padding: 12px 32px;
+      border-radius: 500px;
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+
+    .boton_banner:hover {
+      opacity: 0.7;
+    }
+
+    .imagen_contenedor {
+      width: 50%;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .banner-image {
+      width: 500px;
+      height: 400px;
+      border-radius: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: rotate(-6deg);
+      transition: transform 0.3s;
+      background-size: auto;
+    }
+
+    .banner-image:hover {
+      transform: rotate(0);
+    }
+
+</style>
 <!--
 <template>
     <div class="demo" id="edit-demo">
