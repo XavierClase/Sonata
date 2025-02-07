@@ -5,6 +5,6 @@
     </div>
 </template>
 <script setup>
-import Navbar from './Nav.vue'
+// import Navbar from './Nav.vue'
 
 </script>

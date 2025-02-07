@@ -1,14 +1,17 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center my-5">
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-transparent">{{ $t('register') }}</div>
-                    <div class="card-body">
+    <div class="container-fluid d-flex justify-content-center align-items-center" id="register-body">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm mx-auto">
+                    <div class="card-header bg-transparent col-md-10">
+                        <img src="/images/logo.svg" alt="">
+                        <h1>Registro</h1>
+                    </div>
+                    <div class="card-body col-md-7">
                         <form @submit.prevent="submitRegister">
                             <div class="">
                                 <!-- Email -->
-                                <div class="mb-3">
+                                <div class="mb-5">
                                     <label for="name" class="form-label">{{ $t('name') }}</label>
                                     <input v-model="registerForm.name" id="name" type="text" class="form-control" autofocus>
                                     <!-- Validation Errors -->
@@ -18,7 +21,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-5">
                                     <label for="email" class="form-label">{{ $t('email') }}</label>
                                     <input v-model="registerForm.email" id="email" type="email" class="form-control" autocomplete="username">
                                     <!-- Validation Errors -->
@@ -29,7 +32,7 @@
                                     </div>
                                 </div>
                                 <!-- Password -->
-                                <div class="mb-4">
+                                <div class="mb-5">
                                     <label for="password" class="form-label">
                                         {{ $t('password') }}
                                     </label>
@@ -41,7 +44,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-4">
+                                <div class="mb-2">
                                     <label for="password_confirmation" class="form-label">
                                         {{ $t('confirm_password') }}
                                     </label>
@@ -54,11 +57,17 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-6" id="artista_checkbox">
+                                    <label for="artista">¿Quieres ser artista? Haz click aquí:</label>
+                                    <input type="checkbox" name="artista" id="artista">
+                                </div>
+
                                 <!-- Buttons -->
-                                <div class="flex items-center justify-end mt-4">
+                                <div class="items-center justify-end mt-4" id="button-div">
                                     <button class="btn btn-primary" :class="{ 'opacity-25': processing }" :disabled="processing">
                                         {{ $t('register') }}
                                     </button>
+                                    <p> ¿Ya tienes una cuenta? <router-link class="card-link" to="/login">{{ $t('Inicia sesión') }}</router-link> </p>
                                 </div>
                             </div>
                         </form>
@@ -69,6 +78,7 @@
     </div>
 </template>
 
+
 <script setup>
 
 import useAuth from '@/composables/auth'
@@ -76,3 +86,83 @@ import useAuth from '@/composables/auth'
 const { registerForm, validationErrors, processing, submitRegister } = useAuth();
 
 </script>
+
+<style scoped>
+    #register-body {
+        height: 100vh;
+        background: linear-gradient(#262265, #200834);
+    }
+
+    .card {
+        display: flex;
+        align-items: center;
+        background: linear-gradient(
+            #633291 5%,
+            #A855F7 25%,
+            #633291 95%
+        ); 
+
+        border-radius: 0;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        border-bottom: 1.5px solid white;
+        color: white;
+        margin-bottom: 30px;
+    }
+    
+    .card-header h1 {
+        font-weight: bold;
+    }
+
+    .card-body label {
+        color: white;
+    }
+    .card-body input {
+        height: 42px;
+        background-color: transparent;
+        border: 1px solid white;
+        border-radius: 0;
+        color: rgb(255, 255, 255);
+    }
+    .card-body input:focus {
+        box-shadow: none;
+    }
+
+    .forma-label {
+        margin-bottom: 0px;
+    }
+
+    #artista_checkbox {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1.3rem;
+    }
+    #artista_checkbox input {
+        width: 15px;
+    }
+
+    .card-body button {
+        height: 47px;
+        width: 100%;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #EC4899, #5B21B6);
+        font-weight: bold;
+        font-size: 1.5rem;
+        border: none;
+    }
+
+    #button-div p{
+        display: flex;
+        gap: 20px;
+    }
+
+    .card-link {
+
+        color: #EC4899;
+    }
+</style>
