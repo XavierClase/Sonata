@@ -4,9 +4,9 @@
 <body>
   <section class="banner">
     <div class="overlay"></div>
-    <div class="iniciar_Session_Contenedor">
-        <p class="iniciar_Session_P">¿tienes ya una cuenta? -></p>
-        <button class="iniciar_Session_boton"  >Iniciar Sesión</button>
+    <div class="iniciar_Sesion_Contenedor">
+        <p class="iniciar_Sesion_P">¿tienes ya una cuenta? -></p>
+        <button class="iniciar_Sesion_boton"><router-link  class="color_ruta" to="/login">{{ $t('Iniciar Sesión') }}</router-link></button>
     </div>
     <div class="contenedor">
       <div class="contenido">
@@ -28,7 +28,7 @@
             <span>Música en cualquier dispositivo</span>
           </div>
         </div>
-          <button class="boton_banner">Comenzar Gratis</button>
+          <button class="boton_banner"><router-link  class="color_ruta" to="/register">{{ $t('Comienza Gratis') }}</router-link></button>
       </div>
       <div class="imagen_contenedor">
         <img src="/images/Captura.JPG" alt="Music Streaming" class="banner-image">
@@ -64,7 +64,7 @@
       background: rgba(0, 0, 0, 0.3);
     }
 
-    .iniciar_Session_Contenedor{
+    .iniciar_Sesion_Contenedor{
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -74,13 +74,13 @@
         z-index: 10;
     }
 
-    .iniciar_Session_P{
+    .iniciar_Sesion_P{
         color: white;
         font-weight: 700;
         font-size: 16px;
     }
 
-    .iniciar_Session_boton{
+    .iniciar_Sesion_boton{
       background: linear-gradient(to right, #ec4899, #a855f7);
       padding: 12px 32px;
       border-radius: 500px;
@@ -93,7 +93,7 @@
       transition: opacity 0.3s;
     }
 
-    .iniciar_Session_boton:hover{
+    .iniciar_Sesion_boton:hover{
       opacity: 0.7;
     }
 
@@ -135,7 +135,10 @@
       gap: 12px;
     }
 
-  
+    .color_ruta{
+      color: white;
+      font-weight: 700;
+    }
 
 
     .boton_banner {
