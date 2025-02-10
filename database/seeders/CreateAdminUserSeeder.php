@@ -27,12 +27,15 @@ class CreateAdminUserSeeder extends Seeder
 
         $role = Role::create(['name' => 'admin']);
         $role2 = Role::create(['name' => 'user']);
+        $role3 = Role::create(['name' => 'artista']);
+        
         $permissions = [
-            'post-list',
-            'post-create',
-            'post-edit',
-            'post-delete',
-            'post-list'
+            'lista-list',
+            'lista-create',
+            'lista-edit',
+            'lista-delete',
+            'cancion-list',
+            'album-list'
         ];
         $role2->syncPermissions($permissions);
 
@@ -49,6 +52,24 @@ class CreateAdminUserSeeder extends Seeder
             'password' => bcrypt('123')
         ]);
         $user->assignRole([$role2->id]);
+
+        $permissions = [
+            'cancion-create',
+            'cancion-edit',
+            'cancion-delete',
+            'album-create',
+            'album-edit',
+            'album-delete'
+        ];
+        $role3->syncPermissions($permissions);
+
+        $user = User::create([
+            'id' => 3,
+            'name' => 'Artista',
+            'email' => 'artista@demo.com',
+            'password' => bcrypt('123')
+        ]);
+        $user->assignRole([$role3->id]);
 
     }
 }

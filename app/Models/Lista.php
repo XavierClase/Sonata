@@ -21,15 +21,14 @@ class Lista extends Model
         return $this->belongsTo(User::class, 'id_usuario');
     }
 
-
-    public function lista_favorita()
-    {
-        return $this->belongsToMany(lista_favorita::class, 'id_lista');
-    }
-
     public function detalle_lista()
     {
         return $this->belongsTo(detalle_lista::class, 'id_lista');
+    }
+
+    public function favorito()
+    {
+        return $this->belongsToMany(User::class);
     }
     
 }

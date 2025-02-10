@@ -19,11 +19,6 @@ class Cancion extends Model
         return $this->belongsTo(User::class, 'id_usuario');
     }
 
-    public function cancion_favorita()
-    {
-        return $this->belongsToMany(Cancion_favorita::class, 'id_cancion');
-    }
-
     public function detalle_lista()
     {
         return $this->belongsToMany(detalle_lista::class, 'id_cancion');
@@ -32,6 +27,11 @@ class Cancion extends Model
     public function detalle_album()
     {
         return $this->belongsToMany(detalle_album::class, 'id_cancion');
+    }
+
+    public function favorito()
+    {
+        return $this->belongsToMany(User::class);
     }
 
 

@@ -38,21 +38,22 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Cancion::class, 'id_usuario');
     }
 
-    public function albums_favoritios()
+    public function albums_favoritos()
     {
-        return $this->belongsToMany(Album_favorito::class, 'id_usuario');
+        return $this->belongsToMany(Album::class);
     }
 
-    public function listas_favoritias()
+    public function listas_favoritas()
     {
-        return $this->belongsToMany(Lista_favorita::class, 'id_usuario');
+        return $this->belongsToMany(Lista::class);
     }
 
     public function canciones_favoritas()
     {
-        return $this->belongsToMany(Cancion_favorita::class, 'id_usuario');
+        return $this->belongsToMany(Cancion::class);
     }
 
+    
     
 
     /**
