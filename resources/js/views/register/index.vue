@@ -57,9 +57,11 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-6" id="artista_checkbox">
-                                    <label for="artista">¿Quieres ser artista? Haz click aquí:</label>
-                                    <input type="checkbox" name="artista" id="artista">
+                                <div class="form-check">
+                                    <label class="form-check-label" for="flexCheckIndeterminate">
+                                        {{ $t('¿Quieres ser artista?') }}
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" name="remember"  id="flexCheckIndeterminate">
                                 </div>
 
                                 <!-- Buttons -->
@@ -97,9 +99,8 @@ const { registerForm, validationErrors, processing, submitRegister } = useAuth()
         display: flex;
         align-items: center;
         background: linear-gradient(
-            #633291 5%,
-            #A855F7 25%,
-            #633291 95%
+            #633291 10%,
+            #A855F7 70%
         ); 
 
         border-radius: 0;
@@ -132,18 +133,8 @@ const { registerForm, validationErrors, processing, submitRegister } = useAuth()
         box-shadow: none;
     }
 
-    .forma-label {
+    .form-label {
         margin-bottom: 0px;
-    }
-
-    #artista_checkbox {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-size: 1.3rem;
-    }
-    #artista_checkbox input {
-        width: 15px;
     }
 
     .card-body button {
@@ -162,7 +153,14 @@ const { registerForm, validationErrors, processing, submitRegister } = useAuth()
     }
 
     .card-link {
+        color: #50227a;
+    }
+    .card-link:hover {
+        color: #683399;
+        transition: 0.3s;
+    }
 
-        color: #EC4899;
+    .form-check-input {
+        height: 15px !important;
     }
 </style>
