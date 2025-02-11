@@ -40,7 +40,9 @@ export default function useAuth() {
         name: '',
         email: '',
         password: '',
-        password_confirmation: ''
+        password_confirmation: '',
+        isArtist: false
+
     })
 
     const submitLogin = async () => {

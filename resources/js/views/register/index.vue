@@ -61,7 +61,7 @@
                                     <label class="form-check-label" for="flexCheckIndeterminate">
                                         {{ $t('¿Quieres ser artista?') }}
                                     </label>
-                                    <input class="form-check-input" type="checkbox" name="remember"  id="flexCheckIndeterminate">
+                                    <input v-model="registerForm.isArtist" class="form-check-input" type="checkbox" id="isArtist">
                                 </div>
 
                                 <!-- Buttons -->
