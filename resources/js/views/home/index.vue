@@ -1,6 +1,5 @@
 <template>
-<!DOCTYPE html>
-<html>
+
 <body>
   <section class="banner">
     <div class="overlay"></div>
@@ -82,19 +81,22 @@
     </div>
 
   </section>
-  
+  <app-footer></app-footer>
 </body>
-</html>
+
 </template>
+
+<script setup>
+import AppFooter from '@/layouts/AppFooter.vue';
+
+
+</script>
 
 <style scoped>
 * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-    }
-
-    body {
       font-family: "Inter var";
     }
 
