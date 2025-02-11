@@ -89,12 +89,12 @@ class AuthenticatedSessionController extends Controller
             'name' => $request['name'],
         ]);
 
-        if (isset($data['isArtist']) && $data['isArtist']) {
+        if (isset($request['isArtist']) && $request['isArtist']) {
             $user->assignRole('artista');
         } else {
             $user->assignRole('user'); 
         }
-        
+
         return $this->successResponse($user, 'Registration Successfully');
     }
 }
