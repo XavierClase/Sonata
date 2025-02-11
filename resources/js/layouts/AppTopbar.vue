@@ -1,20 +1,18 @@
 <template>
-    <div class="layout-topbar">
-        <router-link to="/" class="layout-topbar-logo">
-            <img src="/images/logo.svg" alt="logo" />
+    <div class="layout-topbar row">
+        <router-link to="/app" class="layout-topbar-logo col-md-2">
+            <img src="/images/logo.svg" alt="logo"/>
             <span></span>
         </router-link>
 
-        <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
-            <i class="pi pi-bars"></i>
-        </button>
+        <div class="layout-topbar-buscador col-md-5">
+            <input type="text">
+        </div>
 
-        <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
-            <i class="pi pi-ellipsis-v"></i>
-        </button>
+        <div class="layout-topbar-menu col-md-5" :class="topbarMenuClasses">
 
-        <div class="layout-topbar-menu" :class="topbarMenuClasses">
-
+            <router-link class="topbar-link" to="#">{{ $t('Biblioteca') }}</router-link>
+            <router-link class="topbar-link" to="#">{{ $t('¡Conviertete en artista!') }}</router-link>
             <button class="p-link layout-topbar-button layout-topbar-button-c nav-item dropdown " role="button"
                 data-bs-toggle="dropdown">
 
@@ -73,6 +71,49 @@ const topbarMenuClasses = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+
+.layout-topbar {
+    height: 8vh;
+    background-color: #1E1B4B;
+    
+}
+
+.layout-topbar img {
+    height: 60px;
+}
+
+.layout-topbar-buscador {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.layout-topbar-buscador input {
+    height: 4vh;
+    width: 500px;
+    background-color: #100E28;
+    border-bottom: 1px solid #F472B6;
+    border-right: 1px solid #F472B6;
+    border-radius: 13px;
+    color: rgb(255, 215, 215);
+
+}
+
+.layout-topbar-buscador input:focus {
+    outline: none;
+}
+
+.layout-topbar-menu {
+    margin: 0;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.topbar-link {
+    color: #F472B6;
+    padding-right: 20px;
+    font-size: 1.2rem;
+} 
+
 .layout-topbar-button-c,
 .layout-topbar-button-c:hover {
     width: auto;
