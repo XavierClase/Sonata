@@ -1,63 +1,48 @@
 <template>
-    <div class="layout-wrapper" :class="containerClass">
+    <div class="layout-home" :class="containerClass">
         <app-topbar></app-topbar>
+        <div class="layout-main-home ">
+            <div class="layout-main">
+                <div class="layout-main-content">
 
-        <div class="layout-sidebar">
-            <Menu :model="items" class="w-full md:w-13rem menu border-0" appendTo="self">
-                <template #start>
-                    <button class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                        <Avatar :image="authStore().user?.avatar" class="mr-3" shape="circle" />
-                        <span class="inline-flex flex-column">
-                            <span class="font-bold">{{ user.name }}</span>
-                            <span>
-                                <span v-for="rol in user.roles" class="text-sm mr-2">{{ rol.name }}</span>
+                </div>
+                <app-footer></app-footer>
+            </div>
+            <div class="layout-reproductor">
+                <Menu :model="items" class="w-full md:w-13rem menu border-0" appendTo="self">
+                    <template #start>
+                        <button class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
+                            <Avatar :image="authStore().user?.avatar" class="mr-3" shape="circle" />
+                            <span class="inline-flex flex-column">
+                                <span class="font-bold">{{ user.name }}</span>
+                                <span>
+                                    <span v-for="rol in user.roles" class="text-sm mr-2">{{ rol.name }}</span>
+                                </span>
                             </span>
-                        </span>
-                    </button>
-                </template>
-                <template #submenuheader="{ item }">
-                    <span class="text-primary font-bold">{{ item.label }}</span>
-                </template>
+                        </button>
+                    </template>
+                    <template #submenuheader="{ item }">
+                        <span class="text-primary font-bold">{{ item.label }}</span>
+                    </template>
 
-                <template #item="{ item, props }">
-                    <a class="flex align-items-center" v-bind="props.action">
-                        <span :class="item.icon" />
-                        <span class="ml-2">{{ item.label }}</span>
-                        <Badge v-if="item.badge" class="ml-auto" :value="item.badge" />
-                        <span v-if="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">
-                            {{item.shortcut}}
-                        </span>
-                    </a>
-                </template>
-
-            </Menu>
-            <!--            <app-sidebar></app-sidebar>-->
-        </div>
-
-        <div class="layout-main-container ">
-            <div class="card mb-2 bread">
-                <Breadcrumb :home="home" :model="crumbs" >
                     <template #item="{ item, props }">
-                        <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
-                            <a :href="href" v-bind="props.action" class="btn btn-link"   @click="navigate">
-                                <span :class="[item.icon, 'text-color']" />
-                                <span class="text-primary font-semibold">{{ item.label }}</span>
-                            </a>
-                        </router-link>
-                        <a v-else :href="item.url" :target="item.target" v-bind="props.action">
-                            <span class="text-color">{{ item.label }}</span>
+                        <a class="flex align-items-center" v-bind="props.action">
+                            <span :class="item.icon" />
+                            <span class="ml-2">{{ item.label }}</span>
+                            <Badge v-if="item.badge" class="ml-auto" :value="item.badge" />
+                            <span v-if="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">
+                                {{item.shortcut}}
+                            </span>
                         </a>
                     </template>
-                </Breadcrumb>
-            </div>
-            <div class="layout-main">
-<!--                <Suspense>-->
-                    <router-view></router-view>
-<!--                </Suspense>-->
-            </div>
-            <app-footer></app-footer>
-        </div>
 
+                </Menu>
+            </div>
+            
+        </div>
+        
+
+        
         <div class="layout-mask"></div>
     </div>
 </template>
@@ -206,7 +191,7 @@ const isOutsideClicked = (event) => {
 
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .bread{
     padding:.1rem;
 }
@@ -223,5 +208,33 @@ const isOutsideClicked = (event) => {
 
 .layout-sidebar {
     padding: 0.5rem 0.5rem
+}
+
+.layout-wrapper {
+    display: flex;
+}
+
+
+.layout-main-home {
+    display: flex;
+}
+
+.layout-main {
+    background: linear-gradient(#262265, #200834);
+    height: auto;
+}
+
+.layout-main-content {
+    min-height: 92vh;
+}
+
+.layout-reproductor {
+    position: fixed;
+    right: 0;
+    top: 8vh;
+    bottom: 0;
+    max-height: 92vh;
+    width: 30vw;
+    background-color: #2A0E48;
 }
 </style>

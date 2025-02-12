@@ -5,11 +5,14 @@
             <span></span>
         </router-link>
 
-        <div class="layout-topbar-buscador col-md-5">
+        <div class="layout-topbar-centro col-md-6">
+            <router-link to="/app">
+                <img src="/images/home-icon.svg" alt="" class="layout-topbar-home-icon">
+            </router-link>
             <input type="text">
         </div>
 
-        <div class="layout-topbar-menu col-md-5" :class="topbarMenuClasses">
+        <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
 
             <router-link class="topbar-link" to="#">{{ $t('Biblioteca') }}</router-link>
             <router-link class="topbar-link" to="#">{{ $t('¡Conviertete en artista!') }}</router-link>
@@ -75,19 +78,25 @@ const topbarMenuClasses = computed(() => {
 .layout-topbar {
     height: 8vh;
     background-color: #1E1B4B;
-    
+    position: sticky;
 }
 
 .layout-topbar img {
     height: 60px;
 }
 
-.layout-topbar-buscador {
+.layout-topbar-centro {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
 }
 
-.layout-topbar-buscador input {
+.layout-topbar-home-icon {
+    width: 50px;
+    padding-right: 5px;
+}
+
+.layout-topbar-centro input {
     height: 4vh;
     width: 500px;
     background-color: #100E28;
@@ -95,10 +104,13 @@ const topbarMenuClasses = computed(() => {
     border-right: 1px solid #F472B6;
     border-radius: 13px;
     color: rgb(255, 215, 215);
-
+    background: url('images/lupa.svg')
+        no-repeat 10px center;
+        background-size: 25px;
+        padding-left: 40px;
 }
 
-.layout-topbar-buscador input:focus {
+.layout-topbar-centro input:focus {
     outline: none;
 }
 
@@ -112,7 +124,11 @@ const topbarMenuClasses = computed(() => {
     color: #F472B6;
     padding-right: 20px;
     font-size: 1.2rem;
-} 
+}
+.topbar-link:hover {
+    color: #e04595;
+    transition: 0.3s;
+}
 
 .layout-topbar-button-c,
 .layout-topbar-button-c:hover {
