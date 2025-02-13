@@ -115,9 +115,18 @@ export default [
         // redirect: {
         //     name: 'admin.index'
         // },
-        name: 'app',
+       // name: 'app',
         beforeEnter: requireLogin,
-        meta: { breadCrumb: 'Dashboard' }
+        meta: { breadCrumb: 'Dashboard' },
+        children: [
+            {
+                name: 'app.index',
+                path: '',
+                component: () => import('../views/admin/index.vue'),
+                meta: { breadCrumb: 'App' }
+            }
+
+        ]
     },
 
 
