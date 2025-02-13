@@ -26,6 +26,16 @@ function hasAdmin(roles) {
     }
     return false;
 }
+
+function hasArtista(roles) {
+    for (let rol of roles) {
+        if (rol.name && rol.name.toLowerCase().includes('artista')) {
+            return true;
+        }
+    }
+    return false;
+}
+
 async function guest(to, from, next) {
     const auth = authStore()
 
@@ -52,6 +62,23 @@ async function requireAdmin(to, from, next) {
         }
     } else {
         next('/login')
+    }
+}
+
+async function requireArtista(to, from, next) {
+
+    const auth = authStore();
+    let isLogin = !!auth.authenticated;
+    let user = auth.user;
+
+    if (isLogin) {
+        if( hasArtista(user.roles)){
+            next()
+        }else{
+            next('/app/artista/estadisticas.vue')
+        }
+    } else {
+        next('/app/')
     }
 }
 
@@ -115,7 +142,6 @@ export default [
         // redirect: {
         //     name: 'admin.index'
         // },
-       // name: 'app',
         beforeEnter: requireLogin,
         meta: { breadCrumb: 'Dashboard' },
         children: [
@@ -124,10 +150,24 @@ export default [
                 path: '',
                 component: () => import('../views/admin/index.vue'),
                 meta: { breadCrumb: 'App' }
+            },
+            {
+                name: 'artista',
+                path: 'artista',
+                meta: { breadCrumb: 'Artista'},
+                children: [
+                    {
+                        name: 'artista.estadisticas',
+                        path: 'estadisticas',
+                        component: () => import('../views/app/artista/estadisticas.vue'),
+                        meta: { breadCrumb: 'estadisticas' }
+                    },
+                ]
             }
-
         ]
     },
+
+    
 
 
     {

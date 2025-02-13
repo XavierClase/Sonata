@@ -4,7 +4,7 @@
         <div class="layout-main-home ">
             <div class="layout-main">
                 <div class="layout-main-content">
-
+                    <router-view></router-view>
                 </div>
                 <app-footer></app-footer>
             </div>
@@ -222,10 +222,12 @@ const isOutsideClicked = (event) => {
 .layout-main {
     background: linear-gradient(#262265, #200834);
     height: auto;
+    max-width: 70vw;
 }
 
 .layout-main-content {
     min-height: 92vh;
+    
 }
 
 .layout-reproductor {
@@ -234,7 +236,7 @@ const isOutsideClicked = (event) => {
     top: 8vh;
     bottom: 0;
     max-height: 92vh;
-    width: 30vw;
+    min-width: 30vw;
     background-color: #2A0E48;
 }
 </style>
