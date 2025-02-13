@@ -13,12 +13,11 @@
         </div>
 
         <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
-
             <router-link class="topbar-link" to="#">{{ $t('Biblioteca') }}</router-link>
-            <router-link class="topbar-link" to="#">{{ $t('¡Conviertete en artista!') }}</router-link>
+            <router-link v-if="userRole === 'user'" class="topbar-link" to="#">{{ $t('¡Conviertete en artista!') }}</router-link>
+            <router-link v-if="userRole === 'artista'" class="topbar-link" to="#">{{ $t('Panel de artista!') }}</router-link>
             <button class="p-link layout-topbar-button layout-topbar-button-c nav-item dropdown " role="button"
                 data-bs-toggle="dropdown">
-
                 <i class="pi pi-user"></i>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
                     <li>
@@ -37,7 +36,7 @@
                         <hr class="dropdown-divider">
                     </li>
                     <li>
-                        <a class="dropdown-item" :class="{ 'opacity-25': processing }" :disabled="processing" href="javascript:void(0)" @click="logout">Cerrar sessión</a>
+                        <a class="dropdown-item" :class="{ 'opacity-25': processing }" :disabled="processing" href="javascript:void(0)" @click="logout">Cerrar sesión</a>
                     </li>
                 </ul>
 
@@ -53,7 +52,7 @@
 import { ref, computed } from 'vue';
 import { useLayout } from '../composables/layout';
 import useAuth from "@/composables/auth";
-import {  useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { authStore } from "../store/auth";
 
 const { onMenuToggle } = useLayout();
@@ -71,6 +70,9 @@ const topbarMenuClasses = computed(() => {
     };
 });
 
+const userRole = computed(() => {
+    return authStore().user?.roles.length > 0 ? authStore().user.roles[0].name : '';
+});
 </script>
 
 <style lang="scss" scoped>
