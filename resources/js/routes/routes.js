@@ -157,6 +157,12 @@ export default [
                 meta: { breadCrumb: 'Artista'},
                 children: [
                     {
+                        name: 'artista.index',
+                        path: '',
+                        component: () => import('../views/app/artista/perfil.vue'),
+                        meta: { breadCrumb: 'perfil' }
+                    },
+                    {
                         name: 'artista.estadisticas',
                         path: 'estadisticas',
                         component: () => import('../views/app/artista/estadisticas.vue'),

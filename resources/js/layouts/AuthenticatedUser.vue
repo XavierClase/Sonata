@@ -9,34 +9,7 @@
                 <app-footer></app-footer>
             </div>
             <div class="layout-reproductor">
-                <Menu :model="items" class="w-full md:w-13rem menu border-0" appendTo="self">
-                    <template #start>
-                        <button class="relative overflow-hidden w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                            <Avatar :image="authStore().user?.avatar" class="mr-3" shape="circle" />
-                            <span class="inline-flex flex-column">
-                                <span class="font-bold">{{ user.name }}</span>
-                                <span>
-                                    <span v-for="rol in user.roles" class="text-sm mr-2">{{ rol.name }}</span>
-                                </span>
-                            </span>
-                        </button>
-                    </template>
-                    <template #submenuheader="{ item }">
-                        <span class="text-primary font-bold">{{ item.label }}</span>
-                    </template>
-
-                    <template #item="{ item, props }">
-                        <a class="flex align-items-center" v-bind="props.action">
-                            <span :class="item.icon" />
-                            <span class="ml-2">{{ item.label }}</span>
-                            <Badge v-if="item.badge" class="ml-auto" :value="item.badge" />
-                            <span v-if="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">
-                                {{item.shortcut}}
-                            </span>
-                        </a>
-                    </template>
-
-                </Menu>
+                
             </div>
             
         </div>
@@ -236,7 +209,7 @@ const isOutsideClicked = (event) => {
     top: 8vh;
     bottom: 0;
     max-height: 92vh;
-    min-width: 30vw;
+    min-width: 29.1vw;
     background-color: #2A0E48;
 }
 </style>

@@ -44,6 +44,7 @@
                     Hola, {{ authStore().user.name }}
                 </span>
             </button>
+            <router-link v-if="userRole === 'artista'" class="topbar-link" to="/app/artista/">{{ $t('Perfil!') }}</router-link>
         </div>
     </div>
 </template>
@@ -76,6 +77,13 @@ const userRole = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+
+.row {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 0;
+  margin-left: calc(0* var(--bs-gutter-x)) !important;
+}
+
 
 .layout-topbar {
     height: 8vh;
