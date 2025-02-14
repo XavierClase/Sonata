@@ -168,6 +168,18 @@ export default [
                         component: () => import('../views/app/artista/estadisticas.vue'),
                         meta: { breadCrumb: 'estadisticas' }
                     },
+                    {
+                        name: 'artista.upload',
+                        path: 'upload',
+                        component: () => import('../views/app/artista/upload.vue'),
+                        meta: { breadCrumb: 'upload' }
+                    },
+                    {
+                        name: 'artista.edit',
+                        path: 'edit',
+                        component: () => import('../views/app/artista/edit.vue'),
+                        meta: { breadCrumb: 'edit' }
+                    },
                 ]
             }
         ]

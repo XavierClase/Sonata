@@ -13,7 +13,7 @@ const logoUrl = computed(() => {
 <template>
     <section class="footer">
         <div class="contenidoFooter">   
-            <img src="images/logo.svg">
+            <img src="/images/logo.svg">
             <p>© Copyright Sonata 2025</p>
         </div>
     </section>
