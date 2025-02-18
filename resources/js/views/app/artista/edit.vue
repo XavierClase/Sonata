@@ -34,6 +34,8 @@
     top: 4.5rem;
     left: 1rem;
     padding: 0.5rem 1.5rem;
+    border-right: 2px solid #f472b5 ;
+    border-image: linear-gradient(to bottom, #f472b5, #A855F7) 1;
   }
 
   .contenido_edit{

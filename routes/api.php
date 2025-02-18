@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\AuthorController;
+use App\Http\Controllers\Api\AlbumController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PostControllerAdvance;
@@ -34,6 +34,8 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/user', [ProfileController::class, 'user']);
     Route::put('/user', [ProfileController::class, 'update']);
 
+    Route::post('artista', [AlbumController::class, 'store']);
+    
     Route::get('abilities', function(Request $request) {
         return $request->user()->roles()->with('permissions')
             ->get()

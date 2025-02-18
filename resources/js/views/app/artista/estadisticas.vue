@@ -19,6 +19,7 @@
     width: 100%;
    
   }
+  
   .appPanel {
     margin-top: 20px;
     position: fixed;
