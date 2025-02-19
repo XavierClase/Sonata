@@ -11,14 +11,14 @@
             <!-- para añadir imagen falta retocar para que avise al propio artista que puede añadir -->
             <div class="imagen_album">
               <img 
-                :src="imagePreview || '/placeholder-image.png'" 
+                :src="PreviewImagen  || '/placeholder-image.png'" 
                 class="estilo_imagen"
               >
               <input 
                 type="file" 
                 @change="handleImageUpload" 
                 accept="image/*"
-                ref="Archivo"
+                ref="archivo"
                 class="añadir_archivo"
               >
             </div>
@@ -68,8 +68,9 @@ import AppPanel from '@/layouts/AppPanel.vue';
 import axios from 'axios';
 
 const user = authStore().user;
-const Archivo = ref(null);
+const archivo = ref(null);
 const PreviewImagen = ref(null);
+const songs = ref([]);
 
 const albumData = reactive({
   nombre: '',
