@@ -6,55 +6,49 @@
     <section class="contenidoUpload">
       <div class="maximo-contenido">
         <h1 class="titulo_subir_musica">Subir Música</h1>
-        <form @submit.prevent="submitForm" class="formulario_album">
+        <form @submit.prevent="enviarFormulario" class="formulario_album">
           <div class="header_formulario">
-            <!-- para añadir imagen falta retocar para que avise al propio artista que puede añadir -->
             <div class="imagen_album">
-              <img 
-                :src="PreviewImagen  || '/placeholder-image.png'" 
-                class="estilo_imagen"
-              >
-              <input 
-                type="file" 
-                @change="handleImageUpload" 
-                accept="image/*"
-                ref="archivo"
-                class="añadir_archivo"
-              >
+              <img :src="PreviewImagen || '/texto'" class="estilo_imagen">
+              <input type="file" @change="manejarImagen" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+              <!-- falta añadir un aviso que diga que puedes añadir una foto al album -->
             </div>
-   
+
             <div class="informacion_album">
-              <input 
-                v-model="albumData.nombre" 
-                placeholder="Nombre álbum" 
-                class="inputs_form"
-              >
-              <p class="nombre_artista">Artista: {{ user?.name }}</p>
+              <input v-model="albumData.nombre" placeholder="Nombre álbum" class="inputs_form">
+              <!-- <p class="nombre_artista">Artista: {{ user?.name }}</p> -->
               <select v-model="albumData.tipo" class="select_form">
                 <option value="Album">Álbum</option>
                 <option value="Sencillo">Sencillo</option>
-                <option value="Ep">EP</option>
+                <option value="EP">EP</option>
               </select>
+            
+              <div class="album_info">
+                <p>Número de canciones: {{ canciones.length }}</p>
+                <p>Duración total: {{ duracionTotalFormateada }}</p>
+              </div>
             </div>
           </div>
 
-          <!--falta añadir numero de canciones y duracion total del album -->
           <section class="lista_canciones">
-            <div  class="cancion">
-              <span class="numero_cancion"></span>
-              <input placeholder="Nombre de la canción" class="input_cancion">
-              <span class="duracion_cancion"></span>
-              <button 
-                @click.prevent="removeSong(index)" 
-                class="quitar_cancion"
-              >⨯</button>
+            <div v-for="(cancion, index) in canciones" :key="index" class="cancion">
+              <span class="numero_cancion">{{ index + 1 }}</span>
+              <input v-model="cancion.nombre" placeholder="Nombre de la canción" class="input_cancion">
+              <span class="duracion_cancion">{{ cancion.duracion || '0:00' }}</span>
+              <button @click.prevent="quitarCancion(index)" class="quitar_cancion">⨯</button>
             </div>
           </section>
 
-          <!--boton para añadir las canciones falta por hacar-->
-          <button class="cancion_boton">Añadir canción</button>
+          <div class="acciones_canciones">
+            <input type="file" ref="archivoAudio" @change="manejarAudio" accept="audio/*" class="hidden" multiple>
+            <button @click.prevent="$refs.archivoAudio.click()" class="cancion_boton">
+              Añadir canción
+            </button>
+          </div>
 
-          <button type="submit" class="boton_confirmar">Confirmar</button>
+          <button type="submit" class="boton_confirmar" :disabled="!esFormularioValido">
+            Confirmar
+          </button>
         </form>
       </div>
     </section>
@@ -62,15 +56,19 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+//falta hacer que funcione correctamente crear los datos para las tablas de detalle_album,canciones, y album
+// aparte de pulir y simplificar toda la parte de scripts y añadir funcionalidad para el tema de imagenes  por ejemplo que pueda arrastrar imaganes y tambien quitarla
+
+import { ref, reactive, computed } from 'vue';
 import { authStore } from "@/store/auth.js";
 import AppPanel from '@/layouts/AppPanel.vue';
 import axios from 'axios';
 
 const user = authStore().user;
-const archivo = ref(null);
+const archivoImagen = ref(null);
+const archivoAudio = ref(null);
 const PreviewImagen = ref(null);
-const songs = ref([]);
+const canciones = ref([]);
 
 const albumData = reactive({
   nombre: '',
@@ -78,36 +76,99 @@ const albumData = reactive({
   portada: null
 });
 
-const handleImageUpload = (event) => {
+const obtenerDuracionAudio = (file) => {
+  return new Promise((resolve) => {
+    const audio = new Audio();
+    const objectUrl = URL.createObjectURL(file);
+    audio.src = objectUrl;
+
+    audio.addEventListener('loadedmetadata', () => {
+      const duracion = Math.floor(audio.duration);
+      const minutos = Math.floor(duracion / 60);
+      const segundos = duracion % 60;
+      URL.revokeObjectURL(objectUrl); 
+      audio.remove(); 
+      resolve(`${minutos}:${segundos.toString().padStart(2, '0')}`);
+    });
+
+    audio.addEventListener('error', () => {
+      URL.revokeObjectURL(objectUrl);
+      audio.remove();
+      resolve('0:00');
+    });
+  });
+};
+
+const manejarImagen = (event) => {
   const file = event.target.files[0];
   if (file) {
+    if (PreviewImagen.value) {
+      URL.revokeObjectURL(PreviewImagen.value);
+    }
     albumData.portada = file;
     PreviewImagen.value = URL.createObjectURL(file);
   }
 };
 
+const manejarAudio = async (event) => {
+  const files = Array.from(event.target.files);
 
-//de momento tan solo se ha podido añadir la imagen de la portada al album 
-// y se envia a la base de datos, no funciona ahora porque falta que se puedan añadir archivos
+  for (const file of files) {
+    const duracion = await obtenerDuracionAudio(file);
+    canciones.value.push({
+      nombre: file.name.replace(/\.[^/.]+$/, ""),
+      archivo: file,
+      duracion
+    });
+  }
+  
+  event.target.value = '';
+};
 
-const submitForm = async () => {
+const quitarCancion = (index) => {
+  canciones.value.splice(index, 1);
+};
+
+const calcularDuracionTotal = () => {
+  return canciones.value.reduce((total, cancion) => {
+    const [min, sec] = cancion.duracion.split(':').map(Number);
+    return total + (min * 60) + sec;
+  }, 0);
+};
+
+const formatearDuracionTotal = (segundos) => {
+  const minutos = Math.floor(segundos / 60);
+  const segsRestantes = segundos % 60;
+  return `${minutos}:${segsRestantes.toString().padStart(2, '0')}`;
+};
+
+
+const duracionTotalFormateada = computed(() => {
+  return formatearDuracionTotal(calcularDuracionTotal());
+});
+
+const esFormularioValido = computed(() => {
+  return albumData.nombre &&
+    albumData.portada &&
+    canciones.value.length > 0 &&
+    canciones.value.every(c => c.nombre);
+});
+
+const enviarFormulario = async () => {
   try {
     const formData = new FormData();
     formData.append('nombre', albumData.nombre);
     formData.append('tipo', albumData.tipo);
-    
-    
-    if (albumData.portada) {
-      formData.append('portada', albumData.portada);
-    }
-    
-    formData.append('num_canciones', songs.value.length.toString());
-    formData.append('duracion_total', '0:00');
+    formData.append('portada', albumData.portada);
+    formData.append('num_canciones', canciones.value.length.toString());
+    formData.append('duracion_total', duracionTotalFormateada.value);
 
-    
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    canciones.value.forEach((cancion, index) => {
+      formData.append(`canciones[${index}][archivo]`, cancion.archivo);
+      formData.append(`canciones[${index}][nombre]`, cancion.nombre);
+      formData.append(`canciones[${index}][duracion]`, cancion.duracion);
+      formData.append(`canciones[${index}][orden]`, (index + 1).toString());
+    });
 
     const response = await axios.post('/api/artista', formData, {
       headers: {
@@ -115,8 +176,9 @@ const submitForm = async () => {
       }
     });
 
-    console.log('Respuesta:', response.data);
+    console.log('Álbum creado:', response.data);
     
+
   } catch (error) {
     console.error('Error:', error.response?.data);
   }
@@ -217,7 +279,8 @@ const submitForm = async () => {
   gap: 15px;
 }
 
-.inputs_form, .select_form {
+.inputs_form,
+.select_form {
   padding: 12px;
   border: 1px solid #f472b5;
   border-radius: 6px;
@@ -302,4 +365,16 @@ const submitForm = async () => {
 }
 
 
+.album_info {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #f472b5;
+  border-radius: 6px;
+  color: white;
+}
+
+.album_info p {
+  margin: 5px 0;
+  font-size: 14px;
+}
 </style>
