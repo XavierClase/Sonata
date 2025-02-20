@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('archivo');
             $table->date('fecha_subida');
             $table->integer('reproducciones');
-            $table->integer('duracion');
+            $table->time('duracion');
             $table->unsignedBigInteger('id_usuario');
             $table->foreign('id_usuario')->references('id')->on('users')->cascadeOnDelete();
             $table->timestamps();
