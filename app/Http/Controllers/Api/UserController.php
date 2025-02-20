@@ -74,6 +74,13 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
+    public function getUser($id)
+    {
+        $user = User::where('id', $id)->get();
+
+        return response()->json($user, 200);
+    }
+
     /**
      * Update the specified resource in storage.
      *

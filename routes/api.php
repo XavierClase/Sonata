@@ -53,3 +53,9 @@ Route::get('category-list', [CategoryController::class, 'getList']);
 Route::get('get-posts', [PostControllerAdvance::class, 'getPosts']);
 Route::get('get-category-posts/{id}', [PostControllerAdvance::class, 'getCategoryByPosts']);
 Route::get('get-post/{id}', [PostControllerAdvance::class, 'getPost']);
+
+
+Route::get('albumes', [AlbumController::class, 'index']);
+Route::get('albumes/{id}', [AlbumController::class, 'show']);
+
+Route::get('user/{id}', [UserController::class, 'getUser']);

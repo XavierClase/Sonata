@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AlbumResource;
 use Illuminate\Http\Request;
 use App\Models\Album;
 
@@ -12,11 +13,13 @@ use App\Models\Album;
 class AlbumController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Recibir todos los albumes (y los datos del usuario artista propietario).
      */
     public function index()
     {
-        //
+        $albumes = Album::with('user')->get();
+
+        return response()->json($albumes);
     }
 
     /**
@@ -58,11 +61,14 @@ class AlbumController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * Recibir los álbumes de un usuario artista en concreto (y los datos del usuario artista propietario).
      */
-    public function show(string $id)
+    public function show($userId)
     {
-        //
+        $albumes = Album::with('user')->where('id_usuario', $userId)->get();
+
+        return response()->json($albumes, 200);
+
     }
 
     /**

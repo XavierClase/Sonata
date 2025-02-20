@@ -152,12 +152,29 @@
 </template>
 
 <script setup>
-    import { authStore } from "@/store/auth.js";
-    import { ref } from "vue";
+    import { ref, onMounted } from 'vue';
+    import { useRoute } from 'vue-router';
+    import axios from 'axios';
 
     const isHovered = ref(false);
+    const route = useRoute(); 
+    const userId = ref(route.params.id);
+    const user = ref(null);
+    const albums = ref([]);
 
-    const user = authStore().user;
+    onMounted(async () => {
+     try {
+         const response = await axios.get(`/api/user/${userId.value}`);
+         console.log(response.data);  
+         user.value = response.data;
+         
+         const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
+         albums.value = albumResponse.data;
+     } catch (error) {
+         console.error('Error fetching user or albums:', error);
+     }
+ });
+
 </script>
 
 <style scoped>

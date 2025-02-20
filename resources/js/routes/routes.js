@@ -158,7 +158,7 @@ export default [
                 children: [
                     {
                         name: 'artista.index',
-                        path: '',
+                        path: 'perfil/:id',
                         component: () => import('../views/app/artista/perfil.vue'),
                         meta: { breadCrumb: 'perfil' }
                     },

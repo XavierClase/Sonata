@@ -44,7 +44,7 @@
                     Hola, {{ authStore().user.name }}
                 </span>
             </button>
-            <router-link v-if="userRole === 'artista'" class="topbar-link" to="/app/artista/">{{ $t('Perfil!') }}</router-link>
+            <router-link class="topbar-link" :to="`/app/artista/perfil/${user?.id}`">{{ $t('Perfil!') }}</router-link>
         </div>
     </div>
 </template>
@@ -55,6 +55,8 @@ import { useLayout } from '../composables/layout';
 import useAuth from "@/composables/auth";
 import { useRouter } from "vue-router";
 import { authStore } from "../store/auth";
+
+const user = authStore().user;
 
 const { onMenuToggle } = useLayout();
 const { processing, logout } = useAuth();
