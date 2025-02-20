@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Cancion extends Model
 {
     use HasFactory;
-    
+    protected $table = 'canciones';
+
     protected $fillable = [
-        'nombre',
+       'nombre',
        'reproducciones',
+       'duracion',
+       'archivo',
+       'id_usuario',
+       'fecha_subida'
     ];
 
     public function user()
@@ -33,6 +38,8 @@ class Cancion extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+  
 
 
 }
