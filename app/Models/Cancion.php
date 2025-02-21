@@ -44,7 +44,12 @@ class Cancion extends Model implements HasMedia
         return $this->belongsToMany(User::class);
     }
 
-  
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('canciones')
+            ->useFallbackUrl('/audio/placeholder.mp3')
+            ->useFallbackPath(public_path('/audio/placeholder.mp3'));
+    }
 
 
 }

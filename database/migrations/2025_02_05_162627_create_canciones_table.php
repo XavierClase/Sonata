@@ -11,6 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
+        //quitar fecha_subida ya se crea automaticamnete con el timestamps 
+        
         Schema::create('canciones', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');

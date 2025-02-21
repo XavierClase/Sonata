@@ -32,21 +32,16 @@ class Album extends Model implements HasMedia
                 ->withPivot('orden')
                 ->orderBy('detalles_albums.orden');
 }
-
-    
-    
     
     public function favorito()
     {
         return $this->belongsToMany(User::class);
     }
 
-
-    
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('images/albums')
-            ->useFallbackUrl('/images/placeholder.jpg') 
+        $this->addMediaCollection('albums')
+            ->useFallbackUrl('/images/placeholder.jpg')
             ->useFallbackPath(public_path('/images/placeholder.jpg'));
     }
 
