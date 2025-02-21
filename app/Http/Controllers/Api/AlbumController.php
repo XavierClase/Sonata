@@ -35,27 +35,33 @@ class AlbumController extends Controller
             'portada' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        if ($request->hasFile('portada')) {
-            $fileName = time() . '_' . $request->file('portada')->getClientOriginalName();
-            $request->file('portada')->storeAs('public/images/albums', $fileName);
-            
-           
+        try {
             $album = new Album([
                 'nombre' => $request->nombre,
                 'num_canciones' => $request->num_canciones,
                 'duracion_total' => $request->duracion_total,
                 'tipo' => $request->tipo,
-                'portada' => $fileName
+                'portada' => $request->portada,
             ]);
-            
-       
             $album->id_usuario = auth()->id();
             $album->save();
 
+           
+            if ($request->hasFile('portada')) {
+                $album->addMediaFromRequest('portada')
+                    ->toMediaCollection('images/albums');
+            }
+
             return response()->json([
-                'message' => 'Album creado exitosamente',
+                'message' => 'Álbum creado exitosamente',
                 'album' => $album
             ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear el álbum',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

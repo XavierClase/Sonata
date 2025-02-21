@@ -56,7 +56,6 @@
 </template>
 
 <script setup>
-//falta hacer que funcione correctamente crear los datos para las tablas de detalle_album,canciones, y album
 // aparte de pulir y simplificar toda la parte de scripts y añadir funcionalidad para el tema de imagenes  por ejemplo que pueda arrastrar imaganes y tambien quitarla
 
 import { ref, reactive, computed } from 'vue';
@@ -156,31 +155,46 @@ const esFormularioValido = computed(() => {
 
 const enviarFormulario = async () => {
   try {
-    const formData = new FormData();
-    formData.append('nombre', albumData.nombre);
-    formData.append('tipo', albumData.tipo);
-    formData.append('portada', albumData.portada);
-    formData.append('num_canciones', canciones.value.length.toString());
-    formData.append('duracion_total', duracionTotalFormateada.value);
+   
+    const albumFormData = new FormData();
+    albumFormData.append('nombre', albumData.nombre);
+    albumFormData.append('tipo', albumData.tipo);
+    albumFormData.append('portada', albumData.portada);
+    albumFormData.append('num_canciones', canciones.value.length.toString());
+    albumFormData.append('duracion_total', duracionTotalFormateada.value);
 
-    canciones.value.forEach((cancion, index) => {
-      formData.append(`canciones[${index}][archivo]`, cancion.archivo);
-      formData.append(`canciones[${index}][nombre]`, cancion.nombre);
-      formData.append(`canciones[${index}][duracion]`, cancion.duracion);
-      formData.append(`canciones[${index}][orden]`, (index + 1).toString());
-    });
-
-    const response = await axios.post('/api/artista', formData, {
+    const albumResponse = await axios.post('/api/albums', albumFormData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       }
     });
 
-    console.log('Álbum creado:', response.data);
+    const albumId = albumResponse.data.album.id;
+
+  
+    for (let i = 0; i < canciones.value.length; i++) {
+      const cancion = canciones.value[i];
+      
+      const cancionFormData = new FormData();
+      cancionFormData.append('nombre', cancion.nombre);
+      cancionFormData.append('duracion', cancion.duracion);
+      cancionFormData.append('archivo', cancion.archivo);
+      cancionFormData.append('album_id', albumId);
+      cancionFormData.append('orden', (i + 1).toString());
+
+      await axios.post('/api/canciones', cancionFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+    }
+
+    console.log('Álbum y canciones creados exitosamente');
     
 
   } catch (error) {
     console.error('Error:', error.response?.data);
+    
   }
 };
 

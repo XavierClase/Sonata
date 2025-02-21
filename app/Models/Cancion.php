@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Cancion extends Model
+class Cancion extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
+
     protected $table = 'canciones';
 
     protected $fillable = [
@@ -29,10 +32,12 @@ class Cancion extends Model
         return $this->belongsToMany(detalle_lista::class, 'id_cancion');
     }
     
-    public function detalle_album()
+    public function albums()
     {
-        return $this->belongsToMany(detalle_album::class, 'id_cancion');
+        return $this->belongsToMany(Album::class, 'detalles_albums', 'id_cancion', 'id_album')
+                    ->withPivot('orden');
     }
+    
 
     public function favorito()
     {
