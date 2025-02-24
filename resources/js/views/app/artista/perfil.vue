@@ -8,14 +8,15 @@
                 {{ user?.name }}
             </h1>
         </span>
-        <router-link to="/perfil/editar" style="font-size: 2rem">
             <i 
+            
                 :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
                 style="font-size: 2rem"
                 @mouseover="isHovered = true"
                 @mouseleave="isHovered = false"
+                v-if="userPropio?.name === user?.name" 
+                 @click="visible = true"
             ></i>
-        </router-link>
         
     </div>
 
@@ -24,80 +25,23 @@
     <div class="row perfil-artista-medio">
 
         <div class="col-md-7 perfil-artista-medio-populares">
-            <h2>Canciones populares</h2>    
-            <div class="canciones-populares">
-                <div class="row cancion-popular">
-                    <span class="cancion-popular-span1 col-md-2">
-                        <p class="num-cancion-popular">1</p>
-                        <img src="" alt="imagen de portada del álbum de la cancion">
-                    </span>
-                    <span class="cancion-popular-span2 col-md-5">
-                        <p class="cancion-popular-nombre">nombre</p>
-                        <p class="cancion-popular-reproducciones">2 reproducciones</p>
-                    </span>
-                    <p class="col-md-2 duracion-cancion">3:20</p>
-                    <i class="pi pi-heart col-md-1"></i>
-                    <i class="pi pi-plus col-md-1"></i>
-                </div>
-
-                <div class="row cancion-popular">
-                    <span class="cancion-popular-span1 col-md-2">
-                        <p class="num-cancion-popular">1</p>
-                        <img src="" alt="imagen de portada del álbum de la cancion">
-                    </span>
-                    <span class="cancion-popular-span2 col-md-5">
-                        <p class="cancion-popular-nombre">nombre</p>
-                        <p class="cancion-popular-reproducciones">2 reproducciones</p>
-                    </span>
-                    <p class="col-md-2 duracion-cancion">3:20</p>
-                    <i class="pi pi-heart col-md-1"></i>
-                    <i class="pi pi-plus col-md-1"></i>
-                </div>
-
-                <div class="row cancion-popular">
-                    <span class="cancion-popular-span1 col-md-2">
-                        <p class="num-cancion-popular">1</p>
-                        <img src="" alt="imagen de portada del álbum de la cancion">
-                    </span>
-                    <span class="cancion-popular-span2 col-md-5">
-                        <p class="cancion-popular-nombre">nombre</p>
-                        <p class="cancion-popular-reproducciones">2 reproducciones</p>
-                    </span>
-                    <p class="col-md-2 duracion-cancion">3:20</p>
-                    <i class="pi pi-heart col-md-1"></i>
-                    <i class="pi pi-plus col-md-1"></i>
-                </div>
-
-                <div class="row cancion-popular">
-                    <span class="cancion-popular-span1 col-md-2">
-                        <p class="num-cancion-popular">1</p>
-                        <img src="" alt="imagen de portada del álbum de la cancion">
-                    </span>
-                    <span class="cancion-popular-span2 col-md-5">
-                        <p class="cancion-popular-nombre">nombre</p>
-                        <p class="cancion-popular-reproducciones">2 reproducciones</p>
-                    </span>
-                    <p class="col-md-2 duracion-cancion">3:20</p>
-                    <i class="pi pi-heart col-md-1"></i>
-                    <i class="pi pi-plus col-md-1"></i>
-                </div>
-
-                <div class="row cancion-popular">
-                    <span class="cancion-popular-span1 col-md-2">
-                        <p class="num-cancion-popular">1</p>
-                        <img src="" alt="imagen de portada del álbum de la cancion">
-                    </span>
-                    <span class="cancion-popular-span2 col-md-5">
-                        <p class="cancion-popular-nombre">nombre</p>
-                        <p class="cancion-popular-reproducciones">2 reproducciones</p>
-                    </span>
-                    <p class="col-md-2 duracion-cancion">3:20</p>
-                    <i class="pi pi-heart col-md-1"></i>
-                    <i class="pi pi-plus col-md-1"></i>
-                </div>
+        <h2>Canciones populares</h2>    
+        <div class="canciones-populares">
+            <div class="row cancion-popular" v-for="(cancion, index) in populares" :key="cancion.id">
+                <span class="cancion-popular-span1 col-md-2">
+                    <p class="num-cancion-popular">{{ index + 1 }}</p> 
+                    <img src="" alt="imagen de portada del álbum de la canción">
+                </span>
+                <span class="cancion-popular-span2 col-md-5">
+                    <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
+                    <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
+                </span>
+                <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
+                <i class="pi pi-heart col-md-1"></i>
+                <i class="pi pi-plus col-md-1"></i>
             </div>
-            
         </div>
+    </div>
 
         <div class="col-md-5 perfil-artista-medio-detalles">
             <h2>Detalles</h2>
@@ -111,69 +55,83 @@
     <div class="perfil-artista-albums">
         <h2>Álbums</h2>
         <div class="row gap-4">
-            <div class="album col-md-2">
+            <div class="album col-md-2" v-for="album in albums" :key="album.id">
                 <div class="album-img">
-                    <img src="" alt="">
+                    <img src="" alt="Imagen">
                 </div>
                 <div class="album-detalles">
-                    <h4>Nombre</h4>
-                    <p>Año</p>
-                    <p>Duración</p>
-                    <p>num canciones</p>
-                    <p>reproducciones</p>
-                </div>
-            </div>
-            <div class="album col-md-2">
-                <div class="album-img">
-                    <img src="" alt="">
-                </div>
-                <div class="album-detalles">
-                    <h4>Nombre</h4>
-                    <p>Año</p>
-                    <p>Duración</p>
-                    <p>num canciones</p>
-                    <p>reproducciones</p>
-                </div>
-            </div>
-            <div class="album col-md-2">
-                <div class="album-img">
-                    <img src="" alt="">
-                </div>
-                <div class="album-detalles">
-                    <h4>Nombre</h4>
-                    <p>Año</p>
-                    <p>Duración</p>
-                    <p>num canciones</p>
-                    <p>reproducciones</p>
+                    <h4>{{ album.nombre }}</h4>
+                    <p>Año: {{  new Date(album.created_at).getFullYear() }}</p>
+                    <p>Duración: {{ album.duracion_total }}</p>
+                    <p>Número de canciones: {{ album.num_canciones }}</p>
                 </div>
             </div>
         </div>
     </div>
+
+
+    <Dialog class="banner-config-modal" v-model:visible="visible" modal header="Modificar Perfil">
+        <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualiza tu información.</span>
+        <div class="row">
+            <div class="col-md-6">
+
+            </div>
+            <div class="col-md-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <FloatLabel variant="on">
+                        <InputText class="banner-config-input" id="username" v-model="value3" />
+                        <label for="username">Nombre de Usuario</label>
+                    </FloatLabel>
+                </div>
+                <div class="flex items-center gap-4 mb-8">
+                    <FloatLabel variant="on">
+                        <Textarea class="banner-config-input" id="descripcion" v-model="value3" rows="5" cols="30" style="resize: none" />
+                        <label for="descripcion">Descripción</label>
+                    </FloatLabel>
+                </div>
+                
+            </div>
+        </div>
+        <div class="flex justify-end gap-2">
+            <Button type="button" label="Guardar" @click="visible = false"></Button>
+        </div>
+    </Dialog>
 </template>
 
 <script setup>
     import { ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
+    import { authStore } from "@/store/auth.js";
+    const visible = ref(false);
+
+
+    const userPropio = authStore().user;
 
     const isHovered = ref(false);
     const route = useRoute(); 
     const userId = ref(route.params.id);
     const user = ref(null);
     const albums = ref([]);
+    const populares = ref([]);
 
     onMounted(async () => {
-     try {
-         const response = await axios.get(`/api/user/${userId.value}`);
-         console.log(response.data);  
-         user.value = response.data;
-         
-         const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
-         albums.value = albumResponse.data;
-     } catch (error) {
-         console.error('Error fetching user or albums:', error);
-     }
- });
+        try {
+        const response = await axios.get(`/api/user/${userId.value}`);
+        user.value = response.data;
+            
+        const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
+        albums.value = albumResponse.data;
+        console.log(albums.value);
+
+        const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
+        populares.value = cancionResponse.data;
+        console.log(populares.value);
+        } catch (error) {
+            console.error('Error fetching user or albums:', error);
+        }
+    });
+ 
 
 </script>
 
@@ -249,15 +207,18 @@
         height: 330px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-start; 
+        gap: 20px;
     }
 
     .cancion-popular {
         min-height: 50px;
         display: flex;
         align-items: center;
-        color:white;
+        color: white;
+        flex-wrap: nowrap; 
     }
+
     .cancion-popular p {
         margin: 0;
         padding: 0;
@@ -291,6 +252,9 @@
 
     .cancion-popular-nombre {
         font-size: 1.3rem;
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
     }
 
     .cancion-popular-reproducciones {
@@ -346,13 +310,15 @@
     .album-detalles {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 8px;
     }
 
     .album-detalles h4 {
-        color: white;
+        background: linear-gradient(to right, #F472B6, #A855F7);
+        background-clip: text;
+        color: transparent;
+        font-weight: bold;
     }
-
     .album-detalles p {
         margin: 0;
         line-height: 1;
@@ -360,5 +326,40 @@
     }
 
 
+   
 
+    
+
+
+</style>
+
+
+<style>
+
+    /* --- Modal --- */
+
+
+    .banner-config-modal {
+        background-color: #200834 !important;
+        border: 1px solid purple !important;
+        width: 700px !important;
+        color: white !important;
+    }
+
+    .banner-config-input{
+        background-color: #200834 !important;
+        border: 1px solid #A855F7 !important;
+        color: white !important;
+    }
+
+    .banner-config-modal label {
+        color: #F472B6 !important;
+        background: transparent !important;
+    }
+
+    .banner-config-modal Button {
+        background-color: #A855F7 !important;
+        border: none !important;
+        color: white !important;
+    }
 </style>

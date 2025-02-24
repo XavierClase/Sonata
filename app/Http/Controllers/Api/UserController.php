@@ -76,7 +76,7 @@ class UserController extends Controller
 
     public function getUser($id)
     {
-        $user = User::where('id', $id)->get();
+        $user = User::where('id', $id)->first();
 
         return response()->json($user, 200);
     }

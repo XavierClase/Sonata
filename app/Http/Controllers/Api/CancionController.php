@@ -69,6 +69,13 @@ class CancionController extends Controller
         //
     }
 
+    public function getPopulares($userId)
+    {
+        $albumes = Cancion::where('id_usuario', $userId)->orderBy('reproducciones', 'desc')->take(5)->get();
+
+        return response()->json($albumes, 200);
+    }
+
     /**
      * Update the specified resource in storage.
      */

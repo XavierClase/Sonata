@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AlbumResource extends JsonResource
+class CancionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,15 +17,13 @@ class AlbumResource extends JsonResource
         return [
             'id' => 'Id del autor:' . $this->id,
             'nombre' => $this->nombre,
-            'num_cancioens' => $this->num_cancioens,
-            'duracion_total' => $this->duracion_total,
-            'portada' => $this->portada,
-            'tipo' => $this->tipo,
-            'artista' => $this->artista->nombre,
+            'archivo' => $this->archivo,
+            'reproduccciones' => $this->reproducciones,
+            'duracion' => $this->duracion,
+            'autor' => $this->id_usuario,
             
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString()
         ];
-
     }
 }

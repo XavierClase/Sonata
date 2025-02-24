@@ -61,4 +61,6 @@ Route::get('get-post/{id}', [PostControllerAdvance::class, 'getPost']);
 Route::get('albumes', [AlbumController::class, 'index']);
 Route::get('albumes/{id}', [AlbumController::class, 'show']);
 
+Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
+
 Route::get('user/{id}', [UserController::class, 'getUser']);
