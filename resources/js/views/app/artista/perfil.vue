@@ -73,8 +73,17 @@
     <Dialog class="banner-config-modal" v-model:visible="visible" modal header="Modificar Perfil">
         <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualiza tu información.</span>
         <div class="row">
-            <div class="col-md-6">
-
+            <div class="config-imagenes col-md-6">
+                <!-- Imagen de perfil -->
+                <div class="imagen-config-perfil">
+                    <img :src="PreviewImagenPerfil || '/images/placeholder1.jpg'" class="estilo_imagen">
+                    <input type="file" @change="manejarImagenPerfil" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+                </div>
+                <!-- Imagen de detalles -->
+                <div class="imagen-config-detalles">
+                    <img :src="PreviewImagenDetalles || '/images/placeholder1.jpg'" class="estilo_imagen">
+                    <input type="file" @change="manejarImagenDetalles" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+                </div>
             </div>
             <div class="col-md-6">
                 <div class="flex items-center gap-4 mb-4">
@@ -85,11 +94,10 @@
                 </div>
                 <div class="flex items-center gap-4 mb-8">
                     <FloatLabel variant="on">
-                        <Textarea class="banner-config-input" id="descripcion" v-model="value3" rows="5" cols="30" style="resize: none" />
+                        <Textarea class="banner-config-input" id="config-descripcion" v-model="value3" rows="5" cols="30" style="resize: none" />
                         <label for="descripcion">Descripción</label>
                     </FloatLabel>
                 </div>
-                
             </div>
         </div>
         <div class="flex justify-end gap-2">
@@ -99,41 +107,63 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, reactive, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
+
     const visible = ref(false);
-
-
     const userPropio = authStore().user;
-
     const isHovered = ref(false);
     const route = useRoute(); 
     const userId = ref(route.params.id);
     const user = ref(null);
     const albums = ref([]);
     const populares = ref([]);
+    const PreviewImagenPerfil = ref(null);  
+    const PreviewImagenDetalles = ref(null); 
 
     onMounted(async () => {
         try {
-        const response = await axios.get(`/api/user/${userId.value}`);
-        user.value = response.data;
+            const response = await axios.get(`/api/user/${userId.value}`);
+            user.value = response.data; 
             
-        const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
-        albums.value = albumResponse.data;
-        console.log(albums.value);
-
-        const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
-        populares.value = cancionResponse.data;
-        console.log(populares.value);
+            const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
+            albums.value = albumResponse.data;
+            
+            const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
+            populares.value = cancionResponse.data;
         } catch (error) {
             console.error('Error fetching user or albums:', error);
         }
     });
- 
 
+    const albumDataPerfil = reactive({ portada: null });
+    const albumDataDetalles = reactive({ portada: null });
+
+    const manejarImagenPerfil = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (PreviewImagenPerfil.value) {
+                URL.revokeObjectURL(PreviewImagenPerfil.value);
+            }
+            albumDataPerfil.portada = file;
+            PreviewImagenPerfil.value = URL.createObjectURL(file); 
+        }
+    };
+
+    const manejarImagenDetalles = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (PreviewImagenDetalles.value) {
+                URL.revokeObjectURL(PreviewImagenDetalles.value);
+            }
+            albumDataDetalles.portada = file;
+            PreviewImagenDetalles.value = URL.createObjectURL(file); 
+        }
+    };
 </script>
+
 
 <style scoped>
 
@@ -326,11 +356,6 @@
     }
 
 
-   
-
-    
-
-
 </style>
 
 
@@ -352,6 +377,11 @@
         color: white !important;
     }
 
+    #config-descripcion {
+        height: 180px;
+        width: 280px;
+    }
+
     .banner-config-modal label {
         color: #F472B6 !important;
         background: transparent !important;
@@ -361,5 +391,46 @@
         background-color: #A855F7 !important;
         border: none !important;
         color: white !important;
+    }
+
+    .config-imagenes {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .imagen-config-perfil{
+        position: relative;
+        width: 130px;
+        height: 130px;
+        border: 2px dashed #f472b5;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .imagen-config-detalles {
+        position: relative;
+        width: 200px;
+        height: 130px;
+        border: 2px dashed #f472b5;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .estilo_imagen {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .añadir_archivo {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
     }
 </style>
