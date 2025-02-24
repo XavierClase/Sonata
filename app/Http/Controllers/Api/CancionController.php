@@ -34,9 +34,8 @@ class CancionController extends Controller
             'nombre' => $request->nombre,
             'duracion' => $request->duracion,
             'reproducciones' => 0,
-            'id_usuario' => auth()->id(),
-            'fecha_subida' => now(),
-            'archivo' => $request->archivo
+            'id_usuario' => auth()->id()
+        
         ]); 
         
         $cancion->save();

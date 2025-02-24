@@ -9,7 +9,7 @@
         <form @submit.prevent="enviarFormulario" class="formulario_album">
           <div class="header_formulario">
             <div class="imagen_album">
-              <img :src="PreviewImagen || '/texto'" class="estilo_imagen">
+              <img :src="PreviewImagen || '/images/placeholder1.jpg'" class="estilo_imagen">
               <input type="file" @change="manejarImagen" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
               <!-- falta añadir un aviso que diga que puedes añadir una foto al album -->
             </div>
@@ -56,8 +56,6 @@
 </template>
 
 <script setup>
-// aparte de pulir y simplificar toda la parte de scripts y añadir funcionalidad para el tema de imagenes  por ejemplo que pueda arrastrar imaganes y tambien quitarla
-
 import { ref, reactive, computed } from 'vue';
 import { authStore } from "@/store/auth.js";
 import AppPanel from '@/layouts/AppPanel.vue';
@@ -120,7 +118,6 @@ const manejarAudio = async (event) => {
       duracion
     });
   }
-  
   event.target.value = '';
 };
 
@@ -141,7 +138,6 @@ const formatearDuracionTotal = (segundos) => {
   return `${minutos}:${segsRestantes.toString().padStart(2, '0')}`;
 };
 
-
 const duracionTotalFormateada = computed(() => {
   return formatearDuracionTotal(calcularDuracionTotal());
 });
@@ -155,7 +151,6 @@ const esFormularioValido = computed(() => {
 
 const enviarFormulario = async () => {
   try {
-   
     const albumFormData = new FormData();
     albumFormData.append('nombre', albumData.nombre);
     albumFormData.append('tipo', albumData.tipo);
@@ -171,7 +166,7 @@ const enviarFormulario = async () => {
 
     const albumId = albumResponse.data.album.id;
 
-  
+    
     for (let i = 0; i < canciones.value.length; i++) {
       const cancion = canciones.value[i];
       
@@ -190,14 +185,13 @@ const enviarFormulario = async () => {
     }
 
     console.log('Álbum y canciones creados exitosamente');
+  
     
-
   } catch (error) {
     console.error('Error:', error.response?.data);
-    
+  
   }
 };
-
 </script>
 
 <style scoped>

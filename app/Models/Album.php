@@ -17,7 +17,6 @@ class Album extends Model implements HasMedia
         'num_canciones',
         'duracion_total',
         'tipo',
-        'portada',
         'id_usuario'
     ];
 

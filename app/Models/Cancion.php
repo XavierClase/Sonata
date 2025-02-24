@@ -18,8 +18,7 @@ class Cancion extends Model implements HasMedia
        'reproducciones',
        'duracion',
        'archivo',
-       'id_usuario',
-       'fecha_subida'
+       'id_usuario'
     ];
 
     public function user()

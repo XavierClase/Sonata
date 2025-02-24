@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('nombre');
             $table->integer('num_canciones');
             $table->time('duracion_total');
-            $table->string('portada');
             $table->enum('tipo', ['sencillo', 'ep', 'album'])->default('album');
 
             $table->unsignedBigInteger('id_usuario');

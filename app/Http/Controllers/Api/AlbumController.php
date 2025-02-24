@@ -40,8 +40,7 @@ class AlbumController extends Controller
                 'nombre' => $request->nombre,
                 'num_canciones' => $request->num_canciones,
                 'duracion_total' => $request->duracion_total,
-                'tipo' => $request->tipo,
-                'portada' => $request->portada,
+                'tipo' => $request->tipo
             ]);
             $album->id_usuario = auth()->id();
             $album->save();

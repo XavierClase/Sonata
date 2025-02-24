@@ -16,8 +16,6 @@ return new class extends Migration
         Schema::create('canciones', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('archivo');
-            $table->date('fecha_subida');
             $table->integer('reproducciones');
             $table->time('duracion');
             $table->unsignedBigInteger('id_usuario');
