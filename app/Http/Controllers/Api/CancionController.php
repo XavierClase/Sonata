@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CancionResource;
 use Illuminate\Http\Request;
 use App\Models\Cancion;
 use App\Models\Album;
@@ -71,9 +72,14 @@ class CancionController extends Controller
 
     public function getPopulares($userId)
     {
-        $albumes = Cancion::where('id_usuario', $userId)->orderBy('reproducciones', 'desc')->take(5)->get();
+        $canciones = Cancion::with('albums')->where('id_usuario', $userId)->orderBy('reproducciones', 'desc')->take(5)->get();
 
-        return response()->json($albumes, 200);
+        return CancionResource::collection($canciones);
+    }
+
+    public function getCancionesAlbum($albumId)
+    {
+        
     }
 
     /**

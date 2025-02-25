@@ -15,17 +15,15 @@ class AlbumResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => 'Id del autor:' . $this->id,
+            'id' => $this->id,
             'nombre' => $this->nombre,
-            'num_cancioens' => $this->num_cancioens,
+            'num_canciones' => $this->num_canciones,
             'duracion_total' => $this->duracion_total,
-            'portada' => count($this->getMedia('*')) > 0 ? $this->getMedia('*')[0]->getUrl() : null,
+            'portada' => $this->getFirstMediaUrl('images/albums') ?? null, 
             'tipo' => $this->tipo,
-            'artista' => $this->artista->nombre,
-            
+            'artista' => $this->user->name, 
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString()
         ];
-
     }
 }

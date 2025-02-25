@@ -55,9 +55,14 @@
     <div class="perfil-artista-albums">
         <h2>Álbums</h2>
         <div class="row gap-4">
-            <div class="album col-md-2" v-for="album in albums" :key="album.id">
+            <router-link 
+                class="album col-md-2" 
+                v-for="album in albums" 
+                :key="album.id" 
+                :to="{ name: 'app.album', params: { id: album.id} }"
+            >
                 <div class="album-img">
-                    <img src="" alt="Imagen">
+                    <img :src="getImageUrl(album)"/>
                 </div>
                 <div class="album-detalles">
                     <h4>{{ album.nombre }}</h4>
@@ -65,10 +70,9 @@
                     <p>Duración: {{ album.duracion_total }}</p>
                     <p>Número de canciones: {{ album.num_canciones }}</p>
                 </div>
-            </div>
+            </router-link>
         </div>
     </div>
-
 
     <Dialog class="banner-config-modal" v-model:visible="visible" modal header="Modificar Perfil">
         <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualiza tu información.</span>
@@ -129,17 +133,27 @@
             user.value = response.data; 
             
             const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
-            albums.value = albumResponse.data;
+            albums.value = albumResponse.data.data;
+            console.log(albums.value)
             
             const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
-            populares.value = cancionResponse.data;
+            populares.value = cancionResponse.data.data;
+            console.log(populares.value);
         } catch (error) {
             console.error('Error fetching user or albums:', error);
         }
     });
 
-    const albumDataPerfil = reactive({ portada: null });
-    const albumDataDetalles = reactive({ portada: null });
+    function getImageUrl(album) {
+        let image
+
+        image = album.portada
+        
+        return new URL(image, import.meta.url).href
+    }
+
+    const imagenDataPerfil = reactive({ portada: null });
+    const imagenDataDetalles = reactive({ portada: null });
 
     const manejarImagenPerfil = (event) => {
         const file = event.target.files[0];
@@ -147,7 +161,7 @@
             if (PreviewImagenPerfil.value) {
                 URL.revokeObjectURL(PreviewImagenPerfil.value);
             }
-            albumDataPerfil.portada = file;
+            imagenDataPerfil.portada = file;
             PreviewImagenPerfil.value = URL.createObjectURL(file); 
         }
     };
@@ -158,20 +172,21 @@
             if (PreviewImagenDetalles.value) {
                 URL.revokeObjectURL(PreviewImagenDetalles.value);
             }
-            albumDataDetalles.portada = file;
+            imagenDataDetalles.portada = file;
             PreviewImagenDetalles.value = URL.createObjectURL(file); 
         }
     };
+
 </script>
 
 
 <style scoped>
 
     .row {
-    --bs-gutter-x: 1.5rem;
-    --bs-gutter-y: 0;
-     margin-right: calc(0* var(--bs-gutter-x)) !important; 
-     margin-left: calc(0* var(--bs-gutter-x)) !important;
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        margin-right: calc(0* var(--bs-gutter-x)) !important; 
+        margin-left: calc(0* var(--bs-gutter-x)) !important;
     }
 
     h2 {
@@ -334,7 +349,6 @@
 
     .album-img {
         border: 1px solid black;
-        background-color: black;
     }
 
     .album-detalles {

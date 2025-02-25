@@ -72,8 +72,7 @@ class AlbumController extends Controller
     {
         $albumes = Album::with('user')->where('id_usuario', $userId)->get();
 
-        return response()->json($albumes, 200);
-
+        return AlbumResource::collection($albumes); 
     }
 
     /**

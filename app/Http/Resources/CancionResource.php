@@ -15,13 +15,12 @@ class CancionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => 'Id del autor:' . $this->id,
+            'id' => $this->id,
             'nombre' => $this->nombre,
             'archivo' => $this->archivo,
-            'reproduccciones' => $this->reproducciones,
+            'reproducciones' => $this->reproducciones,
             'duracion' => $this->duracion,
-            'autor' => $this->id_usuario,
-            
+            'autor' => $this->user->name,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString()
         ];

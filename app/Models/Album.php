@@ -26,11 +26,11 @@ class Album extends Model implements HasMedia
     }
 
     public function canciones()
-{
-    return $this->belongsToMany(Cancion::class, 'detalles_albums', 'id_album', 'id_cancion')
-                ->withPivot('orden')
-                ->orderBy('detalles_albums.orden');
-}
+    {
+        return $this->belongsToMany(Cancion::class, 'detalles_albums', 'id_album', 'id_cancion')
+                    ->withPivot('orden')
+                    ->orderBy('detalles_albums.orden');
+    }
     
     public function favorito()
     {
