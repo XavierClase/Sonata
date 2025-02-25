@@ -39,6 +39,11 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::post('albums', [AlbumController::class, 'store']);
     Route::post('canciones', [CancionController::class, 'store']);
 
+    Route::get('canciones/{id}', [CancionController::class, 'getCancionesUsuario']);
+    Route::get('albumes/{id}/canciones', [AlbumController::class, 'getCancionesAlbum']);
+    Route::put('albumes/{id}', [AlbumController::class, 'update']);
+    Route::delete('albumes/{id}', [AlbumController::class, 'destroy']);
+
     Route::get('abilities', function(Request $request) {
         return $request->user()->roles()->with('permissions')
             ->get()

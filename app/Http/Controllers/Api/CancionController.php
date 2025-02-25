@@ -82,6 +82,13 @@ class CancionController extends Controller
         
     }
 
+
+    public function getCancionesUsuario(string $userId)
+    {
+        $canciones = Cancion::where('id_usuario', $userId)->get();
+        return response()->json($canciones, 200);
+    }
+
     /**
      * Update the specified resource in storage.
      */

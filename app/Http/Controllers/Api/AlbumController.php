@@ -63,8 +63,6 @@ class AlbumController extends Controller
             ], 500);
         }
     }
-
-
     /**
      * Recibir los álbumes de un usuario artista en concreto (y los datos del usuario artista propietario).
      */
@@ -75,6 +73,13 @@ class AlbumController extends Controller
         return AlbumResource::collection($albumes); 
     }
 
+    public function getCancionesAlbum(string $id)
+    {
+        $album = Album::findOrFail($id);
+        $canciones = $album->canciones;
+        return response()->json($canciones, 200);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -83,11 +88,38 @@ class AlbumController extends Controller
         //
     }
 
+    
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $album = Album::findOrFail($id);
+            
+          
+            if ($album->id_usuario !== auth()->id()) {
+                return response()->json([
+                    'message' => 'No tienes permiso para eliminar este álbum'
+                ], 403);
+            }
+      
+            foreach ($album->getMedia() as $media) {
+                $media->delete();
+            }
+            
+
+            $album->delete();
+
+            return response()->json([
+                'message' => 'Álbum eliminado correctamente'
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el álbum',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
