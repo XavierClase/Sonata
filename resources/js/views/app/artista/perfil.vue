@@ -9,7 +9,6 @@
             </h1>
         </span>
             <i 
-            
                 :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
                 style="font-size: 2rem"
                 @mouseover="isHovered = true"
@@ -144,6 +143,7 @@
         }
     });
 
+ 
     function getImageUrl(album) {
         let image
 
@@ -349,6 +349,11 @@
 
     .album-img {
         border: 1px solid black;
+        
+    }
+    
+    .album-img img{
+        width: 54px;
     }
 
     .album-detalles {

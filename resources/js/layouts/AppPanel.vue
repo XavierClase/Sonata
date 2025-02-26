@@ -1,10 +1,13 @@
-
 <template>
     <section class="">
         <h1 class="h1_panel">Panel Artista</h1>
         <ul class="texto_panel">
             <template v-for="(item, i) in model[0].items" :key="i">
-                <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
+                <li v-if="!item.separator" class="texto_panel">
+                    <router-link :to="item.to" class="texto_panel">
+                        {{ item.label }}
+                    </router-link>
+                </li>
                 <li v-if="item.separator" class="menu-separator"></li>
             </template>
         </ul>
@@ -13,7 +16,6 @@
 
 <script setup>
 import { ref } from 'vue';
-import AppMenuItem from './AppMenuItem.vue';
 import {useAbility} from '@casl/vue'
 import { authStore } from "../store/auth";
 
@@ -32,7 +34,6 @@ const model = ref([
 ]);
 </script>
 
-
 <style lang="scss" scoped>
 
 
@@ -42,11 +43,15 @@ const model = ref([
     background-clip: text; 
     color: transparent; 
     display: inline-block;
+    margin-bottom: 30px;
 }
 
 .texto_panel{
+    display: flex;
+    flex-direction: column;
     color: #F472B6;
     font-size: 24px;
+    gap: 20px;
 }
 
 </style>

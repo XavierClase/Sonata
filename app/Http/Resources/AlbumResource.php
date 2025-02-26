@@ -19,7 +19,7 @@ class AlbumResource extends JsonResource
             'nombre' => $this->nombre,
             'num_canciones' => $this->num_canciones,
             'duracion_total' => $this->duracion_total,
-            'portada' => $this->getFirstMediaUrl('images/albums') ?? null, 
+            'portada' => count($this->getMedia('*')) > 0 ? $this->getMedia('*')[0]->getUrl() : null,
             'tipo' => $this->tipo,
             'artista' => $this->user->name, 
             'created_at' => $this->created_at->toDateTimeString(),
