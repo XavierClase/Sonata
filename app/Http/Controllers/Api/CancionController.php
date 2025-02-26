@@ -77,12 +77,6 @@ class CancionController extends Controller
         return CancionResource::collection($canciones);
     }
 
-    public function getCancionesAlbum($albumId)
-    {
-        
-    }
-
-
     public function getCancionesUsuario(string $userId)
     {
         $canciones = Cancion::where('id_usuario', $userId)->get();

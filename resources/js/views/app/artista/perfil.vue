@@ -58,7 +58,7 @@
                 class="album col-md-2" 
                 v-for="album in albums" 
                 :key="album.id" 
-                :to="{ name: 'app.album', params: { id: album.id} }"
+                :to="{ name: 'app.album', params: {id: album.id} }"
             >
                 <div class="album-img">
                     <img :src="getImageUrl(album)"/>
@@ -222,7 +222,7 @@
         top: 0;
         right: 0;
         color: white;
-        margin: 13px;
+        margin: 20px;
     }
 
     .pi:hover {
@@ -348,12 +348,13 @@
     }
 
     .album-img {
-        border: 1px solid black;
-        
+        display: flex;
+        justify-content: center;
+        background-color: rgb(56, 1, 133);
     }
     
     .album-img img{
-        width: 54px;
+        width: auto;
     }
 
     .album-detalles {

@@ -80,6 +80,19 @@ class AlbumController extends Controller
         return response()->json($canciones, 200);
     }
 
+    public function getAlbumById($idAlbum)
+    {
+        $album = Album::where('id', $idAlbum)->first();
+
+
+        if (!$album) {
+            return response()->json(['message' => 'Álbum no encontrado'], 404);
+        }
+
+        
+        return new AlbumResource($album);
+    }
+
     /**
      * Update the specified resource in storage.
      */

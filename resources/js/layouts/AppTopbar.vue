@@ -44,7 +44,7 @@
                     Hola, {{ authStore().user.name }}
                 </span>
             </button>
-            <router-link class="topbar-link" :to="`/app/artista/perfil/${user?.id}`">{{ $t('Perfil!') }}</router-link>
+            <router-link class="topbar-link" :key="user?.id" :to="{ name: 'artista.perfil', params: {id: user?.id} }">{{ $t('Perfil!') }}</router-link>
         </div>
     </div>
 </template>

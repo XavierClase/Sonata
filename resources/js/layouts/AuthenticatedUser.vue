@@ -209,7 +209,7 @@ const isOutsideClicked = (event) => {
     top: 8vh;
     bottom: 0;
     max-height: 92vh;
-    min-width: 29.1vw;
+    min-width: 30vw;
     background-color: #2A0E48;
 }
 </style>
