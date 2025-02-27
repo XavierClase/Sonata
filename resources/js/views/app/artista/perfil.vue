@@ -229,13 +229,11 @@
         cursor: pointer;
     }
 
-
     .pi-share-alt {
         color: white;
         font-size: 2rem;
         padding: 35px;
     }
-
 
     .perfil-artista-medio > div {
         height: 400px;
@@ -269,7 +267,6 @@
         padding: 0;
     }
 
-
     .cancion-popular-span1 {
         display: flex;
         flex-direction: row;
@@ -291,8 +288,6 @@
         display: flex;
         flex-direction: column;
     }
-
-    
 
     .cancion-popular-nombre {
         font-size: 1.3rem;
@@ -317,11 +312,10 @@
     .pi-plus {
         font-size: 1.5rem;
     }
-    
 
     .perfil-artista-medio-detalles div {
         height: 330px;
-        width: 500px;
+        width: 300px;
         border: 1px solid black;
     }
 
@@ -337,7 +331,7 @@
     }
 
     .album {
-        height: 270px;
+        height: 350px;
         background-color: #721cc2;
     }
 
@@ -347,19 +341,27 @@
     }
 
     .album-img {
-        display: flex;
-        justify-content: center;
-        background-color: rgb(56, 1, 133);
+        width:  100%;
+        position: relative;
+        padding-top: 100%; 
+        overflow: hidden;
+        margin-bottom: 10px;
     }
     
     .album-img img{
-        width: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .album-detalles {
         display: flex;
         flex-direction: column;
         gap: 8px;
+        padding: 5px;
     }
 
     .album-detalles h4 {
@@ -368,6 +370,8 @@
         color: transparent;
         font-weight: bold;
     }
+
+
     .album-detalles p {
         margin: 0;
         line-height: 1;
