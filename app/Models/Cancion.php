@@ -50,5 +50,14 @@ class Cancion extends Model implements HasMedia
             ->useFallbackPath(public_path('/audio/placeholder.mp3'));
     }
 
+    public function getDuracionFormateadaAttribute()
+    {
+        $partes = explode(':', $this->duracion);
+        if (count($partes) >= 3) {
+            return $partes[1] . ':' . $partes[2];
+        }
+        return $this->duracion;
+    }
+
 
 }

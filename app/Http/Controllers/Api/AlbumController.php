@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AlbumResource;
+use App\Http\Resources\CancionResource;
 use Illuminate\Http\Request;
 use App\Models\Album;
-
-
-
 
 class AlbumController extends Controller
 {
@@ -36,16 +34,20 @@ class AlbumController extends Controller
         ]);
 
         try {
+            // Convertir el formato MM:SS a HH:MM:SS para MySQL TIME
+            $duracionPartes = explode(':', $request->duracion_total);
+            $duracionFormateada = '00:' . str_pad($duracionPartes[0], 2, '0', STR_PAD_LEFT) . ':' . 
+                                str_pad(isset($duracionPartes[1]) ? $duracionPartes[1] : '00', 2, '0', STR_PAD_LEFT);
+
             $album = new Album([
                 'nombre' => $request->nombre,
                 'num_canciones' => $request->num_canciones,
-                'duracion_total' => $request->duracion_total,
+                'duracion_total' => $duracionFormateada, // Formato 00:MM:SS para TIME
                 'tipo' => $request->tipo
             ]);
             $album->id_usuario = auth()->id();
             $album->save();
 
-           
             if ($request->hasFile('portada')) {
                 $album->addMediaFromRequest('portada')
                     ->toMediaCollection('images/albums');
@@ -63,6 +65,7 @@ class AlbumController extends Controller
             ], 500);
         }
     }
+    
     /**
      * Recibir los álbumes de un usuario artista en concreto (y los datos del usuario artista propietario).
      */
@@ -77,18 +80,17 @@ class AlbumController extends Controller
     {
         $album = Album::findOrFail($id);
         $canciones = $album->canciones;
-        return response()->json($canciones, 200);
+        
+        return CancionResource::collection($canciones);
     }
 
     public function getAlbumById($idAlbum)
     {
         $album = Album::where('id', $idAlbum)->first();
 
-
         if (!$album) {
             return response()->json(['message' => 'Álbum no encontrado'], 404);
         }
-
         
         return new AlbumResource($album);
     }
@@ -100,7 +102,6 @@ class AlbumController extends Controller
     {
         //
     }
-
     
     /**
      * Remove the specified resource from storage.
@@ -110,7 +111,6 @@ class AlbumController extends Controller
         try {
             $album = Album::findOrFail($id);
             
-          
             if ($album->id_usuario !== auth()->id()) {
                 return response()->json([
                     'message' => 'No tienes permiso para eliminar este álbum'
@@ -121,7 +121,6 @@ class AlbumController extends Controller
                 $media->delete();
             }
             
-
             $album->delete();
 
             return response()->json([

@@ -29,7 +29,7 @@
             <div class="row cancion-popular" v-for="(cancion, index) in populares" :key="cancion.id">
                 <span class="cancion-popular-span1 col-md-2">
                     <p class="num-cancion-popular">{{ index + 1 }}</p> 
-                    <img src="" alt="imagen de portada del álbum de la canción">
+                    <img :src="getImageUrl(cancion)"/>
                 </span>
                 <span class="cancion-popular-span2 col-md-5">
                     <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
@@ -278,7 +278,6 @@
     }
 
     .cancion-popular img {
-        border: 1px solid black;
         min-height: 50px;
         max-height: 50px;
 

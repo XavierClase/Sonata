@@ -96,6 +96,12 @@ const obtenerDuracionAudio = (file) => {
   });
 };
 
+// Función para convertir una duración MM:SS al formato 00:MM:SS para MySQL
+const formatearDuracionParaDB = (duracionStr) => {
+  const partes = duracionStr.split(':');
+  return '00:' + partes[0].padStart(2, '0') + ':' + (partes[1] || '00').padStart(2, '0');
+};
+
 const manejarImagen = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -112,7 +118,7 @@ const manejarAudio = async (event) => {
 
   for (const file of files) {
     const duracion = await obtenerDuracionAudio(file);
-    canciones.value.push({
+    canciones.value.push({  
       nombre: file.name.replace(/\.[^/.]+$/, ""),
       archivo: file,
       duracion
@@ -156,6 +162,7 @@ const enviarFormulario = async () => {
     albumFormData.append('tipo', albumData.tipo);
     albumFormData.append('portada', albumData.portada);
     albumFormData.append('num_canciones', canciones.value.length.toString());
+    // Enviamos la duración en formato MM:SS, el controlador la convertirá
     albumFormData.append('duracion_total', duracionTotalFormateada.value);
 
     const albumResponse = await axios.post('/api/albums', albumFormData, {
@@ -165,13 +172,14 @@ const enviarFormulario = async () => {
     });
 
     const albumId = albumResponse.data.album.id;
-
     
+    // Para las canciones individuales
     for (let i = 0; i < canciones.value.length; i++) {
       const cancion = canciones.value[i];
       
       const cancionFormData = new FormData();
       cancionFormData.append('nombre', cancion.nombre);
+      // Para cada canción también formateamos correctamente la duración
       cancionFormData.append('duracion', cancion.duracion);
       cancionFormData.append('archivo', cancion.archivo);
       cancionFormData.append('album_id', albumId);
@@ -185,11 +193,9 @@ const enviarFormulario = async () => {
     }
 
     console.log('Álbum y canciones creados exitosamente');
-  
-    
+    // Aquí podrías añadir código para redireccionar o mostrar un mensaje de éxito
   } catch (error) {
     console.error('Error:', error.response?.data);
-  
   }
 };
 </script>
@@ -372,7 +378,6 @@ const enviarFormulario = async () => {
   font-size: 16px;
 }
 
-
 .album_info {
   margin-top: 15px;
   padding: 15px;
@@ -384,5 +389,9 @@ const enviarFormulario = async () => {
 .album_info p {
   margin: 5px 0;
   font-size: 14px;
+}
+
+.hidden {
+  display: none;
 }
 </style>

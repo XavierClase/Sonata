@@ -21,46 +21,51 @@ class CancionController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'nombre' => 'required|string',
-        'duracion' => 'required|string',
-        'archivo' => 'required|file|mimes:mp3,wav',
-        'album_id' => 'required|exists:albums,id',
-        'orden' => 'required|integer'
-    ]);
+    {
+        $request->validate([
+            'nombre' => 'required|string',
+            'duracion' => 'required|string',
+            'archivo' => 'required|file|mimes:mp3,wav',
+            'album_id' => 'required|exists:albums,id',
+            'orden' => 'required|integer'
+        ]);
 
-    try {
-        $cancion = new Cancion([
-            'nombre' => $request->nombre,
-            'duracion' => $request->duracion,
-            'reproducciones' => 0,
-            'id_usuario' => auth()->id()
-        
-        ]); 
-        
-        $cancion->save();
+        $duracionPartes = explode(':', $request->duracion);
+        $duracionFormateada = '00:' . str_pad($duracionPartes[0], 2, '0', STR_PAD_LEFT) . ':' . 
+                            str_pad(isset($duracionPartes[1]) ? $duracionPartes[1] : '00', 2, '0', STR_PAD_LEFT);
 
-        if ($request->hasFile('archivo')) {
-            $cancion->addMediaFromRequest('archivo')
-                ->toMediaCollection('audio/canciones');
+
+        try {
+            $cancion = new Cancion([
+                'nombre' => $request->nombre,
+                'duracion' => $duracionFormateada,
+                'reproducciones' => 0,
+                'id_usuario' => auth()->id()
+            
+            ]); 
+            
+            $cancion->save();
+
+            if ($request->hasFile('archivo')) {
+                $cancion->addMediaFromRequest('archivo')
+                    ->toMediaCollection('audio/canciones');
+            }
+
+            $album = Album::findOrFail($request->album_id);
+            $album->canciones()->attach($cancion->id, ['orden' => $request->orden]);
+
+            return response()->json([
+                'message' => 'Canción creada y asociada exitosamente',
+                'cancion' => $cancion
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear la canción',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $album = Album::findOrFail($request->album_id);
-        $album->canciones()->attach($cancion->id, ['orden' => $request->orden]);
-
-        return response()->json([
-            'message' => 'Canción creada y asociada exitosamente',
-            'cancion' => $cancion
-        ], 201);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Error al crear la canción',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
     /**
      * Display the specified resource.

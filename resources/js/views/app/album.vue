@@ -2,7 +2,7 @@
     <div class="album-banner">
         <div class="detalles-album">
             <div class="album-banner-img">
-                <img src="" alt="">
+                <img :src="getImageUrl(album)"/>
             </div>
             <div class="datos-detalles-album">
                 <p> {{ album?.tipo }}</p>
@@ -19,17 +19,44 @@
                     {{ album?.duracion_total }}
                 </span>
             </div>
+            <i :class="'pi pi-heart'" style="font-size: 2.4rem"></i>
+        </div>
+        <div class="album-banner-play">
+            <svg viewBox="0 0 100 100">
+                <!-- Definición del degradado -->
+                <defs>
+                    <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F472B6" />
+                    <stop offset="100%" stop-color="#A855F7" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Círculo de fondo con degradado -->
+                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
+                
+                <!-- Triángulo de play blanco -->
+                <path d="M35 25 L35 75 L75 50 Z" fill="white"/>
+            </svg>
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                 Definición del degradado 
+                <defs>
+                    <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F472B6" />
+                    <stop offset="100%" stop-color="#A855F7" />
+                    </linearGradient>
+                </defs>
+                
+                 Círculo de fondo con degradado 
+                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
+                
+                 Barras de pausa (dos rectángulos) 
+                <rect x="35" y="30" width="10" height="40" fill="white" rx="2"/>
+                <rect x="55" y="30" width="10" height="40" fill="white" rx="2"/>
+            </svg> -->
         </div>
         
     </div>
-    <i 
-            :class="'pi pi-heart'" 
-            style="font-size: 2rem"
-            @mouseover="isHovered = true"
-            @mouseleave="isHovered = false"
-            v-if="userPropio?.name === user?.name" 
-                @click="visible = true"
-        ></i>
+        
     <div class="album-canciones-container">
         <div class="row album-canciones-categorias">
             <p class="col-md-1">#</p>
@@ -38,7 +65,6 @@
             <p class="col-md-2">Duración</p>
         </div>
         <div class="album-canciones-detalles">
-
             <div class="row cancion-album" v-for="(cancion, index) in canciones">
                 <p class="col-md-1 num-cancion-album">{{ index + 1 }}</p> 
                 <p class="col-md-5 cancion-album-nombre">{{ cancion.nombre }}</p>
@@ -76,12 +102,20 @@
 
         try {
             const response = await axios.get(`/api/albumes/${albumId.value}/canciones`);
-            canciones.value = response.data;
+            canciones.value = response.data.data;
             console.log(canciones.value);
         } catch (error) {
             console.error('Error fetching canciones:', error);
         }
     });
+
+    function getImageUrl(album) {
+        let image
+
+        image = album?.portada
+        
+        return new URL(image, import.meta.url).href
+    }
     
 </script>
 
@@ -100,13 +134,15 @@
 
     .album-banner {
         height: 180px;
-        width: 100%;
+        width: 90%;
         background: linear-gradient(to bottom, #4f226530, #2622653d);
         display: flex;
         align-items: center;
+        justify-content: space-between;
         position: relative;
         color: white;
     }
+
 
     .detalles-album {
         display: flex;
@@ -117,8 +153,12 @@
     .album-banner-img {
         height: 150px;
         width: 150px;
-        border: 1px solid black;
         margin-left: 100px;
+        box-shadow: 3px 1px 20px 0px rgb(44, 0, 73);
+    }
+
+    .album-banner-img img {
+        width: 100%;
     }
 
     .datos-detalles-album span {
@@ -132,6 +172,23 @@
 
     .pi:hover {
         cursor: pointer;
+    }
+
+    .album-banner-play {
+        height: 100px;
+        width: 100px;
+    }
+
+    .album-banner-play:hover {
+        cursor: pointer;
+    }
+
+    .pi-play {
+        height: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 5rem;
     }
 
     .album-canciones-container {
@@ -174,8 +231,9 @@
         align-items: center;
         color: white;
         flex-wrap: nowrap; 
-        background: linear-gradient(to left, #9c32fe, #da3bf6a2);
+        background: linear-gradient(to right, #7e10e5, #da3bf6c5);
         border-radius: 15px;
+        box-shadow: 3px 1px 20px 0px rgb(44, 0, 73);
     }
 
     .cancion-album p {
@@ -196,7 +254,7 @@
     }
 
     .cancion-album-reproducciones {
-        padding-left: 20px;
+        padding-left: 70px !important;
     }
     .duracion-cancion {
         font-size: 1.2rem;

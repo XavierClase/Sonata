@@ -19,10 +19,11 @@ class CancionResource extends JsonResource
             'nombre' => $this->nombre,
             'archivo' => $this->archivo,
             'reproducciones' => $this->reproducciones,
-            'duracion' => $this->duracion,
-            'autor' => $this->user->name,
-            'created_at' => $this->created_at->toDateTimeString(),
-            'updated_at' => $this->updated_at->toDateTimeString()
+            'duracion' => $this->getDuracionFormateadaAttribute(),
+            'autor' => optional($this->user)->name,
+            'portada' => $this->albums->first()?->getMedia('*')->isNotEmpty() ? $this->albums->first()->getMedia('*')[0]->getUrl() : null,
+            'created_at' => $this->created_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at?->toDateTimeString()
         ];
     }
 }
