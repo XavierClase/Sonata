@@ -16,7 +16,7 @@
 
             <div class="informacion_album">
               <input v-model="albumData.nombre" placeholder="Nombre álbum" class="inputs_form">
-              <!-- <p class="nombre_artista">Artista: {{ user?.name }}</p> -->
+           
               <select v-model="albumData.tipo" class="select_form">
                 <option value="Album">Álbum</option>
                 <option value="Sencillo">Sencillo</option>
@@ -96,11 +96,8 @@ const obtenerDuracionAudio = (file) => {
   });
 };
 
-// Función para convertir una duración MM:SS al formato 00:MM:SS para MySQL
-const formatearDuracionParaDB = (duracionStr) => {
-  const partes = duracionStr.split(':');
-  return '00:' + partes[0].padStart(2, '0') + ':' + (partes[1] || '00').padStart(2, '0');
-};
+
+
 
 const manejarImagen = (event) => {
   const file = event.target.files[0];
@@ -162,7 +159,7 @@ const enviarFormulario = async () => {
     albumFormData.append('tipo', albumData.tipo);
     albumFormData.append('portada', albumData.portada);
     albumFormData.append('num_canciones', canciones.value.length.toString());
-    // Enviamos la duración en formato MM:SS, el controlador la convertirá
+   
     albumFormData.append('duracion_total', duracionTotalFormateada.value);
 
     const albumResponse = await axios.post('/api/albums', albumFormData, {
@@ -173,13 +170,13 @@ const enviarFormulario = async () => {
 
     const albumId = albumResponse.data.album.id;
     
-    // Para las canciones individuales
+    
     for (let i = 0; i < canciones.value.length; i++) {
       const cancion = canciones.value[i];
       
       const cancionFormData = new FormData();
       cancionFormData.append('nombre', cancion.nombre);
-      // Para cada canción también formateamos correctamente la duración
+     
       cancionFormData.append('duracion', cancion.duracion);
       cancionFormData.append('archivo', cancion.archivo);
       cancionFormData.append('album_id', albumId);
@@ -191,9 +188,9 @@ const enviarFormulario = async () => {
         }
       });
     }
-
     console.log('Álbum y canciones creados exitosamente');
-    // Aquí podrías añadir código para redireccionar o mostrar un mensaje de éxito
+    
+    
   } catch (error) {
     console.error('Error:', error.response?.data);
   }
