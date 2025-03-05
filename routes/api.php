@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AlbumController;
 use App\Http\Controllers\Api\CancionController;
+use App\Http\Controllers\Api\ListaController;
 
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PermissionController;
@@ -21,7 +22,9 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
 
     Route::apiResource('users', UserController::class);
 
-    Route::post('users/updateimg', [UserController::class,'updateimg']); //Listar
+    Route::post('users/updateimg', [UserController::class,'updateimg']);
+    Route::put('/users/{user}', [UserController::class, 'update']);
+
 
     Route::apiResource('posts', PostControllerAdvance::class);
     Route::apiResource('categories', CategoryController::class);
@@ -72,3 +75,5 @@ Route::get('album/{id}', [AlbumController::class, 'getAlbumById']);
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 
 Route::get('user/{id}', [UserController::class, 'getUser']);
+
+Route::post('listas', [ListaController::class, 'store']);

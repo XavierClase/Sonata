@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('listas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('descripcion');
-            $table->string('portada');
-            $table->time('duracion_total');
+            $table->string('descripcion')->nullable();
+            $table->integer('num_canciones')->default(0);
+            $table->time('duracion_total')->default('00:00:00');
 
             $table->unsignedBigInteger('id_usuario');
             $table->foreign('id_usuario')->references('id')->on('users')->cascadeOnDelete();

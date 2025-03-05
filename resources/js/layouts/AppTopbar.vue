@@ -13,7 +13,7 @@
         </div>
 
         <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
-            <router-link class="topbar-link" to="#">{{ $t('Biblioteca') }}</router-link>
+            <router-link class="topbar-link" :to=" { name: 'app.biblioteca' }">{{ $t('Biblioteca') }}</router-link>
             <router-link v-if="userRole === 'user'" class="topbar-link" to="#">{{ $t('¡Conviertete en artista!') }}</router-link>
             <router-link v-if="userRole === 'artista'" class="topbar-link" to="/app/artista/estadisticas">{{ $t('Panel de artista!') }}</router-link>
             <button class="p-link layout-topbar-button layout-topbar-button-c nav-item dropdown " role="button"

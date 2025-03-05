@@ -152,6 +152,12 @@ export default [
                 meta: { breadCrumb: 'App' }
             },
             {
+                name: 'app.biblioteca',
+                path: 'biblioteca',
+                component: () => import('../views/app/biblioteca.vue'),
+                meta: { breadCrumb: 'biblioteca' }
+            },
+            {
                 name: 'app.album',
                 path: 'album/:id',
                 component: () => import('../views/app/album.vue'),

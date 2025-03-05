@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Lista extends Model
+class Lista extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'nombre',
         'descripcion',
-        'portada',
         'duracion_total'
     ];
 
@@ -31,4 +32,10 @@ class Lista extends Model
         return $this->belongsToMany(User::class);
     }
     
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('listas')
+            ->useFallbackUrl('/images/placeholder.jpg')
+            ->useFallbackPath(public_path('/images/placeholder.jpg'));
+    }
 }

@@ -10,13 +10,14 @@
                     {{ album?.nombre }}
                 </h1>
                 <span>
-                    <router-link class="topbar-link" :key="album?.id_artista" :to="{ name: 'artista.perfil', params: {id: album?.id_artista} }">{{ album?.artista }}</router-link>
+                    <router-link  class="banner-artista-nombre" :key="album?.id_artista" :to="{ name: 'artista.perfil', params: {id: album?.id_artista} }">{{ album?.artista }}</router-link>
 
-                    {{  new Date(album?.created_at).getFullYear() }}
+                    
+                    <p>{{  new Date(album?.created_at).getFullYear() }}</p>
                     <p>·</p>
-                    {{ album?.num_canciones }} canciones
+                    <p>{{ album?.num_canciones }} canciones</p>
                     <p>·</p>
-                    {{ album?.duracion_total }}
+                    <p>{{ album?.duracion_total }}</p>
                 </span>
             </div>
             <i :class="'pi pi-heart'" style="font-size: 2.4rem"></i>
@@ -83,7 +84,6 @@
     import { ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
-
 
     const route = useRoute(); 
     const albumId = ref(route.params.id);
@@ -164,6 +164,25 @@
     .datos-detalles-album span {
         display: flex;
         gap: 5px;
+        align-items: flex-end;
+    }
+
+    .datos-detalles-album p {
+        margin: 0 !important;
+    }
+
+    .banner-artista-nombre {
+        font-size: 1.2rem;
+        font-weight: bold;
+        background: linear-gradient(to right, #F472B6, #A855F7);
+        background-clip: text;
+        color: transparent;
+        padding-right: 5px;
+    }
+
+    .banner-artista-nombre:hover {
+        text-decoration: underline !important;
+        text-decoration-color: #F472B6 !important;
     }
 
     .pi-heart {        
@@ -196,6 +215,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding-bottom: 50px;
     }
 
     .album-canciones-container p {
@@ -236,6 +256,11 @@
         box-shadow: 3px 1px 20px 0px rgb(44, 0, 73);
     }
 
+    .cancion-album:hover {
+        cursor: pointer;
+        background: linear-gradient(to right, #7e10e59e, #da3bf688);
+    }
+
     .cancion-album p {
         margin-left: 5px;
     }
@@ -256,6 +281,7 @@
     .cancion-album-reproducciones {
         padding-left: 70px !important;
     }
+
     .duracion-cancion {
         font-size: 1.2rem;
     }

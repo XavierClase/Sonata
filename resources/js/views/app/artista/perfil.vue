@@ -2,54 +2,49 @@
     <div class="perfil-artista-banner">
         <span>
             <div class="perfil-artista-banner-img">
-                <img src="" alt="">
+                <img :src="getImagePerfilUrl(user)" />
             </div>
             <h1>
                 {{ user?.name }}
             </h1>
         </span>
-            <i 
-                :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
-                style="font-size: 2rem"
-                @mouseover="isHovered = true"
-                @mouseleave="isHovered = false"
-                v-if="userPropio?.name === user?.name" 
-                 @click="visible = true"
-            ></i>
-        
+        <i 
+            :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
+            style="font-size: 2rem"
+            @mouseover="isHovered = true"
+            @mouseleave="isHovered = false"
+            v-if="userPropio?.name === user?.name" 
+            @click="visible = true"
+        ></i>
     </div>
 
     <i class="pi pi-share-alt"></i>
 
     <div class="row perfil-artista-medio">
-
         <div class="col-md-7 perfil-artista-medio-populares">
-        <h2>Canciones populares</h2>    
-        <div class="canciones-populares">
-            <div class="row cancion-popular" v-for="(cancion, index) in populares" :key="cancion.id">
-                <span class="cancion-popular-span1 col-md-2">
-                    <p class="num-cancion-popular">{{ index + 1 }}</p> 
-                    <img :src="getImageUrl(cancion)"/>
-                </span>
-                <span class="cancion-popular-span2 col-md-5">
-                    <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
-                    <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
-                </span>
-                <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
-                <i class="pi pi-heart col-md-1"></i>
-                <i class="pi pi-plus col-md-1"></i>
+            <h2>Canciones populares</h2>    
+            <div class="canciones-populares">
+                <div class="row cancion-popular" v-for="(cancion, index) in populares" :key="cancion.id">
+                    <span class="cancion-popular-span1 col-md-2">
+                        <p class="num-cancion-popular">{{ index + 1 }}</p> 
+                        <img :src="getImageAlbumUrl(cancion)" />
+                    </span>
+                    <span class="cancion-popular-span2 col-md-5">
+                        <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
+                        <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
+                    </span>
+                    <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
+                    <i class="pi pi-heart col-md-1"></i>
+                    <i class="pi pi-plus col-md-1"></i>
+                </div>
             </div>
         </div>
-    </div>
 
         <div class="col-md-5 perfil-artista-medio-detalles">
             <h2>Detalles</h2>
-            <div>
-                 
-            </div>
+            <div></div>
         </div>
     </div>
-
 
     <div class="perfil-artista-albums">
         <h2>Álbums</h2>
@@ -61,7 +56,7 @@
                 :to="{ name: 'app.album', params: {id: album.id} }"
             >
                 <div class="album-img">
-                    <img :src="getImageUrl(album)"/>
+                    <img :src="getImageAlbumUrl(album)" />
                 </div>
                 <div class="album-detalles">
                     <h4>{{ album.nombre }}</h4>
@@ -79,7 +74,7 @@
             <div class="config-imagenes col-md-6">
                 <!-- Imagen de perfil -->
                 <div class="imagen-config-perfil">
-                    <img :src="PreviewImagenPerfil || '/images/placeholder1.jpg'" class="estilo_imagen">
+                    <img :src="PreviewImagenPerfil || getImagePerfilUrl(user) || '/images/placeholder1.jpg'" class="estilo_imagen">
                     <input type="file" @change="manejarImagenPerfil" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
                 </div>
                 <!-- Imagen de detalles -->
@@ -91,20 +86,20 @@
             <div class="col-md-6">
                 <div class="flex items-center gap-4 mb-4">
                     <FloatLabel variant="on">
-                        <InputText class="banner-config-input" id="username" v-model="value3" />
+                        <InputText class="banner-config-input" id="username" v-model="nombreUsuarioMod" />
                         <label for="username">Nombre de Usuario</label>
                     </FloatLabel>
                 </div>
                 <div class="flex items-center gap-4 mb-8">
                     <FloatLabel variant="on">
-                        <Textarea class="banner-config-input" id="config-descripcion" v-model="value3" rows="5" cols="30" style="resize: none" />
+                        <Textarea class="banner-config-input" id="config-descripcion" rows="5" cols="30" style="resize: none" />
                         <label for="descripcion">Descripción</label>
                     </FloatLabel>
                 </div>
             </div>
         </div>
         <div class="flex justify-end gap-2">
-            <Button type="button" label="Guardar" @click="visible = false"></Button>
+            <Button type="button" label="Guardar" @click="guardarCambios"></Button>
         </div>
     </Dialog>
 </template>
@@ -125,31 +120,33 @@
     const populares = ref([]);
     const PreviewImagenPerfil = ref(null);  
     const PreviewImagenDetalles = ref(null); 
+    const nombreUsuarioMod = ref('');
+    const UsuarioMod = ref('');
 
     onMounted(async () => {
         try {
             const response = await axios.get(`/api/user/${userId.value}`);
-            user.value = response.data; 
+            user.value = response.data.data; 
+            nombreUsuarioMod.value = user.value.name; // Inicializa el nombre del usuario en el input
             
             const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
             albums.value = albumResponse.data.data;
-            console.log(albums.value)
             
             const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
             populares.value = cancionResponse.data.data;
-            console.log(populares.value);
         } catch (error) {
             console.error('Error fetching user or albums:', error);
         }
     });
 
- 
-    function getImageUrl(album) {
-        let image
+    function getImageAlbumUrl(album) {
+        let image = album.portada;
+        return new URL(image, import.meta.url).href;
+    }
 
-        image = album.portada
-        
-        return new URL(image, import.meta.url).href
+    function getImagePerfilUrl(user) {
+        let image = user?.avatar;
+        return new URL(image, import.meta.url).href;
     }
 
     const imagenDataPerfil = reactive({ portada: null });
@@ -177,6 +174,60 @@
         }
     };
 
+    const guardarCambios = async () => {
+        
+        if (imagenDataPerfil.portada) {
+            let formData = new FormData();
+            formData.append('id', userPropio.id); 
+            formData.append('picture', imagenDataPerfil.portada);
+
+            try {
+                const response = await axios.post('/api/users/updateimg', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (response.data && response.data.media.length > 0) {
+                    const nuevaImagen = response.data.media[0].original_url;
+                    PreviewImagenPerfil.value = nuevaImagen;
+                    user.value.avatar = nuevaImagen; // Actualiza el perfil localmente
+                }
+
+                console.log("Imagen actualizada correctamente", response.data);
+            } catch (error) {
+                console.error("Error al actualizar la imagen:", error);
+            }
+        }
+
+        if (nombreUsuarioMod.value !== user.value.name) {
+            try {
+                console.log("Datos enviados:", { name: nombreUsuarioMod.value }); 
+                const response = await axios.put(`/api/users/${userId.value}`, {
+                    name: nombreUsuarioMod.value,
+                });
+                user.value.name = nombreUsuarioMod.value;
+                userPropio.name = nombreUsuarioMod.value;  
+
+                console.log("Nombre actualizado correctamente", response.data);
+            } catch (error) {
+                console.error("Error al actualizar el nombre:", error);
+            }
+        }
+
+        visible.value = false; 
+        await fetchUserData(); 
+    };
+
+    const fetchUserData = async () => {
+        try {
+            const response = await axios.get(`/api/user/${userId.value}`);
+            user.value = response.data.data;
+        } catch (error) {
+            console.error('Error al actualizar los datos del usuario:', error);
+            window.location.reload(); // Recarga la página si no se pueden actualizar los datos
+        }
+    };
 </script>
 
 
@@ -213,8 +264,18 @@
     .perfil-artista-banner-img {
         height: 130px;
         width: 130px;
-        border: 1px solid black;
         margin-left: 100px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .perfil-artista-banner-img img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .pi-cog {
@@ -315,7 +376,7 @@
 
     .perfil-artista-medio-detalles div {
         height: 330px;
-        width: 300px;
+        width: 470px;
         border: 1px solid black;
     }
 
