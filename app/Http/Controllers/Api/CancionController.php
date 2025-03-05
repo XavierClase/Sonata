@@ -7,6 +7,7 @@ use App\Http\Resources\CancionResource;
 use Illuminate\Http\Request;
 use App\Models\Cancion;
 use App\Models\Album;
+
 class CancionController extends Controller
 {
     /**
@@ -88,6 +89,15 @@ class CancionController extends Controller
         return response()->json($canciones, 200);
     }
 
+    public function getCancionesArtistaEstadisticas(string $userId)
+    {
+        $canciones = Cancion::where('id_usuario', $userId)
+            ->orderBy('reproducciones', 'desc')
+            ->get();
+        return response()->json($canciones, 200);
+    }
+
+
     /**
      * Update the specified resource in storage.
      */
@@ -101,6 +111,34 @@ class CancionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $cancion = Cancion::findOrFail($id);
+    
+           
+            if ($cancion->id_usuario !== auth()->id()) {
+                return response()->json([
+                    'message' => 'No tienes permiso para eliminar esta canción'
+                ], 403);
+            }
+    
+        
+            $cancion->clearMediaCollection('audio/canciones');
+    
+         
+            $cancion->albums()->detach();
+    
+            
+            $cancion->delete();
+    
+            return response()->json([
+                'message' => 'Canción eliminada correctamente'
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar la canción',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
