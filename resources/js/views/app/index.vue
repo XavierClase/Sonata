@@ -106,9 +106,12 @@
 }
 
 .contenedor {
-  max-width: 1050px; 
+  max-width: 1100px; 
   margin: 0 auto;
   padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .section {
@@ -116,7 +119,10 @@
 }
 
 .titulo_seccion {
-  color: #ff6fc8; 
+  background: linear-gradient(to right, #F472B6, #A855F7);
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
   font-size: 30px;
   margin-bottom: 20px; 
   font-weight: normal;
@@ -124,7 +130,10 @@
 
 
 .titulo_seccion_ultimo {
-  color: #ff6fc8; 
+  background: linear-gradient(to right, #F472B6, #A855F7);
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
   font-size: 30px;
   margin-bottom: 20px; 
   font-weight: bold;
@@ -133,15 +142,15 @@
 .imagenes_contenedor {
   display: flex;
   flex-wrap: wrap;
-  gap: 50px; 
-  justify-content: center;
+  gap: 60px; 
+  
 }
 
 
 .imagen_tarjeta {
   cursor: pointer;
   transition: all 0.3s ease;
-  max-width: 190px; 
+  max-width: 220px; 
 }
 
 .imagen_tarjeta:hover {
