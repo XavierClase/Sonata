@@ -78,7 +78,7 @@ class UserController extends Controller
     {
         $user = User::where('id', $id)->first();
 
-        return response()->json($user, 200);
+        return new UserResource($user);
     }
 
     /**
