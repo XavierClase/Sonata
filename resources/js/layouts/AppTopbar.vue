@@ -14,17 +14,16 @@
 
         <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
             <router-link class="topbar-link" :to=" { name: 'app.biblioteca' }">{{ $t('Biblioteca') }}</router-link>
-            <router-link v-if="userRole === 'user'" class="topbar-link" to="#">{{ $t('¡Conviertete en artista!') }}</router-link>
+            <a v-if="userRole === 'user'" class="topbar-link" href="#" @click="mostrarDialogArtista">{{ $t('¡Conviertete en artista!') }}</a>
             <router-link v-if="userRole === 'artista'" class="topbar-link" to="/app/artista/estadisticas">{{ $t('Panel de artista!') }}</router-link>
             <button class="p-link layout-topbar-button layout-topbar-button-c nav-item dropdown " role="button"
                 data-bs-toggle="dropdown">
-                <i class="pi pi-user"></i>
+                <div class="perfil-imagen-container">
+                    <img :src="getImageUrl()" alt="Perfil" class="perfil-imagen" />
+                </div>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
                     <li>
-                        <router-link :to="{ name: 'profile.index' }" class="dropdown-item">Perfil</router-link>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="#">Preferencias</a>
+                        <router-link class="dropdown-item" :key="user?.id" :to="{ name: 'artista.perfil', params: {id: user?.id} }">{{ $t('Perfil') }}</router-link>
                     </li>
                     <li v-if="true">
                         <a class="dropdown-item" href="#" @click="router.push({ name: 'admin.index' })">Panel Admin</a>
@@ -46,26 +45,45 @@
             </button>
             <router-link class="topbar-link" :key="user?.id" :to="{ name: 'artista.perfil', params: {id: user?.id} }">{{ $t('Perfil!') }}</router-link>
         </div>
+        
+   
+        <Dialog class="dialog_diseño" v-model:visible="dialogArtistaVisible" modal header="¡Conviértete en Artista!">
+            <div class="mensaje_advertencia mb-6">
+                <p class="text-surface-500 dark:text-surface-400 "></p>
+                <p> ¿Estás seguro que deseas convertirte en artista?</p>
+                <p> Este cambio te permitirá subir y gestionar tu música en la plataforma.</p>
+                <p class="text-warning">¡Importante! Este cambio no es reversible.</p>
+            </div>
+            <div class="flex justify-end gap-3">
+                <Button type="button" label="Cancelar" class="boton_secundario" @click="dialogArtistaVisible = false"></Button>
+                <Button type="button" label="Confirmar" @click="confirmarCambioRol"></Button>
+            </div>
+        </Dialog>
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted} from 'vue';
 import { useLayout } from '../composables/layout';
 import useAuth from "@/composables/auth";
 import { useRouter } from "vue-router";
 import { authStore } from "../store/auth";
 
-const user = authStore().user;
 
+
+const user = authStore().user;
+const users = ref([]);
 const { onMenuToggle } = useLayout();
 const { processing, logout } = useAuth();
 const topbarMenuActive = ref(false);
 const router = useRouter();
+const dialogArtistaVisible = ref(false);
 
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
+
+
 
 const topbarMenuClasses = computed(() => {
     return {
@@ -76,16 +94,36 @@ const topbarMenuClasses = computed(() => {
 const userRole = computed(() => {
     return authStore().user?.roles.length > 0 ? authStore().user.roles[0].name : '';
 });
+
+const mostrarDialogArtista = () => {
+    dialogArtistaVisible.value = true;
+};
+
+const confirmarCambioRol = async () => {
+    try {
+        await axios.post('/api/users/cambiarRol', { role: 'artista' });
+        dialogArtistaVisible.value = false;
+
+    } catch (error) {
+        console.error('Error al cambiar rol:', error);
+    }
+};
+
+function getImageUrl(user) {
+  let image
+  image = user?.avatar ;
+  return new URL(image, import.meta.url).href ;
+}
+
+
 </script>
 
 <style lang="scss" scoped>
-
 .row {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
   margin-left: calc(0* var(--bs-gutter-x)) !important;
 }
-
 
 .layout-topbar {
     height: 8vh;
@@ -149,5 +187,56 @@ const userRole = computed(() => {
     border: 0;
     border-radius: 0%;
     padding: 1em;
+}
+
+
+.perfil-imagen-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #F472B6;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.perfil-imagen {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+</style>
+<style >
+
+
+.dialog_diseño {
+    background-color: #200834 !important;
+    border: 1px solid purple !important;
+    color: white !important;
+    width: 450px;
+}
+
+
+.p-button {
+    background-color: #A855F7 !important;
+    border: none !important;
+    color: white !important;
+}
+
+.boton_secundario{
+    background-color: #3F3759 !important;
+}
+
+.mensaje_advertencia {
+    border-left: 3px solid #F472B6;
+    padding-left: 1rem;
+}
+
+.text-warning {
+    color: #F472B6 !important;
+    font-weight: bold !important;
 }
 </style>
