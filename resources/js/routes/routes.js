@@ -148,7 +148,7 @@ export default [
             {
                 name: 'app.index',
                 path: '',
-                component: () => import('../views/admin/index.vue'),
+                component: () => import('../views/app/index.vue'),
                 meta: { breadCrumb: 'App' }
             },
             {
