@@ -23,7 +23,7 @@
                 </div>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
                     <li>
-                        <router-link class="dropdown-item" :key="user?.id" :to="{ name: 'artista.perfil', params: {id: user?.id} }">{{ $t('Perfil') }}</router-link>
+                        <a class="dropdown-item" :key="user?.id" @click="router.push({ name: 'artista.perfil' })">{{ $t('Perfil') }}</a>
                     </li>
                     <li v-if="true">
                         <a class="dropdown-item" href="#" @click="router.push({ name: 'admin.index' })">Panel Admin</a>
@@ -44,9 +44,10 @@
                 </span>
             </button>
             <router-link class="topbar-link" :key="user?.id" :to="{ name: 'artista.perfil', params: {id: user?.id} }">{{ $t('Perfil!') }}</router-link>
+            <router-link class="topbar-link" :key="user?.id" :to="{ name: 'app.perfil', params: {id: user?.id} }">{{ $t('Perfil!') }}</router-link>
         </div>
-        
-   
+
+        <Toast></Toast>
         <Dialog class="dialog_diseño" v-model:visible="dialogArtistaVisible" modal header="¡Conviértete en Artista!">
             <div class="mensaje_advertencia mb-6">
                 <p class="text-surface-500 dark:text-surface-400 "></p>
@@ -68,8 +69,13 @@ import { useLayout } from '../composables/layout';
 import useAuth from "@/composables/auth";
 import { useRouter } from "vue-router";
 import { authStore } from "../store/auth";
+import { useToast } from "primevue/usetoast";
+import Toast from 'primevue/toast';
+import axios from 'axios';
 
 
+const toast = useToast();
+const loading = ref(false);
 
 const user = authStore().user;
 const users = ref([]);
@@ -82,8 +88,6 @@ const dialogArtistaVisible = ref(false);
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
-
-
 
 const topbarMenuClasses = computed(() => {
     return {
@@ -99,22 +103,48 @@ const mostrarDialogArtista = () => {
     dialogArtistaVisible.value = true;
 };
 
-const confirmarCambioRol = async () => {
-    try {
-        await axios.post('/api/users/cambiarRol', { role: 'artista' });
-        dialogArtistaVisible.value = false;
 
+const confirmarCambioRol = async () => {
+    loading.value = true;
+    try {
+        
+        const response = await axios.post('/api/users/cambiarRol', { role: 'artista' });
+        
+       
+        const store = authStore();
+        store.user = response.data.data;
+        
+        toast.add({
+            severity: 'success',
+            summary: '¡Cambio exitoso!',
+            detail: 'Ahora eres un artista y puedes empezar a subir tu música.',
+            life: 3000
+        });
+        
+        dialogArtistaVisible.value = false;
+        
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+        
     } catch (error) {
         console.error('Error al cambiar rol:', error);
+        
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudo cambiar tu rol. Por favor, inténtalo de nuevo más tarde.',
+            life: 3000
+        });
+    } finally {
+        loading.value = false;
     }
 };
 
-function getImageUrl(user) {
-  let image
-  image = user?.avatar ;
-  return new URL(image, import.meta.url).href ;
+function getImageUrl() {
+  let image = user?.avatar;
+  return image;
 }
-
 
 </script>
 

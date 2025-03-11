@@ -81,6 +81,27 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
+
+    public function cambiarRol(Request $request)
+{
+    try {
+        $user = auth()->user();
+        $role = Role::where('name', $request->role)->first();
+        
+        if (!$role) {
+            return response()->json(['error' => 'Rol no encontrado'], 404);
+        }
+        
+     
+        $user->syncRoles($role);
+        
+    
+        return new UserResource($user);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al cambiar el rol: ' . $e->getMessage()], 500);
+    }
+}
+
     /**
      * Update the specified resource in storage.
      *

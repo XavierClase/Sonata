@@ -72,10 +72,10 @@ Route::get('albumes', [AlbumController::class, 'index']);
 Route::get('albumes/{id}', [AlbumController::class, 'show']);
 Route::get('album/{id}', [AlbumController::class, 'getAlbumById']);
 
-
-
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 
 Route::get('user/{id}', [UserController::class, 'getUser']);
+Route::post('users/cambiarRol', [UserController::class, 'cambiarRol']);
+
 
 Route::post('listas', [ListaController::class, 'store']);

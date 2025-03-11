@@ -94,7 +94,20 @@ class AuthenticatedSessionController extends Controller
         } else {
             $user->assignRole('user'); 
         }
+        $this->assignDefaultProfileImage($user);
 
         return $this->successResponse($user, 'Registration Successfully');
     }
+    
+    protected function assignDefaultProfileImage(User $user)
+    {
+        $defaultImagePath = public_path('images/ImagenPredeterminadaPerfil.jpg');
+        
+        if (file_exists($defaultImagePath)) {
+            $user->addMedia($defaultImagePath)
+                ->preservingOriginal()
+                ->toMediaCollection('images-users');
+        }
+    }
+    
 }
