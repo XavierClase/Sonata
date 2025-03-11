@@ -9,7 +9,7 @@
                 <app-footer></app-footer>
             </div>
             <div class="layout-reproductor">
-                
+                <app-reproductor-global></app-reproductor-global>
             </div>
             
         </div>
@@ -29,6 +29,7 @@ import Breadcrumb from 'primevue/breadcrumb';
 
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
+import AppReproductorGlobal from './AppReproductorGlobal.vue';
 import { useLayout } from '../composables/layout';
 
 const auth = authStore();

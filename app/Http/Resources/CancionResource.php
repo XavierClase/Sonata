@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Storage;
 
 class CancionResource extends JsonResource
 {
@@ -17,7 +18,7 @@ class CancionResource extends JsonResource
         return [
             'id' => $this->id,
             'nombre' => $this->nombre,
-            'archivo' => $this->archivo,
+            'archivo' => $this->getFirstMediaUrl('audio/canciones'),
             'reproducciones' => $this->reproducciones,
             'duracion' => $this->getDuracionFormateadaAttribute(),
             'autor' => optional($this->user)->name,

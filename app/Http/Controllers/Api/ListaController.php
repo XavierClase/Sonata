@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ListaResource;
+use App\Http\Resources\CancionResource;
 use Illuminate\Http\Request;
 use App\Models\Lista;
 
@@ -59,11 +61,38 @@ class ListaController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Recibe los datos de la lista seleccionada.
      */
-    public function show(string $id)
+    public function show($idLista)
     {
-        //
+        $lista = Lista::where('id', $idLista)->first();
+
+        if (!$lista) {
+            return response()->json(['message' => 'Álbum no encontrado'], 404);
+        }
+        
+        return new ListaResource($lista);
+    }
+
+    /**
+     * Recibir todas las canciones pertenecientes a la lista introducida.
+     */
+    public function getCancionesLista(string $id)
+    {
+        $lista = Lista::findOrFail($id);
+        $canciones = $lista->canciones;
+        
+        return CancionResource::collection($canciones);
+    }
+
+    /**
+     * Recibir las listas de el usuario iniciado.
+     */
+    public function getListasUser($userId)
+    {
+        $listas = Lista::where('id_usuario', $userId)->get();
+
+        return ListaResource::collection($listas); 
     }
 
     /**

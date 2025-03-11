@@ -24,7 +24,7 @@
         <div class="col-md-7 perfil-artista-medio-populares">
             <h2>Canciones populares</h2>    
             <div class="canciones-populares">
-                <div class="row cancion-popular" v-for="(cancion, index) in populares" :key="cancion.id">
+                <div class="row cancion-popular" v-for="(cancion, index) in populares" :key="cancion.id" @click="reproducirCancion(cancion)">
                     <span class="cancion-popular-span1 col-md-2">
                         <p class="num-cancion-popular">{{ index + 1 }}</p> 
                         <img :src="getImageAlbumUrl(cancion)" />
@@ -38,6 +38,7 @@
                     <i class="pi pi-plus col-md-1"></i>
                 </div>
             </div>
+
         </div>
 
         <div class="col-md-5 perfil-artista-medio-detalles">
@@ -127,17 +128,36 @@
         try {
             const response = await axios.get(`/api/user/${userId.value}`);
             user.value = response.data.data; 
-            nombreUsuarioMod.value = user.value.name; // Inicializa el nombre del usuario en el input
-            
-            const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
-            albums.value = albumResponse.data.data;
-            
+            nombreUsuarioMod.value = user.value.name; 
+        } catch (error) {
+            console.error('Error recogiendo los datos del usuario:', error);
+        }
+
+        try {
             const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
             populares.value = cancionResponse.data.data;
+            console.log(populares.value);
         } catch (error) {
-            console.error('Error fetching user or albums:', error);
+            console.error('Error recogiendo las canciones populares del artista:', error);
         }
+
+        try {
+            const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
+            albums.value = albumResponse.data.data;
+        } catch (error) {
+            console.error('Error recogiendo los albumes del artista:', error);
+        }
+
     });
+
+    const reproducirCancion = (cancion) => {
+
+        const event = new CustomEvent('cancionSeleccionada', {
+            detail: cancion.archivo 
+        });
+        window.dispatchEvent(event); 
+    };
+
 
     function getImageAlbumUrl(album) {
         let image = album.portada;
@@ -225,9 +245,11 @@
             user.value = response.data.data;
         } catch (error) {
             console.error('Error al actualizar los datos del usuario:', error);
-            window.location.reload(); // Recarga la página si no se pueden actualizar los datos
+            window.location.reload(); 
         }
     };
+
+
 </script>
 
 
@@ -320,7 +342,13 @@
         display: flex;
         align-items: center;
         color: white;
-        flex-wrap: nowrap; 
+        flex-wrap: nowrap;
+        border-radius: 10px;
+    }
+
+    .cancion-popular:hover {
+        background-color: #8141b63e;
+        cursor: pointer;
     }
 
     .cancion-popular p {

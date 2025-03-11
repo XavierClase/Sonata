@@ -67,24 +67,9 @@ class AlbumController extends Controller
     }
     
     /**
-     * Recibir los álbumes de un usuario artista en concreto (y los datos del usuario artista propietario).
+     * Recibir los datos de un álbum por su id.
      */
-    public function show($userId)
-    {
-        $albumes = Album::with('user')->where('id_usuario', $userId)->get();
-
-        return AlbumResource::collection($albumes); 
-    }
-
-    public function getCancionesAlbum(string $id)
-    {
-        $album = Album::findOrFail($id);
-        $canciones = $album->canciones;
-        
-        return CancionResource::collection($canciones);
-    }
-
-    public function getAlbumById($idAlbum)
+    public function show($idAlbum)
     {
         $album = Album::where('id', $idAlbum)->first();
 
@@ -93,6 +78,27 @@ class AlbumController extends Controller
         }
         
         return new AlbumResource($album);
+    }
+
+    /**
+     * Recibir todas las canciones pertenecientes al album introducido.
+     */
+    public function getCancionesAlbum(string $id)
+    {
+        $album = Album::findOrFail($id);
+        $canciones = $album->canciones;
+        
+        return CancionResource::collection($canciones);
+    }
+
+    /**
+     * Recibir los álbumes de un usuario artista en concreto (y los datos del usuario artista propietario).
+     */
+    public function getAlbumsArtista($userId)
+    {
+        $albumes = Album::with('user')->where('id_usuario', $userId)->get();
+
+        return AlbumResource::collection($albumes); 
     }
 
     /**

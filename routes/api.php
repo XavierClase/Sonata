@@ -69,8 +69,8 @@ Route::get('get-post/{id}', [PostControllerAdvance::class, 'getPost']);
 
 
 Route::get('albumes', [AlbumController::class, 'index']);
-Route::get('albumes/{id}', [AlbumController::class, 'show']);
-Route::get('album/{id}', [AlbumController::class, 'getAlbumById']);
+Route::get('albumes/{id}', [AlbumController::class, 'getAlbumsArtista']);
+Route::get('album/{id}', [AlbumController::class, 'show']);
 
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 
@@ -79,3 +79,8 @@ Route::post('users/cambiarRol', [UserController::class, 'cambiarRol']);
 
 
 Route::post('listas', [ListaController::class, 'store']);
+Route::get('listas/{id}', [ListaController::class, 'getListasUser']);
+Route::get('lista/{id}', [ListaController::class, 'show']);
+Route::get('listas/{id}/canciones', [ListaController::class, 'getCancionesLista']);
+
+

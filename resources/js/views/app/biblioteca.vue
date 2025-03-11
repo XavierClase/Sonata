@@ -11,13 +11,21 @@
         ></i>
     </div>
 
+    <div class="biblioteca-content">
+        <div class="biblioteca-tusListas">
+            <router-link :to="{ name: 'app.lista', params: {id: lista.id} }" class="biblioteca_tarjeta" v-for="(lista, index) in listas" :key="lista.id">
+                <img :src="getImageUrl(lista)" :alt="lista.nombre" class="imagen_caja">
+                <p>{{ lista.nombre }}</p>
+            </router-link>
+        </div>
+    </div>
+
 
 
     <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Crea una lista">
         <form @submit.prevent="enviarFormulario">
             <div class="row">
                 <div class="config-imagenes col-md-4">
-                    <!-- Imagen de perfil -->
                     <div class="imagen-crear-lista">
                         <img :src="PreviewImagenLista || '/images/placeholder1.jpg'" class="estilo_imagen">
                         <input type="file" @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo" required>  
@@ -55,8 +63,24 @@
     const userPropio = authStore().user;
     const isHovered = ref(false);    
     const PreviewImagenLista = ref(null); 
+    const listas = ref([]);
 
     const imagenDataPerfil = reactive({ portada: null });
+
+    onMounted(async () => {
+        try {
+            const response = await axios.get(`/api/listas/${userPropio.id}`);
+            listas.value = response.data.data; 
+
+        } catch (error) {
+            console.error('Error encontrando listas:', error);
+        }
+    });
+
+    function getImageUrl(lista) {
+        let image = lista.portada;
+        return new URL(image, import.meta.url).href;
+    }
 
     const listaData = reactive({
         nombre: '',
@@ -105,18 +129,27 @@
                 listaFormData.append('descripcion', listaData.descripcion);
             }
 
-            await axios.post('/api/listas', listaFormData, {
+            const response = await axios.post('/api/listas', listaFormData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            console.log('Lista creada exitosamente');
+            console.log('Lista creada exitosamente', response.data);
+
+            if (response.data.lista) {
+                listas.value.push(response.data.lista); 
+            } else {
+                console.error('Error: la respuesta no contiene la lista esperada.', response.data);
+            }
 
             visible.value = false;  
             resetFormulario();     
+
         } catch (error) {
             console.error('Error:', error.response?.data);
         }
     };
+
+
 
 
 
@@ -156,6 +189,56 @@
         cursor: pointer;
     }
 
+    .biblioteca-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 50px;
+    }
+
+    .biblioteca-tusListas {
+        width: 85%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 50px;
+    }
+
+    .biblioteca_tarjeta {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 220px; 
+        height: 220px;
+        background-color: rgb(38, 12, 12);
+        border-radius: 15px;
+    }
+
+    .biblioteca_tarjeta:hover {
+        transform: scale(1.05);
+    }
+
+    .imagen_caja {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 10px; 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+
+    .artista_radius {
+        border-radius: 50%;
+    }
+
+    .biblioteca_tarjeta p{
+        font-size: 14px;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: white;
+    }
 </style>
 
 
