@@ -82,42 +82,55 @@ async function requireArtista(to, from, next) {
     }
 }
 
-function redirectUserToUserProfile(to, from, next) {
+function redirectToProfile(to, from, next) {
     const store = authStore();
-    const userRole = store.user?.roles?.[0]?.name;
     const requestedId = to.params.id;
     const currentUserId = store.user.id;
-    if (userRole !== 'artista') {
-      next({ name: 'app.perfil', params: { id: requestedId } });
-    } else {
-      if (requestedId == currentUserId) {
-        next();
-      } else {
-       
-        next({ name: 'app.perfil', params: { id: requestedId } });
-      }
-    }
-  }
+    const userRole = store.user?.roles?.[0]?.name.toLowerCase();
 
-function redirectArtistaToArtistaProfile(to, from, next) {
-    const store = authStore();
-    const userRole = store.user?.roles?.[0]?.name;
-    const requestedId = to.params.id;
-    const currentUserId = store.user.id;
-    
-    if (userRole === 'artista') {
-      
-      if (requestedId == currentUserId) {
-        next({ name: 'artista.perfil', params: { id: currentUserId } });
-      } else {
+  
+    if (requestedId == currentUserId) {
+        const targetRoute = userRole === 'artista' ? 'artista.perfil' : 'app.perfil';
 
-        next();
-      }
-    } else {
-   
-      next();
+        if (to.name === targetRoute) {
+         
+            return next();
+        }
+
+        return next({ name: targetRoute, params: { id: currentUserId } });
     }
-  }
+
+    fetch(`/api/users/${requestedId}`)
+        .then(response => response.json())
+        .then(user => {
+            
+            if (!user.data || !Array.isArray(user.data.roles)) {
+                throw new Error('No se encontraron roles en la respuesta');
+            }
+
+            const isArtist = user.data.roles.some(role => role.name?.toLowerCase() === 'artista');
+            const targetRoute = isArtist ? 'artista.perfil' : 'app.perfil';
+
+            
+            if (to.name === targetRoute) {
+              
+                return next();
+            }
+
+           
+            next({ name: targetRoute, params: { id: requestedId } });
+        })
+        .catch(error => {
+            
+            next('/app'); 
+        });
+}
+
+
+
+
+
+
 
 export default [
     {
@@ -211,7 +224,7 @@ export default [
                 path: 'perfil/:id',
                 component: () => import('../views/app/perfilUsuario.vue'),
                 meta: { breadCrumb: 'perfil' },
-                beforeEnter: redirectArtistaToArtistaProfile
+                beforeEnter: redirectToProfile
             },
             {
                 name: 'artista',
@@ -223,13 +236,14 @@ export default [
                         path: 'perfil/:id',
                         component: () => import('../views/app/artista/perfil.vue'),
                         meta: { breadCrumb: 'perfil' },
-                        beforeEnter: redirectUserToUserProfile
+                        beforeEnter: redirectToProfile
                     },
                     {
                         name: 'artista.estadisticas',
                         path: 'estadisticas',
                         component: () => import('../views/app/artista/estadisticas.vue'),
-                        meta: { breadCrumb: 'estadisticas' }
+                        meta: { breadCrumb: 'estadisticas' },
+                        beforeEnter: requireArtista
                     },
                     {
                         name: 'artista.upload',
