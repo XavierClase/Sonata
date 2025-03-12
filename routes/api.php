@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PostControllerAdvance;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Http\Request;
@@ -86,3 +87,5 @@ Route::post('listas/updateimg', [ListaController::class,'updateimg']);
 Route::post('listas/update/{id}', [ListaController::class,'update']);
 
 
+
+Route::post('like/cancion', [LikeController::class, 'likeCancion']);

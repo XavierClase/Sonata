@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreign('id_cancion')->references('id')->on('canciones')->cascadeOnDelete();
             $table->unsignedBigInteger('id_usuario');
             $table->foreign('id_usuario')->references('id')->on('users')->cascadeOnDelete();
+
+            $table->integer('orden');
             $table->timestamps();
         });
     }

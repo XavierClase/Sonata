@@ -35,7 +35,8 @@
                         <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
                     </span>
                     <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
-                    <i class="pi pi-heart col-md-1"></i>
+                    <!-- <i class="pi pi-heart col-md-1"></i> -->
+                    <button class="col-md-1"  @click="likeCancion(cancion.id)">Like Canción</button>
                     <i class="pi pi-plus col-md-1"></i>
                 </div>
             </div>
@@ -111,6 +112,9 @@
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
+    import { useLikes } from "@/composables/likeCancion.js";
+
+    const { likeCancion } = useLikes();
 
     const visible = ref(false);
     const userPropio = authStore().user;
@@ -150,6 +154,10 @@
         }
 
     });
+
+    
+
+
 
     const reproducirCancion = (cancion) => {
 
