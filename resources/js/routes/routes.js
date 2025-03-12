@@ -82,6 +82,43 @@ async function requireArtista(to, from, next) {
     }
 }
 
+function redirectUserToUserProfile(to, from, next) {
+    const store = authStore();
+    const userRole = store.user?.roles?.[0]?.name;
+    const requestedId = to.params.id;
+    const currentUserId = store.user.id;
+    if (userRole !== 'artista') {
+      next({ name: 'app.perfil', params: { id: requestedId } });
+    } else {
+      if (requestedId == currentUserId) {
+        next();
+      } else {
+       
+        next({ name: 'app.perfil', params: { id: requestedId } });
+      }
+    }
+  }
+
+function redirectArtistaToArtistaProfile(to, from, next) {
+    const store = authStore();
+    const userRole = store.user?.roles?.[0]?.name;
+    const requestedId = to.params.id;
+    const currentUserId = store.user.id;
+    
+    if (userRole === 'artista') {
+      
+      if (requestedId == currentUserId) {
+        next({ name: 'artista.perfil', params: { id: currentUserId } });
+      } else {
+
+        next();
+      }
+    } else {
+   
+      next();
+    }
+  }
+
 export default [
     {
         path: '/',
@@ -173,7 +210,8 @@ export default [
                 name: 'app.perfil',
                 path: 'perfil/:id',
                 component: () => import('../views/app/perfilUsuario.vue'),
-                meta: { breadCrumb: 'perfil' }
+                meta: { breadCrumb: 'perfil' },
+                beforeEnter: redirectArtistaToArtistaProfile
             },
             {
                 name: 'artista',
@@ -184,7 +222,8 @@ export default [
                         name: 'artista.perfil',
                         path: 'perfil/:id',
                         component: () => import('../views/app/artista/perfil.vue'),
-                        meta: { breadCrumb: 'perfil' }
+                        meta: { breadCrumb: 'perfil' },
+                        beforeEnter: redirectUserToUserProfile
                     },
                     {
                         name: 'artista.estadisticas',
