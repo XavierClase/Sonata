@@ -82,5 +82,7 @@ Route::post('listas', [ListaController::class, 'store']);
 Route::get('listas/{id}', [ListaController::class, 'getListasUser']);
 Route::get('lista/{id}', [ListaController::class, 'show']);
 Route::get('listas/{id}/canciones', [ListaController::class, 'getCancionesLista']);
+Route::post('listas/updateimg', [ListaController::class,'updateimg']);
+Route::post('listas/update/{id}', [ListaController::class,'update']);
 
 

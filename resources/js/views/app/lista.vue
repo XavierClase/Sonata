@@ -1,4 +1,5 @@
 <template>
+    <div class="showDialog"></div>
     <div class="lista-banner">
         <div class="detalles-lista">
             <div class="lista-banner-img">
@@ -10,7 +11,7 @@
                     {{ lista?.nombre }}
                 </h1>
                 <span>
-                    <router-link  class="banner-artista-nombre" :key="lista?.id_artista" :to="{ name: 'artista.perfil', params: {id: lista?.id_artista} }">{{ lista?.artista }}</router-link>
+                    <router-link  class="banner-creador-nombre" :key="lista?.id_creador" :to="{ name: 'artista.perfil', params: {id: lista?.id_creador} }">{{ lista?.creador }}</router-link>
 
                     
                     <p>{{  new Date(lista?.created_at).getFullYear() }}</p>
@@ -88,19 +89,19 @@
         </div>
     </div>
     
-    <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Crea una lista">
+    <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Crea una lista" appendTo=".showDialog">
         <form @submit.prevent="enviarFormulario">
             <div class="row">
                 <div class="config-imagenes col-md-4">
                     <div class="imagen-crear-lista">
                         <img :src="PreviewImagenLista || getImageUrl(lista) || '/images/placeholder1.jpg'" class="estilo_imagen">
-                        <input type="file" accept="image/*" ref="archivoImagen" class="añadir_archivo" required>  
+                        <input type="file"  @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="flex items-center gap-4 mb-4">
                         <FloatLabel variant="on">
-                            <InputText class="crearLista-input" id="username"  v-model="nombreListaMod"  required />
+                            <InputText class="crearLista-input" id="username"  v-model="nombreListaMod" />
                             <label for="username">Nombre de la lista</label>
                         </FloatLabel>
                     </div>
@@ -113,14 +114,14 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2">
-                <Button type="button" label="Guardar" @click="enviarFormulario" :disabled="!esFormularioValido"></Button>
+                <Button type="button" label="Guardar" @click="enviarFormulario"></Button>
             </div>
         </form>
     </Dialog>
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, reactive, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
@@ -142,9 +143,8 @@
         try {
             const response = await axios.get(`/api/lista/${listaId.value}`);
             lista.value = response.data.data; 
-            nombreListaMod = lista.value.name;
-            descripcionListaMod = lista.value.descripcion;
-            
+            nombreListaMod.value = lista.value.nombre; 
+            descripcionListaMod.value = lista.value.descripcion; 
         } catch (error) {
             console.error('Error encontrando la lista:', error);
         }
@@ -166,6 +166,50 @@
         return new URL(image, import.meta.url).href
     }
     
+    const nuevaImagenLista = reactive({ portada: null });
+
+    const manejarImagenLista = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (PreviewImagenLista.value) {
+                URL.revokeObjectURL(PreviewImagenLista.value);
+            }
+            nuevaImagenLista.portada = file;  
+            PreviewImagenLista.value = URL.createObjectURL(file);
+        }
+    };
+
+    const enviarFormulario = async () => {
+        try {
+            await axios.post(`/api/listas/update/${listaId.value}`, {
+                nombre: nombreListaMod.value,
+                descripcion: descripcionListaMod.value
+            });
+
+            if (nuevaImagenLista.portada) {
+                let formData = new FormData();
+                formData.append('idLista', listaId.value);
+                formData.append('portada', nuevaImagenLista.portada);
+
+                await axios.post('/api/listas/updateimg', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+            }
+
+            lista.value.nombre = nombreListaMod.value;
+            lista.value.descripcion = descripcionListaMod.value;
+            if (nuevaImagenLista.portada) {
+                lista.value.portada = URL.createObjectURL(nuevaImagenLista.portada);
+            }
+
+            visible.value = false;
+            console.log("Lista actualizada correctamente");
+        } catch (error) {
+            console.error("Error al actualizar la lista:", error);
+        }
+    };
+
+
     
 </script>
 
@@ -223,7 +267,7 @@
         margin: 0 !important;
     }
 
-    .banner-artista-nombre {
+    .banner-creador-nombre {
         font-size: 1.2rem;
         font-weight: bold;
         background: linear-gradient(to right, #F472B6, #A855F7);
@@ -232,7 +276,7 @@
         padding-right: 5px;
     }
 
-    .banner-artista-nombre:hover {
+    .banner-creador-nombre:hover {
         text-decoration: underline !important;
         text-decoration-color: #F472B6 !important;
     }

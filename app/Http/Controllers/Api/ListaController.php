@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ListaResource;
 use App\Http\Resources\CancionResource;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use App\Models\Lista;
-
 
 class ListaController extends Controller
 {
@@ -98,9 +98,25 @@ class ListaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $lista = Lista::findOrFail($id);
+
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'nullable|string',
+        ]);
+
+        if (auth()->id() !== $lista->id_usuario) {
+            return response()->json(['message' => 'No tienes permiso para actualizar esta lista'], 403);
+        }
+
+        $lista->update([
+            'nombre' => $request->nombre,
+            'descripcion' => $request->descripcion,
+        ]);
+
+        return new ListaResource($lista);
     }
 
     /**
@@ -109,5 +125,17 @@ class ListaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function updateimg(Request $request)
+    {
+        $lista = Lista::find($request->id);
+
+        if($request->hasFile('picture')) {
+            $lista->media()->delete();
+            $media = $lista->addMediaFromRequest('picture')->preservingOriginal()->toMediaCollection('images/listas');
+        }
+        $lista =  Lista::with('media')->find($request->id);
+        return  $lista;
     }
 }
