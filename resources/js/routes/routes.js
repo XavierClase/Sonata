@@ -170,6 +170,12 @@ export default [
                 meta: { breadCrumb: 'lista' }
             },
             {
+                name: 'app.perfil',
+                path: 'perfil/:id',
+                component: () => import('../views/app/perfilUsuario.vue'),
+                meta: { breadCrumb: 'perfil' }
+            },
+            {
                 name: 'artista',
                 path: 'artista',
                 meta: { breadCrumb: 'Artista'},
