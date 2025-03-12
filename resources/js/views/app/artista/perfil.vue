@@ -1,4 +1,5 @@
 <template>
+    <div class="showDialog"></div>
     <div class="perfil-artista-banner">
         <span>
             <div class="perfil-artista-banner-img">
@@ -69,7 +70,7 @@
         </div>
     </div>
 
-    <Dialog class="banner-config-modal" v-model:visible="visible" modal header="Modificar Perfil">
+    <Dialog class="banner-config-modal" v-model:visible="visible" modal header="Modificar Perfil" appendTo=".showDialog">
         <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualiza tu información.</span>
         <div class="row">
             <div class="config-imagenes col-md-6">
@@ -195,7 +196,6 @@
     };
 
     const guardarCambios = async () => {
-        
         if (imagenDataPerfil.portada) {
             let formData = new FormData();
             formData.append('id', userPropio.id); 
@@ -211,7 +211,7 @@
                 if (response.data && response.data.media.length > 0) {
                     const nuevaImagen = response.data.media[0].original_url;
                     PreviewImagenPerfil.value = nuevaImagen;
-                    user.value.avatar = nuevaImagen; // Actualiza el perfil localmente
+                    user.value.avatar = nuevaImagen; 
                 }
 
                 console.log("Imagen actualizada correctamente", response.data);
@@ -238,6 +238,7 @@
         visible.value = false; 
         await fetchUserData(); 
     };
+
 
     const fetchUserData = async () => {
         try {
