@@ -1,4 +1,5 @@
 <template>
+    <div class="show"></div>
     <div class="layout-topbar row">
         <router-link to="/app" class="layout-topbar-logo col-md-2">
             <img src="/images/logo.svg" alt="logo"/>
@@ -48,7 +49,7 @@
         </div>
 
         <Toast></Toast>
-        <Dialog class="dialog_diseño" v-model:visible="dialogArtistaVisible" modal header="¡Conviértete en Artista!">
+        <Dialog class="dialog_diseño" v-model:visible="dialogArtistaVisible" modal header="¡Conviértete en Artista!" appendTo=".show">
             <div class="mensaje_advertencia mb-6">
                 <p class="text-surface-500 dark:text-surface-400 "></p>
                 <p> ¿Estás seguro que deseas convertirte en artista?</p>
