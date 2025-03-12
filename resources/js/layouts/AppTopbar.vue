@@ -45,7 +45,6 @@
                 </span>
             </button>
             <router-link class="topbar-link" :key="user?.id" :to="{ name: 'artista.perfil', params: {id: user?.id} }">{{ $t('Perfil!') }}</router-link>
-            <router-link class="topbar-link" :key="user?.id" :to="{ name: 'app.perfil', params: {id: user?.id} }">{{ $t('Perfil!') }}</router-link>
         </div>
 
         <Toast></Toast>
@@ -97,7 +96,7 @@ const topbarMenuClasses = computed(() => {
 });
 
 const userRole = computed(() => {
-    return authStore().user?.roles.length > 0 ? authStore().user.roles[0].name : '';
+    return authStore().user?.roles?.length > 0 ? authStore().user.roles[0].name : '';
 });
 
 const mostrarDialogArtista = () => {
