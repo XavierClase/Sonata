@@ -11,6 +11,7 @@
                 <img src="/images/home-icon.svg" alt="" class="layout-topbar-home-icon">
             </router-link>
             <input type="text">
+            <!-- <Buscador /> -->
         </div>
 
         <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
@@ -44,7 +45,15 @@
                     Hola, {{ authStore().user.name }}
                 </span>
             </button>
-            <router-link class="topbar-link" :key="user?.id" :to="{ name: 'artista.perfil', params: {id: user?.id} }">{{ $t('Perfil!') }}</router-link>
+                <router-link 
+                class="topbar-link" 
+                :key="user?.id" 
+                :to="{ 
+                name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
+                params: {id: user?.id} 
+                }">
+                {{ $t('Perfil!') }}
+                </router-link>
         </div>
 
         <Toast></Toast>
@@ -72,7 +81,7 @@ import { authStore } from "../store/auth";
 import { useToast } from "primevue/usetoast";
 import Toast from 'primevue/toast';
 import axios from 'axios';
-
+// import Buscador from '@/components/buscador.vue';
 
 const toast = useToast();
 const loading = ref(false);

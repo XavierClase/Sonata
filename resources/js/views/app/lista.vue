@@ -11,7 +11,10 @@
                     {{ lista?.nombre }}
                 </h1>
                 <span>
-                    <router-link  class="banner-creador-nombre" :key="lista?.id_creador" :to="{ name: 'artista.perfil', params: {id: lista?.id_creador} }">{{ lista?.creador }}</router-link>
+                    <router-link  class="banner-creador-nombre" :key="lista?.id_creador"   :to="{ 
+                name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
+                params: {id: lista?.id_creador} }">{{ lista?.creador }}
+                </router-link>
 
                     
                     <p>{{  new Date(lista?.created_at).getFullYear() }}</p>
