@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\AlbumController;
 use App\Http\Controllers\Api\CancionController;
 use App\Http\Controllers\Api\ListaController;
-
+use App\Http\Controllers\Api\BuscarController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PostControllerAdvance;
@@ -40,16 +40,7 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/user', [ProfileController::class, 'user']);
     Route::put('/user', [ProfileController::class, 'update']);
 
-    Route::post('albums', [AlbumController::class, 'store']);
-    Route::post('canciones', [CancionController::class, 'store']);
 
-    Route::get('canciones/{id}', [CancionController::class, 'getCancionesUsuario']);
-    Route::get('albumes/{id}/canciones', [AlbumController::class, 'getCancionesAlbum']);
-    Route::put('albumes/{id}', [AlbumController::class, 'update']);
-    Route::delete('albumes/{id}', [AlbumController::class, 'destroy']);
-    Route::get('/canciones/usuario/{id}', [CancionController::class, 'getCancionesArtistaEstadisticas']);
-    Route::delete('canciones/{id}', [CancionController::class, 'destroy']);
-    
     Route::get('abilities', function(Request $request) {
         return $request->user()->roles()->with('permissions')
             ->get()
@@ -69,11 +60,20 @@ Route::get('get-category-posts/{id}', [PostControllerAdvance::class, 'getCategor
 Route::get('get-post/{id}', [PostControllerAdvance::class, 'getPost']);
 
 
+Route::post('albums', [AlbumController::class, 'store']);
 Route::get('albumes', [AlbumController::class, 'index']);
 Route::get('albumes/{id}', [AlbumController::class, 'getAlbumsArtista']);
 Route::get('album/{id}', [AlbumController::class, 'show']);
+Route::get('albumes/{id}/canciones', [AlbumController::class, 'getCancionesAlbum']);
+Route::put('albumes/{id}', [AlbumController::class, 'update']);
+Route::delete('albumes/{id}', [AlbumController::class, 'destroy']);
+
 
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
+Route::post('canciones', [CancionController::class, 'store']);
+Route::get('canciones/{id}', [CancionController::class, 'getCancionesUsuario']);
+Route::get('/canciones/usuario/{id}', [CancionController::class, 'getCancionesArtistaEstadisticas']);
+Route::delete('canciones/{id}', [CancionController::class, 'destroy']);
 
 Route::get('user/{id}', [UserController::class, 'getUser']);
 Route::post('users/cambiarRol', [UserController::class, 'cambiarRol']);
@@ -86,6 +86,8 @@ Route::get('listas/{id}/canciones', [ListaController::class, 'getCancionesLista'
 Route::post('listas/updateimg', [ListaController::class,'updateimg']);
 Route::post('listas/update/{id}', [ListaController::class,'update']);
 
+
+Route::get('buscador', [BuscarController::class, 'buscar']);
 
 
 Route::post('/like/cancion', [LikeController::class, 'likeCancion']);

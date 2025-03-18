@@ -27,6 +27,13 @@ class Lista extends Model implements HasMedia
         return $this->belongsTo(detalle_lista::class, 'id_lista');
     }
 
+    public function canciones()
+    {
+        return $this->belongsToMany(Cancion::class, 'detalles_listas', 'id_lista', 'id_cancion')
+                    ->withPivot('orden')
+                    ->orderBy('detalles_listas.orden');
+    }
+    
     public function favorito()
     {
         return $this->belongsToMany(User::class);

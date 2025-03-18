@@ -11,7 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Album extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
-
+    protected $table = 'albums';
     protected $fillable = [
         'nombre',
         'num_canciones',

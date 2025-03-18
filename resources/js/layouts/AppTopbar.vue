@@ -10,8 +10,8 @@
             <router-link to="/app">
                 <img src="/images/home-icon.svg" alt="" class="layout-topbar-home-icon">
             </router-link>
-            <input type="text">
-            <!-- <Buscador /> -->
+            
+            <Buscador />
         </div>
 
         <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
@@ -81,7 +81,7 @@ import { authStore } from "../store/auth";
 import { useToast } from "primevue/usetoast";
 import Toast from 'primevue/toast';
 import axios from 'axios';
-// import Buscador from '@/components/buscador.vue';
+import Buscador from '@/components/buscador.vue';
 
 const toast = useToast();
 const loading = ref(false);
@@ -193,10 +193,6 @@ function getImageUrl() {
     border-right: 1px solid #F472B6;
     border-radius: 13px;
     color: rgb(255, 215, 215);
-    background: url('images/lupa.svg')
-        no-repeat 10px center;
-        background-size: 25px;
-        padding-left: 40px;
 }
 
 .layout-topbar-centro input:focus {
