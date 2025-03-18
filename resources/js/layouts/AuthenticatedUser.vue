@@ -212,5 +212,8 @@ const isOutsideClicked = (event) => {
     max-height: 92vh;
     min-width: 30vw;
     background-color: #2A0E48;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 </style>

@@ -48,10 +48,13 @@ class User extends Authenticatable implements HasMedia
         return $this->belongsToMany(Lista::class);
     }
 
-    public function canciones_favoritas()
+    public function cancionesFavoritas()
     {
-        return $this->belongsToMany(Cancion::class);
+        return $this->belongsToMany(Cancion::class, 'canciones_favoritas', 'id_usuario', 'id_cancion')
+                    ->withPivot('orden')
+                    ->withTimestamps();
     }
+
 
     
     

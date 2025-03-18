@@ -1,33 +1,48 @@
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
+import { authStore } from "@/store/auth.js";
 
 export function useLikes() {
-    // Creamos un array para almacenar las canciones que ya tienen "like" con su respectivo orden
-    const likes = ref([]);
+    const favoritos = ref([]);
+
+    const cargarFavoritos = async () => {
+        try {
+            const response = await axios.get(`/api/canciones/favoritos`);
+            favoritos.value = response.data;
+            console.log("Likes:", favoritos.value);
+        } catch (error) {
+            console.error("No se han podido cargar los likes del usuario", error.response?.data?.message || error.message);
+        }
+    };
 
     const likeCancion = async (idCancion) => {
         try {
-            // Calcular el orden en base a la longitud de likes (es decir, cuántas canciones ya tienen "like")
-            const orden = likes.value.length + 1;
+            const orden = favoritos.value.length + 1;
 
-            // Añadir el "like" a nuestra lista local
-            likes.value.push({ idCancion, orden });
+            favoritos.value.push(idCancion);
 
-            // Realizar la solicitud POST para registrar el like
             const response = await axios.post(`/api/like/cancion`, {
                 id_cancion: idCancion,
                 orden: orden
             });
 
-            // Mostrar el mensaje de éxito
             console.log(response.data.message);
-
         } catch (error) {
-            console.error('Error al registrar el like:', error.response ? error.response.data.message : error.message);
+            console.error('Error al registrar el like:', error.response?.data?.message || error.message);
         }
     };
 
+    const esFavorita = computed(() => (idCancion) =>
+        favoritos.value.some((fav) => fav.id_cancion === idCancion)
+    );
+
+    onMounted(() => {
+        cargarFavoritos();
+    });
+
     return {
-        likeCancion
+        likeCancion,
+        esFavorita,
+        cargarFavoritos
     };
 }

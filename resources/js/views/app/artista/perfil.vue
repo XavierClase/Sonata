@@ -25,21 +25,27 @@
         <div class="col-md-7 perfil-artista-medio-populares">
             <h2>Canciones populares</h2>    
             <div class="canciones-populares">
-                <div class="row cancion-popular" v-for="(cancion, index) in populares" :key="cancion.id" @click="reproducirCancion(cancion)">
-                    <span class="cancion-popular-span1 col-md-2">
-                        <p class="num-cancion-popular">{{ index + 1 }}</p> 
-                        <img :src="getImageAlbumUrl(cancion)" />
-                    </span>
-                    <span class="cancion-popular-span2 col-md-5">
-                        <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
-                        <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
-                    </span>
-                    <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
-                    <!-- <i class="pi pi-heart col-md-1"></i> -->
-                    <button class="col-md-1"  @click="likeCancion(cancion.id)">Like Canción</button>
-                    <i class="pi pi-plus col-md-1"></i>
-                </div>
+        <div v-for="(cancion, index) in populares" :key="cancion.id" 
+                class="cancion-popular" 
+                @click="reproducirCancion(cancion)">
+                
+                <span class="cancion-popular-span1 col-md-2">
+                    <p class="num-cancion-popular">{{ index + 1 }}</p> 
+                    <img :src="getImageAlbumUrl(cancion)" />
+                </span>
+                <span class="cancion-popular-span2 col-md-5">
+                    <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
+                    <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
+                </span>
+                <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
+                <i
+                    :class="esFavorita(cancion.id) ? 'pi pi-heart-fill text-red-500' : 'pi pi-heart col-md-1'"
+                    @click="likeCancion(cancion.id)"
+                ></i>
+
+                <i class="pi pi-plus col-md-1"></i>
             </div>
+        </div>
 
         </div>
 
@@ -113,8 +119,14 @@
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
     import { useLikes } from "@/composables/likeCancion.js";
+    import { usePlayerStore } from "@/store/player";
+    const player = usePlayerStore(); 
 
-    const { likeCancion } = useLikes();
+    const reproducirCancion = (cancion) => {
+        player.playSong(cancion);
+    };
+
+    const { likeCancion, esFavorita, cargarFavoritos } = useLikes();
 
     const visible = ref(false);
     const userPropio = authStore().user;
@@ -159,13 +171,7 @@
 
 
 
-    const reproducirCancion = (cancion) => {
-
-        const event = new CustomEvent('cancionSeleccionada', {
-            detail: cancion.archivo 
-        });
-        window.dispatchEvent(event); 
-    };
+    
 
 
     function getImageAlbumUrl(album) {
@@ -321,6 +327,8 @@
         cursor: pointer;
     }
 
+
+
     .pi-share-alt {
         color: white;
         font-size: 2rem;
@@ -357,7 +365,6 @@
 
     .cancion-popular:hover {
         background-color: #8141b63e;
-        cursor: pointer;
     }
 
     .cancion-popular p {
@@ -405,6 +412,7 @@
 
     .pi-heart {
         font-size: 1.5rem;
+        z-index: 99;
     }
 
     .pi-plus {

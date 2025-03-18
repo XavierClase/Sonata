@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('canciones', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->integer('reproducciones');
-            $table->time('duracion');
             $table->unsignedBigInteger('id_usuario');
             $table->foreign('id_usuario')->references('id')->on('users')->cascadeOnDelete();
+            $table->integer('reproducciones')->default(0);
+            $table->time('duracion');
             $table->timestamps();
         });
     }

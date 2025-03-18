@@ -88,4 +88,5 @@ Route::post('listas/update/{id}', [ListaController::class,'update']);
 
 
 
-Route::post('like/cancion', [LikeController::class, 'likeCancion']);
+Route::post('/like/cancion', [LikeController::class, 'likeCancion']);
+Route::get('/canciones/favoritos', [LikeController::class, 'obtenerCancionesFav']);
