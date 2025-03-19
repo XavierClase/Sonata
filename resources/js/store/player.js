@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
 
 export const usePlayerStore = defineStore("player", {
     state: () => ({
@@ -10,135 +10,102 @@ export const usePlayerStore = defineStore("player", {
         sound: null,
         progress: 0,
         duration: 0,
-        _mediaListenerActive: false
     }),
     actions: {
         async playSong(song, index = null) {
+            // If an index is provided, update the current index
             if (index !== null) {
                 this.currentIndex = index;
             }
-        
-            console.log("🎵 Intentando reproducir:", song.id);
-        
-            // 🔹 Si la canción es la misma y ya hay un `Howl`, solo reanudar
+
+            // Check if we're trying to play the same song that's already loaded
             if (this.currentSong?.id === song.id && this.sound) {
-                console.log("▶ Reanudando en:", this.sound.seek());
-                if (!this.sound.playing()) {
+                // If the song is already loaded but not playing, just play it
+                if (!this.isPlaying) {
                     this.sound.play();
                     this.isPlaying = true;
                     requestAnimationFrame(this.updateProgress);
                 }
                 return;
             }
-        
-            console.log("🔄 Cargando nueva canción...");
-        
-            // 🛑 Solo eliminar `sound` si la canción realmente cambió
-            if (this.sound && this.currentSong?.id !== song.id) {
-                console.log("🗑 Eliminando sonido anterior.");
+
+            // Unload previous sound if it exists
+            if (this.sound) {
                 this.sound.unload();
-                this.sound = null;
             }
-        
+
+            // Reset progress when starting a new song
             this.progress = 0;
             this.currentSong = song;
+            
+            // Create a new Howl instance for the song
             this.sound = new Howl({
                 src: [song.archivo],
                 html5: true,
-                onend: () => this.nextSong(),
+                onend: () => {
+                    this.nextSong();
+                },
                 onload: () => {
-                    console.log("✅ Canción cargada:", song.id);
                     this.duration = this.sound.duration();
                     this.sound.play();
                     this.isPlaying = true;
                     requestAnimationFrame(this.updateProgress);
                 },
-                onplay: () => {
-                    console.log("▶ En reproducción:", song.id);
-                    this.isPlaying = true;
+                onplay: async () => {
+                    await this.sumarReproduccion(song.id);
                     requestAnimationFrame(this.updateProgress);
-                },
-                onpause: () => console.log("⏸ Pausada"),
-                onstop: () => console.log("⏹ Detenida"),
-            });
-        
-            this._setupMediaListeners();
-        },
-        
-        
-        
-        
-
-        _setupMediaListeners() {
-            // Eliminar listeners anteriores si existían
-            if (this._mediaListenerActive) return;
-            
-            // Función para sincronizar con controles multimedia
-            const syncMediaState = () => {
-                if (this.sound) {
-                    const isActuallyPlaying = this.sound.playing();
-                    if (this.isPlaying !== isActuallyPlaying) {
-                        this.isPlaying = isActuallyPlaying;
-                    }
                 }
-            };
-            
-            // Sincronizar cada segundo
-            setInterval(syncMediaState, 1000);
-            
-            // Marcar como activo
-            this._mediaListenerActive = true;
+            });
         },
 
         togglePlay() {
             if (!this.sound) return;
-        
-            console.log("🎵 Estado actual:", {
-                isPlaying: this.isPlaying,
-                soundExists: !!this.sound,
-                soundPlaying: this.sound.playing(),
-                currentSeek: this.sound.seek(),
-            });
-        
-            if (this.sound.playing()) {
-                console.log("⏸ Pausando en:", this.sound.seek());
+            
+            if (this.isPlaying) {
                 this.sound.pause();
                 this.isPlaying = false;
             } else {
-                console.log("▶ Reanudando en:", this.sound.seek());
                 this.sound.play();
                 this.isPlaying = true;
                 requestAnimationFrame(this.updateProgress);
             }
         },
-        
 
         nextSong() {
             if (this.currentIndex < this.playlist.length - 1) {
                 this.currentIndex++;
                 this.playSong(this.playlist[this.currentIndex]);
             } else {
+                // Reset player if we're at the end of the playlist
                 if (this.sound) {
                     this.sound.stop();
                 }
-                this.isPlaying = false;
+                this.isPlaying = false; 
             }
         },
 
         prevSong() {
+            // If we're more than 3 seconds into the song, restart it
             if (this.sound && this.sound.seek() > 3) {
                 this.sound.seek(0);
                 return;
             }
             
+            // Otherwise go to previous song
             if (this.currentIndex > 0) {
                 this.currentIndex--;
                 this.playSong(this.playlist[this.currentIndex]);
             }
         },
 
+        setPlaylist(tracks) {
+            this.playlist = tracks;
+            this.currentIndex = 0;
+            if (tracks.length) this.playSong(tracks[0]);
+        },
+
         updateProgress() {
-            if (this.sound && this.sound.playing()) {
+            if (this.sound && this.isPlaying) {
                 this.progress = this.sound.seek();
                 requestAnimationFrame(this.updateProgress);
             }
@@ -148,20 +115,7 @@ export const usePlayerStore = defineStore("player", {
             if (this.sound) {
                 this.sound.seek(time);
                 this.progress = time;
-                
-                // Si estaba pausado y movemos la barra, mantenemos el estado pausado
-                if (!this.isPlaying) {
-                    this.sound.pause();
-                } else {
-                    requestAnimationFrame(this.updateProgress);
-                }
             }
-        },
-
-        setPlaylist(tracks) {
-            this.playlist = tracks;
-            this.currentIndex = 0;
-            if (tracks.length) this.playSong(tracks[0]);
         },
 
         playQueue(songs) {
