@@ -2,18 +2,17 @@
     <div class="album-banner">
         <div class="detalles-album">
             <div class="album-banner-img">
-                <img :src="getImageUrl(album)"/>
+                <img :src="getImageUrl(album)" />
             </div>
             <div class="datos-detalles-album">
-                <p> {{ album?.tipo }}</p>
-                <h1>
-                    {{ album?.nombre }}
-                </h1>
+                <p>{{ album?.tipo }}</p>
+                <h1>{{ album?.nombre }}</h1>
                 <span>
-                    <router-link  class="banner-artista-nombre" :key="album?.id_artista" :to="{ name: 'artista.perfil', params: {id: album?.id_artista} }">{{ album?.artista }}</router-link>
-
-                    
-                    <p>{{  new Date(album?.created_at).getFullYear() }}</p>
+                    <router-link class="banner-artista-nombre" :key="album?.id_artista"
+                        :to="{ name: 'artista.perfil', params: { id: album?.id_artista } }">
+                        {{ album?.artista }}
+                    </router-link>
+                    <p>{{ new Date(album?.created_at).getFullYear() }}</p>
                     <p>·</p>
                     <p>{{ album?.num_canciones }} canciones</p>
                     <p>·</p>
@@ -22,42 +21,34 @@
             </div>
             <i :class="'pi pi-heart'" style="font-size: 2.4rem"></i>
         </div>
-        <div class="album-banner-play">
-            <svg viewBox="0 0 100 100">
-                <!-- Definición del degradado -->
+
+        <!-- Botón de Reproducción -->
+        <div class="album-banner-play" @click="toggleAlbumPlayback">
+            <svg v-if="!isPlaying" viewBox="0 0 100 100">
                 <defs>
                     <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#F472B6" />
-                    <stop offset="100%" stop-color="#A855F7" />
+                        <stop offset="0%" stop-color="#F472B6" />
+                        <stop offset="100%" stop-color="#A855F7" />
                     </linearGradient>
                 </defs>
-                
-                <!-- Círculo de fondo con degradado -->
-                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
-                
-                <!-- Triángulo de play blanco -->
-                <path d="M35 25 L35 75 L75 50 Z" fill="white"/>
+                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none" />
+                <path d="M35 25 L35 75 L75 50 Z" fill="white" />
             </svg>
-            <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                 Definición del degradado 
+
+            <svg v-else viewBox="0 0 100 100">
                 <defs>
                     <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#F472B6" />
-                    <stop offset="100%" stop-color="#A855F7" />
+                        <stop offset="0%" stop-color="#F472B6" />
+                        <stop offset="100%" stop-color="#A855F7" />
                     </linearGradient>
                 </defs>
-                
-                 Círculo de fondo con degradado 
-                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
-                
-                 Barras de pausa (dos rectángulos) 
-                <rect x="35" y="30" width="10" height="40" fill="white" rx="2"/>
-                <rect x="55" y="30" width="10" height="40" fill="white" rx="2"/>
-            </svg> -->
+                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none" />
+                <rect x="35" y="30" width="10" height="40" fill="white" rx="2" />
+                <rect x="55" y="30" width="10" height="40" fill="white" rx="2" />
+            </svg>
         </div>
-        
     </div>
-        
+
     <div class="album-canciones-container">
         <div class="row album-canciones-categorias">
             <p class="col-md-1">#</p>
@@ -66,8 +57,9 @@
             <p class="col-md-2">Duración</p>
         </div>
         <div class="album-canciones-detalles">
-            <div class="row cancion-album" v-for="(cancion, index) in canciones">
-                <p class="col-md-1 num-cancion-album">{{ index + 1 }}</p> 
+            <div class="row cancion-album" v-for="(cancion, index) in canciones" :key="cancion.id"
+                @click="reproducirCancion(cancion)">
+                <p class="col-md-1 num-cancion-album">{{ index + 1 }}</p>
                 <p class="col-md-5 cancion-album-nombre">{{ cancion.nombre }}</p>
                 <p class="col-md-3 cancion-album-reproducciones">{{ cancion.reproducciones }}</p>
                 <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
@@ -81,21 +73,46 @@
 </template>
 
 <script setup>
-    import { ref, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
+    import { usePlayerStore } from "@/store/player";
 
-    const route = useRoute(); 
+    const player = usePlayerStore();
+    const route = useRoute();
     const albumId = ref(route.params.id);
     const album = ref(null);
     const canciones = ref(null);
 
+    // Estado reactivo para detectar si se está reproduciendo una canción
+    const isPlaying = computed(() => player.isPlaying);
 
+    // Función para alternar la reproducción del álbum
+    const toggleAlbumPlayback = () => {
+        if (isPlaying.value && player.currentPlaylist === canciones.value) {
+            player.togglePlay(); // Pausar si ya está reproduciendo este álbum
+        } else {
+            player.setPlaylist(canciones.value); // Cargar toda la lista de reproducción
+            
+            // Verificar que la primera canción no se sobreponga
+            if (!player.currentSong || player.currentSong.id !== canciones.value[0].id) {
+                player.playSong(canciones.value[0], 0); // Reproducir desde la primera canción solo si no está ya en reproducción
+            }
+        }
+    };
+
+    // Función para reproducir una canción específica al hacer clic
+    const reproducirCancion = (cancion) => {
+        const index = canciones.value.findIndex(c => c.id === cancion.id);
+        player.setPlaylist(canciones.value); // Asegura que todas las canciones del álbum están en la lista
+        player.playSong(cancion, index);
+    };
+
+    // Cargar datos del álbum y sus canciones
     onMounted(async () => {
         try {
             const response = await axios.get(`/api/album/${albumId.value}`);
-            album.value = response.data.data; 
-            
+            album.value = response.data.data;
         } catch (error) {
             console.error('Error fetching album:', error);
         }
@@ -103,20 +120,15 @@
         try {
             const response = await axios.get(`/api/albumes/${albumId.value}/canciones`);
             canciones.value = response.data.data;
-            console.log(canciones.value);
         } catch (error) {
             console.error('Error fetching canciones:', error);
         }
     });
 
+    // Función para obtener la URL de la imagen
     function getImageUrl(album) {
-        let image
-
-        image = album?.portada
-        
-        return new URL(image, import.meta.url).href
+        return new URL(album?.portada, import.meta.url).href;
     }
-    
 </script>
 
 <style scoped>
@@ -257,7 +269,6 @@
     }
 
     .cancion-album:hover {
-        cursor: pointer;
         background: linear-gradient(to right, #7e10e59e, #da3bf688);
     }
 

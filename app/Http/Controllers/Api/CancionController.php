@@ -106,6 +106,18 @@ class CancionController extends Controller
         //
     }
 
+    public function sumarRepro($cancionId)
+    {
+        $cancion = Cancion::findOrFail($cancionId);
+
+        $cancion->increment('reproducciones');
+
+        return response()->json([
+            'message' => 'Reproducción sumada correctamente',
+            'reproducciones' => $cancion->reproducciones
+        ]);
+    }
+
     /**
      * Remove the specified resource from storage.
      */

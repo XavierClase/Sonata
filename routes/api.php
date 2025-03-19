@@ -74,6 +74,7 @@ Route::post('canciones', [CancionController::class, 'store']);
 Route::get('canciones/{id}', [CancionController::class, 'getCancionesUsuario']);
 Route::get('/canciones/usuario/{id}', [CancionController::class, 'getCancionesArtistaEstadisticas']);
 Route::delete('canciones/{id}', [CancionController::class, 'destroy']);
+Route::post('reproducciones/{id}', [CancionController::class, 'sumarRepro']);
 
 Route::get('user/{id}', [UserController::class, 'getUser']);
 Route::post('users/cambiarRol', [UserController::class, 'cambiarRol']);

@@ -123,8 +123,11 @@
     const player = usePlayerStore(); 
 
     const reproducirCancion = (cancion) => {
-        player.playSong(cancion);
+        const index = populares.value.findIndex(c => c.id === cancion.id);
+        player.setPlaylist(populares.value); 
+        player.playSong(cancion, index); 
     };
+
 
     const { likeCancion, esFavorita, cargarFavoritos } = useLikes();
 
