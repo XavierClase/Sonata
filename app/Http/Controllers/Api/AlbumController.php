@@ -104,9 +104,102 @@ class AlbumController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
+
+    public function updatePortada(Request $request, string $id)
+    {
+        $request->validate([
+            'portada' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        try {
+            $album = Album::findOrFail($id);
+            
+            if ($album->id_usuario !== auth()->id()) {
+                return response()->json([
+                    'message' => 'No tienes permiso para editar este álbum'
+                ], 403);
+            }
+
+            $album->clearMediaCollection('images/albums');
+            
+        
+            $media = $album->addMediaFromRequest('portada')
+                ->toMediaCollection('images/albums');
+
+            return response()->json([
+                'message' => 'Portada actualizada exitosamente',
+                'portada_url' => $media->getUrl()
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar la portada',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'tipo' => 'required|in:sencillo,ep,album', 
+            'num_canciones' => 'required|integer|min:0',
+            'duracion_total' => 'required|string', 
+            'canciones' => 'nullable|string'
+        ]);
+
+        try {
+            $album = Album::findOrFail($id);
+            
+            if ($album->id_usuario !== auth()->id()) {
+                return response()->json([
+                    'message' => 'No tienes permiso para editar este álbum'
+                ], 403);
+            }
+
+        
+            $duracionPartes = explode(':', $request->duracion_total);
+            $duracionFormateada = '';
+            
+            if (count($duracionPartes) == 2) {
+                $duracionFormateada = '00:' . str_pad($duracionPartes[0], 2, '0', STR_PAD_LEFT) . ':' . 
+                                    str_pad($duracionPartes[1], 2, '0', STR_PAD_LEFT);
+            } else if (count($duracionPartes) == 3) {
+                $duracionFormateada = str_pad($duracionPartes[0], 2, '0', STR_PAD_LEFT) . ':' . 
+                                    str_pad($duracionPartes[1], 2, '0', STR_PAD_LEFT) . ':' . 
+                                    str_pad($duracionPartes[2], 2, '0', STR_PAD_LEFT);
+            }
+
+            $album->nombre = $request->nombre;
+            $album->tipo = $request->tipo;
+            $album->num_canciones = $request->num_canciones;
+            $album->duracion_total = $duracionFormateada;
+            $album->save();
+
+        
+            if ($request->has('canciones')) {
+                $cancionesIds = json_decode($request->canciones, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                
+                    $album->canciones()->sync($cancionesIds);
+                }
+            }
+
+            return response()->json([
+                'message' => 'Álbum actualizado exitosamente',
+                'data' => new AlbumResource($album)
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el álbum',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
     
     /**

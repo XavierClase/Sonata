@@ -67,7 +67,7 @@ Route::get('album/{id}', [AlbumController::class, 'show']);
 Route::get('albumes/{id}/canciones', [AlbumController::class, 'getCancionesAlbum']);
 Route::put('albumes/{id}', [AlbumController::class, 'update']);
 Route::delete('albumes/{id}', [AlbumController::class, 'destroy']);
-
+Route::post('/albumes/{id}/portada', [AlbumController::class, 'updatePortada']);
 
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 Route::post('canciones', [CancionController::class, 'store']);
