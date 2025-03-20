@@ -49,6 +49,8 @@
           <button type="submit" class="boton_confirmar" :disabled="!esFormularioValido">
             Confirmar
           </button>
+
+          <Toast />
         </form>
       </div>
     </section>
@@ -60,7 +62,9 @@ import { ref, reactive, computed } from 'vue';
 import { authStore } from "@/store/auth.js";
 import AppPanel from '@/layouts/AppPanel.vue';
 import axios from 'axios';
+import { useToast } from 'primevue/usetoast';
 
+const toast = useToast();
 const user = authStore().user;
 const archivoImagen = ref(null);
 const archivoAudio = ref(null);
@@ -96,9 +100,6 @@ const obtenerDuracionAudio = (file) => {
   });
 };
 
-
-
-
 const manejarImagen = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -112,6 +113,8 @@ const manejarImagen = (event) => {
 
 const manejarAudio = async (event) => {
   const files = Array.from(event.target.files);
+  
+  if (files.length === 0) return;
 
   for (const file of files) {
     const duracion = await obtenerDuracionAudio(file);
@@ -121,13 +124,38 @@ const manejarAudio = async (event) => {
       duracion
     });
   }
+  
+  toast.add({
+    severity: 'success',
+    summary: 'Canciones añadidas',
+    detail: `${files.length} canción(es) agregadas`,
+    life: 3000
+  });
   event.target.value = '';
+};
+
+
+const borrarTodo = () => {
+  albumData.nombre = '';
+  albumData.tipo = 'Album';
+  albumData.portada = null;
+  PreviewImagen.value = null;
+  canciones.value = [];
+  
+  
+  if (archivoImagen.value) archivoImagen.value.value = '';
+  if (archivoAudio.value) archivoAudio.value.value = '';
 };
 
 const quitarCancion = (index) => {
   canciones.value.splice(index, 1);
+  toast.add({
+    severity: 'success',
+    summary: 'Canción eliminada',
+    detail: 'La canción fue removida del álbum',
+    life: 3000
+  });
 };
-
 const calcularDuracionTotal = () => {
   return canciones.value.reduce((total, cancion) => {
     const [min, sec] = cancion.duracion.split(':').map(Number);
@@ -188,8 +216,15 @@ const enviarFormulario = async () => {
         }
       });
     }
-    console.log('Álbum y canciones creados exitosamente');
     
+    
+    toast.add({
+      severity: 'success',
+      summary: 'Álbum creado',
+      detail: 'El álbum se ha creado exitosamente',
+      life: 5000
+    });
+    borrarTodo();
     
   } catch (error) {
     console.error('Error:', error.response?.data);
