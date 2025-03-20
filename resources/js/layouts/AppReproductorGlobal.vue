@@ -30,12 +30,24 @@
 
             <!-- Controles de reproducción -->
             <div class="controles">
+                <button 
+                    @click="player.toggleShuffle" 
+                    :class="['boton-controles', { 'activo': player.isShuffle }]"
+                ><i class="fa-solid fa-shuffle"></i></button>
                 <button class="cambiar-cancion" @click="player.prevSong">⏮</button>
+                
                 <button class="play-button" @click="handlePlayPause">
                     {{ player.isPlaying ? "⏸" : "▶" }}
                 </button>
+
                 <button class="cambiar-cancion" @click="player.nextSong">⏭</button>
+                
+                <button 
+                    @click="player.toggleLoop" 
+                    :class="['boton-controles', { 'activo': player.isLoop }]"
+                ><i class="fa-solid fa-repeat"></i></button>
             </div>
+
 
             <!-- Barra de volumen -->
             <span class="barra-volumen-span">
@@ -119,25 +131,20 @@
         }
     }
 
-    // Vigilar cambios en el progreso de reproducción
     watch(() => player.progress, () => {
         if (!isDragging.value) {
             updateProgressBar();
         }
     });
 
-    // Vigilar cambios en el volumen
     watch(() => volume.value, () => {
         updateVolumeStyle();
     });
 
-    // Vigilar cambios en el estado de reproducción
     watch(() => player.isPlaying, () => {
-        // Puede actualizarse desde controles externos como Windows
         updateProgressBar();
     });
 
-    // Vigilar cambios en la canción actual
     watch(() => player.currentSong, () => {
         if (player.sound && player.currentSong) {
             player.sound.volume(volume.value);
@@ -145,14 +152,12 @@
     });
 
     onMounted(() => {
-        // Inicializar volumen si ya hay una canción cargada
         if (player.sound) {
             player.sound.volume(volume.value);
         }
         updateVolumeStyle();
         window.addEventListener('mouseup', stopDragging);
         
-        // Verificar que el componente se actualice si cambia el estado externamente
         setInterval(() => {
             if (player.sound && player.sound.playing() !== player.isPlaying) {
                 player.isPlaying = player.sound.playing();
@@ -235,6 +240,22 @@
         font-size: 3rem;
         color: #F472B6;
     }
+
+    .boton-controles {
+        background: none;
+        border: none;
+        color: #F472B6;
+        font-size: 2rem;
+        padding: 0 !important;
+        margin: 0 !important;
+        position: relative;
+        top: 5px;
+    }
+
+    .activo {
+        color: #fc148c;
+    }
+
 
     /* ----- ESTILOS PARA LA BARRA DE PROGRESO ----- */
 

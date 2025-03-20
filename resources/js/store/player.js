@@ -3,25 +3,30 @@ import { Howl } from "howler";
 
 export const usePlayerStore = defineStore("player", {
     state: () => ({
-        playlist: [], 
-        currentIndex: 0, 
+        playlist: [],
+        currentIndex: 0,
         currentSong: null,
         isPlaying: false,
         sound: null,
         progress: 0,
         duration: 0,
+        isShuffle: false,
+        isLoop: false,
+        _mediaListenerActive: false
     }),
+
     actions: {
         async playSong(song, index = null) {
-            // If an index is provided, update the current index
             if (index !== null) {
                 this.currentIndex = index;
             }
 
-            // Check if we're trying to play the same song that's already loaded
+            console.log("🎵 Intentando reproducir:", song.id);
+
+            //  Si es la misma canción y el sonido ya existe, solo reanudar
             if (this.currentSong?.id === song.id && this.sound) {
-                // If the song is already loaded but not playing, just play it
-                if (!this.isPlaying) {
+                if (!this.sound.playing()) {
+                    console.log(" Reanudando en:", this.sound.seek());
                     this.sound.play();
                     this.isPlaying = true;
                     requestAnimationFrame(this.updateProgress);
@@ -29,42 +34,53 @@ export const usePlayerStore = defineStore("player", {
                 return;
             }
 
-            // Unload previous sound if it exists
+            console.log("🔄 Cargando nueva canción...");
+
             if (this.sound) {
                 this.sound.unload();
             }
 
-            // Reset progress when starting a new song
             this.progress = 0;
             this.currentSong = song;
-            
-            // Create a new Howl instance for the song
             this.sound = new Howl({
                 src: [song.archivo],
                 html5: true,
-                onend: () => {
-                    this.nextSong();
-                },
+                onend: () => this.nextSong(),
                 onload: () => {
+                    console.log(" Canción cargada:", song.id);
                     this.duration = this.sound.duration();
                     this.sound.play();
                     this.isPlaying = true;
                     requestAnimationFrame(this.updateProgress);
                 },
                 onplay: async () => {
-                    await this.sumarReproduccion(song.id);
+                    console.log(" En reproducción:", song.id);
+                    this.isPlaying = true;
                     requestAnimationFrame(this.updateProgress);
-                }
+                },
+                onpause: () => console.log(" Pausada"),
+                onstop: () => console.log(" Detenida"),
             });
+
+            this._setupMediaListeners();
         },
 
         togglePlay() {
             if (!this.sound) return;
-            
-            if (this.isPlaying) {
+
+            console.log("🎵 Estado actual:", {
+                isPlaying: this.isPlaying,
+                soundExists: !!this.sound,
+                soundPlaying: this.sound.playing(),
+                currentSeek: this.sound.seek(),
+            });
+
+            if (this.sound.playing()) {
+                console.log(" Pausando en:", this.sound.seek());
                 this.sound.pause();
                 this.isPlaying = false;
             } else {
+                console.log(" Reanudando en:", this.sound.seek());
                 this.sound.play();
                 this.isPlaying = true;
                 requestAnimationFrame(this.updateProgress);
@@ -72,40 +88,58 @@ export const usePlayerStore = defineStore("player", {
         },
 
         nextSong() {
-            if (this.currentIndex < this.playlist.length - 1) {
-                this.currentIndex++;
-                this.playSong(this.playlist[this.currentIndex]);
+            if (!this.playlist.length) return;
+        
+            if (this.isShuffle) {
+                let newIndex;
+                do {
+                    console.log("Canción aleatoria");
+                    newIndex = Math.floor(Math.random() * this.playlist.length);
+                } while (newIndex === this.currentIndex);
+        
+                this.currentIndex = newIndex;
             } else {
-                // Reset player if we're at the end of the playlist
-                if (this.sound) {
-                    this.sound.stop();
+                if (this.currentIndex < this.playlist.length - 1) {
+                    console.log("Canción siguiente");
+                    this.currentIndex++;
+                } else {
+                    if (this.isLoop) {
+                        console.log("🔄 Reiniciando playlist...");
+                        this.currentIndex = 0; // Volver a la primera canción
+                    } else {
+                        if (this.sound) this.sound.stop();
+                        this.isPlaying = false;
+                        return;
+                    }
                 }
-                this.isPlaying = false; 
             }
+        
+            this.playSong(this.playlist[this.currentIndex]);
         },
 
         prevSong() {
-            // If we're more than 3 seconds into the song, restart it
             if (this.sound && this.sound.seek() > 3) {
                 this.sound.seek(0);
                 return;
             }
-            
-            // Otherwise go to previous song
             if (this.currentIndex > 0) {
                 this.currentIndex--;
                 this.playSong(this.playlist[this.currentIndex]);
             }
         },
 
-        setPlaylist(tracks) {
-            this.playlist = tracks;
-            this.currentIndex = 0;
-            if (tracks.length) this.playSong(tracks[0]);
+        toggleShuffle() {
+            this.isShuffle = !this.isShuffle;
+            console.log(" Modo aleatorio:", this.isShuffle ? "Activado" : "Desactivado");
+        },
+
+        toggleLoop() {
+            this.isLoop = !this.isLoop;
+            console.log(" Modo bucle:", this.isLoop ? "Activado" : "Desactivado");
         },
 
         updateProgress() {
-            if (this.sound && this.isPlaying) {
+            if (this.sound && this.sound.playing()) {
                 this.progress = this.sound.seek();
                 requestAnimationFrame(this.updateProgress);
             }
@@ -115,18 +149,17 @@ export const usePlayerStore = defineStore("player", {
             if (this.sound) {
                 this.sound.seek(time);
                 this.progress = time;
+                if (!this.isPlaying) this.sound.pause();
+                else requestAnimationFrame(this.updateProgress);
             }
         },
 
-        playQueue(songs) {
-            this.setPlaylist(songs);
-        },
-
-        async sumarReproduccion(songId) {
-            try {
-                await axios.post(`/api/reproducciones/${songId}`);
-            } catch (error) {
-                console.error('Error al sumar reproducción:', error);
+        setPlaylist(tracks) {
+            this.playlist = tracks;
+            this.currentIndex = 0;
+        
+            if (tracks.length && !this.sound) {
+                this.playSong(tracks[0]);  
             }
         },
     },
