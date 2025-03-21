@@ -21,7 +21,9 @@ class UserResource extends JsonResource
             'role_id' => $this->roles,
             'roles' => $this->roles,
             'rolNombre' => $this->roles->pluck('name'),
-            'avatar' => count($this->getMedia('*')) > 0 ? $this->getMedia('*')[0]->getUrl() : null,
+            'avatar' => $this->getFirstMediaUrl('images-users'),
+            'fotoDetalles' => $this->getFirstMediaUrl('images-users-detalles'),
+            'descripcion' => $this->descripcion,
             'created_at' => $this->created_at->toDateString()
         ];
     }

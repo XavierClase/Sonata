@@ -51,7 +51,14 @@
 
         <div class="col-md-5 perfil-artista-medio-detalles">
             <h2>Detalles</h2>
-            <div></div>
+            <div class="detalles-contenido">
+                <div class="detalles-img">
+                    <img :src="getImageDetalleslUrl(user)" alt="Imagen de detalles del usuario artista">
+                </div>
+                <div class="detalles-descripcion">
+                    <p> {{ user?.descripcion }} </p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -101,7 +108,7 @@
                 </div>
                 <div class="flex items-center gap-4 mb-8">
                     <FloatLabel variant="on">
-                        <Textarea class="banner-config-input" id="config-descripcion" rows="5" cols="30" style="resize: none" />
+                        <Textarea class="banner-config-input" id="config-descripcion" rows="5" cols="30" style="resize: none" maxlength="185" v-model="descripcionUsuarioMod"/>
                         <label for="descripcion">Descripción</label>
                     </FloatLabel>
                 </div>
@@ -142,13 +149,15 @@
     const PreviewImagenPerfil = ref(null);  
     const PreviewImagenDetalles = ref(null); 
     const nombreUsuarioMod = ref('');
+    const descripcionUsuarioMod = ref('');
     const UsuarioMod = ref('');
 
     onMounted(async () => {
         try {
             const response = await axios.get(`/api/user/${userId.value}`);
             user.value = response.data.data; 
-            nombreUsuarioMod.value = user.value.name; 
+            nombreUsuarioMod.value = user.value.name;
+            descripcionUsuarioMod.value = user.value.descripcion;
         } catch (error) {
             console.error('Error recogiendo los datos del usuario:', error);
         }
@@ -184,6 +193,11 @@
 
     function getImagePerfilUrl(user) {
         let image = user?.avatar;
+        return new URL(image, import.meta.url).href;
+    }
+
+    function getImageDetalleslUrl(user) {
+        let image = user?.fotoDetalles;
         return new URL(image, import.meta.url).href;
     }
 
@@ -237,18 +251,51 @@
             }
         }
 
-        if (nombreUsuarioMod.value !== user.value.name) {
+        if (imagenDataDetalles.portada) {
+            let formData = new FormData();
+            formData.append('id', userPropio.id); 
+            formData.append('picture', imagenDataDetalles.portada);
+
             try {
-                console.log("Datos enviados:", { name: nombreUsuarioMod.value }); 
+                const response = await axios.post('/api/users/updateimgdetalles', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+                if (response.data) {
+                    const nuevaImagen = response.data.fotoDetalles;
+                    if (nuevaImagen) {
+                        PreviewImagenDetalles.value = nuevaImagen;
+                        user.value.fotoDetalles = nuevaImagen;
+                    }
+                }
+
+                console.log("Imagen de detalles actualizada correctamente", response.data);
+            } catch (error) {
+                console.error("Error al actualizar la imagen de detalles:", error);
+            }
+        }
+
+        if (nombreUsuarioMod.value !== user.value.name || descripcionUsuarioMod.value !== user.value.descripcion) {
+            try {
+                console.log("Datos enviados:", { 
+                    name: nombreUsuarioMod.value,
+                    descripcion: descripcionUsuarioMod.value
+                }); 
+
                 const response = await axios.put(`/api/users/${userId.value}`, {
                     name: nombreUsuarioMod.value,
+                    descripcion: descripcionUsuarioMod.value
                 });
+
                 user.value.name = nombreUsuarioMod.value;
+                user.value.descripcion = descripcionUsuarioMod.value;
                 userPropio.name = nombreUsuarioMod.value;  
 
-                console.log("Nombre actualizado correctamente", response.data);
+                console.log("Datos actualizados correctamente", response.data);
             } catch (error) {
-                console.error("Error al actualizar el nombre:", error);
+                console.error("Error al actualizar los datos del usuario:", error);
             }
         }
 
@@ -422,12 +469,39 @@
         font-size: 1.5rem;
     }
 
-    .perfil-artista-medio-detalles div {
-        height: 330px;
+    .detalles-contenido {
+        background-color: rgba(0, 0, 0, 0.511);
+        height: 350px;
         width: 470px;
-        border: 1px solid black;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 1px 1px 11px 0px rgba(0, 0, 0, 0.438);
     }
 
+    .detalles-img {
+        flex: 4;
+        width:  100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .detalles-img img{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .detalles-descripcion {
+        padding: 5px;
+        flex: 1;
+        color: white;
+        overflow: hidden;          
+        text-overflow: ellipsis;   
+        white-space: normal;       
+        word-wrap: break-word;    
+    }
     .perfil-artista-albums {
         margin-top: 20px;
         padding-left: 33px;
@@ -495,11 +569,12 @@
 
     /* --- Modal --- */
 
-
+    
     .banner-config-modal {
         background-color: #200834 !important;
         border: 1px solid purple !important;
         width: 700px !important;
+         height: 520px !important; 
         color: white !important;
     }
 
@@ -510,7 +585,7 @@
     }
 
     #config-descripcion {
-        height: 180px;
+        height: 150px;
         width: 280px;
     }
 

@@ -111,12 +111,19 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $user->name = $request->name;
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+
+        if ($request->has('descripcion')) {
+            $user->descripcion = $request->descripcion;
+        }
 
         $user->save();
 
         return new UserResource($user);
     }
+
 
 
 
@@ -133,6 +140,22 @@ class UserController extends Controller
         $user =  User::with('media')->find($request->id);
         return  $user;
     }
+
+    public function updateimgDetalles(Request $request)
+    {
+        $user = User::find($request->id);
+
+        if($request->hasFile('picture')) {
+            // Eliminar solo la imagen anterior de la colección específica
+            $user->clearMediaCollection('images-users-detalles');
+
+            // Subir nueva imagen
+            $user->addMediaFromRequest('picture')->preservingOriginal()->toMediaCollection('images-users-detalles');
+        }
+
+        return User::with('media')->find($request->id);
+    }
+
 
     public function destroy(User $user)
     {
