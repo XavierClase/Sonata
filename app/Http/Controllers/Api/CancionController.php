@@ -121,36 +121,36 @@ class CancionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        try {
-            $cancion = Cancion::findOrFail($id);
+
+public function destroy(string $id)
+{
+    try {
+        $cancion = Cancion::findOrFail($id);
     
-           
-            if ($cancion->id_usuario !== auth()->id()) {
-                return response()->json([
-                    'message' => 'No tienes permiso para eliminar esta canción'
-                ], 403);
-            }
-    
-        
-            $cancion->clearMediaCollection('audio/canciones');
-    
-         
-            $cancion->albums()->detach();
-    
-            
-            $cancion->delete();
-    
+        if ($cancion->id_usuario !== auth()->id()) {
             return response()->json([
-                'message' => 'Canción eliminada correctamente'
-            ], 200);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error al eliminar la canción',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'No tienes permiso para eliminar esta canción'
+            ], 403);
         }
+    
+    
+        $cancion->clearMediaCollection('audio/canciones');
+    
+     
+        $cancion->albums()->detach();
+    
+      
+        $cancion->delete();
+    
+        return response()->json([
+            'message' => 'Canción eliminada completamente del sistema'
+        ], 200);
+            
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Error al eliminar la canción',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 }

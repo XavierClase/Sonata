@@ -50,7 +50,15 @@ const model = ref([
             { label: 'Categorias', icon: 'pi pi-fw pi-id-card', to: '/admin/categories', permision: 'category-list' }
 
         ]
-    }
+    },
+    {
+        label: 'Musica',
+        items: [
+            { label: 'Albums', icon: 'pi pi-fw pi-headphones', to: '/', permision: 'role-list' },
+            { label: 'Canciones', icon: 'pi pi-fw pi-play-circle', to: '/', permision:'role-list' },
+            { label: 'Listas', icon: 'pi pi-fw pi-file', to: '/', permision:'role-list' }
+        ]
+    },
 ]);
 </script>
 
