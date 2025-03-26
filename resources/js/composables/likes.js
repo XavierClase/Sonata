@@ -4,20 +4,20 @@ import { authStore } from "@/store/auth.js";
 
 export function useLikeCancion() {
     const store = authStore(); 
-    const favoritos = ref(new Set()); 
+    const cancionesFaoritas = ref(new Set()); 
 
-    const cargarFavoritos = async () => {
+    const cargarFavoritosCanciones = async () => {
         if (!store.user) return;
 
         try {
             const response = await axios.get("/api/cancion/likes");
-            favoritos.value = new Set(response.data.favoritos); 
+            cancionesFaoritas.value = new Set(response.data.favoritos); 
         } catch (error) {
             console.error("Error al cargar favoritos", error);
         }
     };
 
-    const toggleLike = async (idCancion) => {
+    const toggleLikeCancion = async (idCancion) => {
         if (!store.user) {
             console.warn("El usuario no está autenticado");
             return;
@@ -25,20 +25,20 @@ export function useLikeCancion() {
 
         try {
             const response = await axios.post(`/api/like/cancion/${idCancion}`);
-            favoritos.value = new Set(response.data.favoritos); 
+            cancionesFaoritas.value = new Set(response.data.favoritos); 
         } catch (error) {
             console.error("Error al dar/quitar like", error);
         }
     };
 
-    const esFavorita = (idCancion) => favoritos.value.has(idCancion);
+    const esFavoritaCancion = (idCancion) => cancionesFaoritas.value.has(idCancion);
 
 
     return {
-        favoritos,
-        cargarFavoritos,
-        toggleLike,
-        esFavorita,
+        cancionesFaoritas,
+        cargarFavoritosCanciones,
+        toggleLikeCancion,
+        esFavoritaCancion,
     };
 }
 

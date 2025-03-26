@@ -43,7 +43,7 @@
                     </span>
                     <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
                     <i
-                        :class="esFavorita(cancion.id) ? 'pi pi-heart-fill col-md-1' : 'pi pi-heart col-md-1'"
+                        :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill col-md-1' : 'pi pi-heart col-md-1'"
                         @click="likeCancion(cancion.id, $event)"
                     ></i>
                     <i class="pi pi-plus col-md-1"  @click="mostrarListaCanciones(cancion)"></i>
@@ -143,7 +143,7 @@
         player.playSong(cancion, index); 
     };
 
-    const { favoritos, cargarFavoritos, toggleLike, esFavorita } = useLikeCancion();
+    const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
     
     const visible = ref(false);
     const userPropio = authStore().user;
@@ -161,7 +161,7 @@
         await fetchData(`/api/user/${userId.value}`, (data) => user.value = data);
         await fetchData(`/api/canciones/populares/${userId.value}`, (data) => populares.value = data);
         await fetchData(`/api/albumes/${userId.value}`, (data) => albums.value = data);
-        await cargarFavoritos();
+        await cargarFavoritosCanciones();
 
         nombreUsuarioMod.value = user.value?.name || '';  
         descripcionUsuarioMod.value = user.value?.descripcion || '';
@@ -177,13 +177,14 @@
         }
     };
     const mostrarListaCanciones = (cancion) => {
+        event.stopPropagation();
         cancionParaCompartir.value = cancion
     }
 
     const likeCancion = async (idCancion, event) => {
         event.stopPropagation();
-        await toggleLike(idCancion);
-        await cargarFavoritos();
+        await toggleLikeCancion(idCancion);
+        await cargarFavoritosCanciones();
     };
 
     // Función generalizada para obtener URLs de imágenes

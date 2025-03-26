@@ -67,6 +67,8 @@
 </template>
 
 <script setup>
+
+    import axios from 'axios';
     import { ref, watch, onMounted, onUnmounted } from "vue";
     import { usePlayerStore } from "@/store/player";
 
@@ -74,6 +76,23 @@
     const volume = ref(0.2);
     const localProgress = ref(0);
     const isDragging = ref(false);
+
+    function registrarReproduccion(songId) {
+        axios.post(`/api/reproducciones/${songId}`)
+            .then(response => {
+                console.log("Reproducción registrada", response.data);
+            })
+            .catch(error => {
+                console.error("Error al registrar reproducción", error);
+            });
+    }
+
+    watch(() => player.currentSong, (newSong) => {
+        if (newSong && newSong.id) {
+            registrarReproduccion(newSong.id);
+        }
+    });
+
 
     function getImageAlbumUrl(song) {
         return song?.portada ? song.portada : "/images/placeholder.jpg"; 

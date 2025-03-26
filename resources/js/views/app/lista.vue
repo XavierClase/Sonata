@@ -25,7 +25,8 @@
                 </span>
                 <p class="lista-descripcion">{{ lista?.descripcion }}</p>
             </div>
-            <i 
+            <i
+                v-if="userPropio?.name !== lista?.creador"
                 :class="esFavoritoLista ? 'pi pi-heart-fill' : 'pi pi-heart'" 
                 style="font-size: 2.4rem; cursor: pointer"
                 @click="likeLista(lista?.id, $event)"

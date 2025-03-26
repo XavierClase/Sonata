@@ -73,7 +73,10 @@
                 <p class="col-md-3 cancion-album-reproducciones">{{ cancion.reproducciones }}</p>
                 <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
                 <span class="cancion-album-span">
-                    <i class="pi pi-heart"></i>
+                    <i
+                        :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                        @click="likeCancion(cancion.id, $event)"
+                    ></i>
                     <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)"></i>
                 </span>
             </div>
@@ -86,7 +89,7 @@
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { usePlayerStore } from "@/store/player";
-    import { useLikeAlbum } from "@/composables/likes.js";
+    import { useLikeAlbum, useLikeCancion } from "@/composables/likes.js";
     import ListaCanciones from '@/components/listaCanciones.vue'
 
     const cancionParaCompartir = ref(null)
@@ -96,12 +99,19 @@
     const album = ref(null);
     const canciones = ref(null);
     const { favoritos, toggleLike, esFavorito } = useLikeAlbum();
+    const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
     const esFavoritoAlbum = ref(false);
 
     const likeAlbum = async (idAlbum, event) => {
         event.stopPropagation();
         await toggleLike(idAlbum);
         esFavoritoAlbum.value = esFavorito(albumId.value); // Usar el Set de favoritos para determinar si es favorito
+    };
+
+    const likeCancion = async (idCancion, event) => {
+        event.stopPropagation();
+        await toggleLikeCancion(idCancion);
+        await cargarFavoritosCanciones();
     };
 
     // Estado reactivo para detectar si se está reproduciendo una canción
@@ -122,6 +132,7 @@
     };
     
     const mostrarListaCanciones = (cancion) => {
+        event.stopPropagation();
         cancionParaCompartir.value = cancion
     }
 
@@ -150,7 +161,7 @@
 
         
         esFavoritoAlbum.value = await esFavorito(albumId.value);
-
+        await cargarFavoritosCanciones();
         
 
 
