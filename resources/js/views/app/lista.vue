@@ -91,31 +91,44 @@
         <div class="lista-canciones-detalles">
             <div class="row cancion-lista" v-for="(cancion, index) in canciones" :key="cancion.id"
             @click="reproducirCancion(cancion)">
-                <p class="col-md-1 num-cancion-lista">{{ index + 1 }}</p> 
-                <p class="col-md-5 cancion-lista-nombre">{{ cancion.nombre }}</p>
-                <p class="col-md-3 cancion-lista-reproducciones">{{ cancion.reproducciones }}</p>
-                <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
-                <span class="cancion-lista-span">
-                    <i class="pi pi-heart"></i>
-                    <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)"></i>
-                </span>
+                <div>
+                    <p class="col-md-1 num-cancion-lista">{{ index + 1 }}</p> 
+                    <p class="col-md-5 cancion-lista-nombre">{{ cancion.nombre }}</p>
+                    <p class="col-md-3 cancion-lista-reproducciones">{{ cancion.reproducciones }}</p>
+                    <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
+                    <span class="cancion-lista-span">
+                        <i
+                            :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                            @click="likeCancion(cancion.id, $event)"
+                        ></i>
+                        <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)"></i>
+                    </span>
+                </div>
+                
+                <i 
+                    v-if="userPropio?.name === lista?.creador" 
+                    class="pi pi-times-circle" 
+                    style="cursor: pointer; color: red;" 
+                    @click="eliminarCancionDeLista(cancion.id, $event)"
+                ></i>
+
             </div>
         </div>
     </div>
     
-    <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Crea una lista" appendTo=".showDialog">
+    <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Editar lista" appendTo=".showDialog">
         <form @submit.prevent="enviarFormulario">
             <div class="row">
                 <div class="config-imagenes col-md-4">
                     <div class="imagen-crear-lista">
                         <img :src="PreviewImagenLista || getImageUrl(lista) || '/images/placeholder1.jpg'" class="estilo_imagen">
-                        <input type="file"  @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+                        <input type="file" @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="flex items-center gap-4 mb-4">
                         <FloatLabel variant="on">
-                            <InputText class="crearLista-input" id="username"  v-model="nombreListaMod" />
+                            <InputText class="crearLista-input" id="username" v-model="nombreListaMod" />
                             <label for="username">Nombre de la lista</label>
                         </FloatLabel>
                     </div>
@@ -129,9 +142,11 @@
             </div>
             <div class="flex justify-end gap-2">
                 <Button type="button" label="Guardar" @click="enviarFormulario"></Button>
+                <Button type="button" label="Eliminar Lista" severity="danger" @click="eliminarLista"></Button>
             </div>
         </form>
     </Dialog>
+
 </template>
 
 <script setup>
@@ -139,7 +154,7 @@
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
-    import { useLikeLista } from "@/composables/likes.js";
+    import { useLikeLista, useLikeCancion } from "@/composables/likes.js";
     import ListaCanciones from '@/components/listaCanciones.vue'
     import { usePlayerStore } from "@/store/player";
 
@@ -156,12 +171,19 @@
     const nombreListaMod = ref('');
     const descripcionListaMod = ref('');
     const { favoritos, toggleLike, esFavorito } = useLikeLista();
+    const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
     const esFavoritoLista = ref(false);
 
     const likeLista = async (idLista, event) => {
         event.stopPropagation();
         await toggleLike(idLista);
         esFavoritoLista.value = !esFavoritoLista.value; // Cambia el estado manualmente
+    };
+
+    const likeCancion = async (idCancion, event) => {
+        event.stopPropagation();
+        await toggleLikeCancion(idCancion);
+        await cargarFavoritosCanciones();
     };
 
     const isPlaying = computed(() => player.isPlaying);
@@ -210,6 +232,9 @@
         } catch (error) {
              console.error('Error encontrando las canciones:', error);
         }
+
+        await cargarFavoritosCanciones();
+
     });
 
     function getImageUrl(lista) {
@@ -260,6 +285,37 @@
             console.log("Lista actualizada correctamente");
         } catch (error) {
             console.error("Error al actualizar la lista:", error);
+        }
+    };
+
+    const eliminarLista = async () => {
+        if (!confirm("¿Estás seguro de que quieres eliminar esta lista?")) return;
+
+        try {
+            await axios.delete(`/api/listas/del/${listaId.value}`);
+            alert("Lista eliminada correctamente");
+
+            visible.value = false; // Cerrar modal
+            // Aquí puedes redirigir o actualizar la lista en la UI
+        } catch (error) {
+            console.error("Error al eliminar la lista:", error);
+            alert("Error al eliminar la lista");
+        }
+    };
+
+    const eliminarCancionDeLista = async (cancionId, event) => {
+        event.stopPropagation(); // Evita que se active la reproducción al hacer clic en eliminar
+
+        if (!confirm("¿Seguro que quieres eliminar esta canción de la lista?")) return;
+
+        try {
+            await axios.delete(`/api/listas/${listaId.value}/cancion/${cancionId}`);
+            canciones.value = canciones.value.filter(c => c.id !== cancionId); // Actualiza la lista localmente
+
+            alert("Canción eliminada correctamente");
+        } catch (error) {
+            console.error("Error al eliminar la canción:", error);
+            alert("No se pudo eliminar la canción");
         }
     };
 
@@ -399,8 +455,15 @@
     }
 
     .cancion-lista {
+        width: 103%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .cancion-lista div{
         min-height: 60px;
-        width: 100%;
+        width: 96%;
         display: flex;
         align-items: center;
         color: white;
@@ -410,8 +473,7 @@
         box-shadow: 3px 1px 20px 0px rgb(44, 0, 73);
     }
 
-    .cancion-lista:hover {
-        cursor: pointer;
+    .cancion-lista div:hover {
         background: linear-gradient(to right, #7e10e59e, #da3bf688);
     }
 
@@ -441,7 +503,19 @@
     }
 
     .cancion-lista-span {
-        width: 40px;
+        width: auto;
+        display: flex;
+        gap: 15px;
+    }
+
+    .cancion-lista-span .pi {
+        font-size: 1.3rem;
+    }
+
+    .pi-times-circle {
+        font-size: 1.2rem;
+        color: rgb(251, 1, 1);
+        width: auto;
     }
 
     

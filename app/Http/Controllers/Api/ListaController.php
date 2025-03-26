@@ -188,7 +188,31 @@ class ListaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $lista = Lista::findOrFail($id);
+            
+            if ($lista->id_usuario !== auth()->id()) {
+                return response()->json([
+                    'message' => 'No tienes permiso para eliminar esta lista'
+                ], 403);
+            }
+      
+            foreach ($lista->getMedia() as $media) {
+                $media->delete();
+            }
+            
+            $lista->delete();
+
+            return response()->json([
+                'message' => 'Lista eliminada correctamente'
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar la lista',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function updateimg(Request $request)
@@ -202,4 +226,35 @@ class ListaController extends Controller
         $lista =  Lista::with('media')->find($request->id);
         return  $lista;
     }
+
+    public function eliminarCancionDeLista($lista_id, $cancion_id)
+    {
+        try {
+            $lista = Lista::findOrFail($lista_id);
+
+            if ($lista->id_usuario !== auth()->id()) {
+                return response()->json([
+                    'message' => 'No tienes permiso para modificar esta lista'
+                ], 403);
+            }
+
+            // Eliminar la canción de la lista
+            $lista->canciones()->detach($cancion_id);
+
+            // Actualizar la duración total y el número de canciones
+            $this->actualizarDuracionLista($lista);
+
+            return response()->json([
+                'message' => 'Canción eliminada correctamente de la lista'
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar la canción de la lista',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 }
