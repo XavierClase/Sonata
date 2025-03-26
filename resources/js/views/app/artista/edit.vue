@@ -279,7 +279,7 @@ const cargarCancionesAlbum = async (albumId) => {
   }
 };
 
-const manejarCambioImagen = (event) => {
+const handleImageChange = (event) => {
   const file = event.target.files[0];
   if (file) {
     imagenArchivo.value = file;
