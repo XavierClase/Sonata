@@ -36,6 +36,8 @@ function hasArtista(roles) {
     return false;
 }
 
+
+
 async function guest(to, from, next) {
     const auth = authStore()
 
@@ -80,6 +82,17 @@ async function requireArtista(to, from, next) {
     } else {
         next('/app/')
     }
+}
+
+async function redirigirAHome(to, from, next) {
+    const auth = authStore();
+    
+    if (auth.authenticated) {
+        next('/app'); 
+        return;
+    }
+    
+    next(); 
 }
 
 function redirectToProfile(to, from, next) {
@@ -143,6 +156,7 @@ export default [
                 path: '/',
                 name: 'home',
                 component: () => import('../views/home/index.vue'),
+                beforeEnter: redirigirAHome,
             },
             {
                 path: 'posts',
