@@ -46,7 +46,7 @@
                         :class="esFavorita(cancion.id) ? 'pi pi-heart-fill col-md-1' : 'pi pi-heart col-md-1'"
                         @click="likeCancion(cancion.id, $event)"
                     ></i>
-                    <i class="pi pi-plus col-md-1"></i>
+                    <i class="pi pi-plus col-md-1"  @click="mostrarListaCanciones(cancion)"></i>
                 </div>
             </div>
         </div>
@@ -130,8 +130,7 @@
     import { authStore } from "@/store/auth.js";
     import { useLikeCancion } from "@/composables/likes.js";
     import { usePlayerStore } from "@/store/player";
-
-    import ListaCanciones from '@/components/ListaCanciones.vue'
+    import ListaCanciones from '@/components/listaCanciones.vue'
 
 
 
@@ -145,7 +144,7 @@
     };
 
     const { favoritos, cargarFavoritos, toggleLike, esFavorita } = useLikeCancion();
-
+    
     const visible = ref(false);
     const userPropio = authStore().user;
     const route = useRoute(); 
@@ -177,6 +176,9 @@
             console.error(`Error al obtener los datos desde ${url}:`, error);
         }
     };
+    const mostrarListaCanciones = (cancion) => {
+        cancionParaCompartir.value = cancion
+        }
 
     const likeCancion = async (idCancion, event) => {
         event.stopPropagation();
