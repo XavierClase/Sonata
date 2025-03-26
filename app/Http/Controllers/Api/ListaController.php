@@ -85,15 +85,79 @@ class ListaController extends Controller
         return CancionResource::collection($canciones);
     }
 
+
+    public function añadirCancionALista(Request $request)
+    {
+        $request->validate([
+            'lista_ids' => 'required|array',
+            'lista_ids.*' => 'exists:listas,id',
+            'cancion_id' => 'required|exists:canciones,id'
+        ]);
+    
+        $exitosas = [];
+        $duplicados = [];
+    
+        foreach ($request->lista_ids as $listaId) {
+            $lista = Lista::find($listaId);
+          
+            if ($lista->canciones()->where('id_cancion', $request->cancion_id)->exists()) {
+                $duplicados[] = $listaId;
+                continue;
+            }
+    
+          
+            $orden = $lista->canciones()->count() + 1;
+            $lista->canciones()->attach($request->cancion_id, ['orden' => $orden]);
+            $this->actualizarDuracionLista($lista);
+            $exitosas[] = $listaId;
+        }
+    
+        return response()->json([
+            'message' => 'Operación completada',
+            'exitosas' => $exitosas,
+            'duplicados' => $duplicados
+        ], 200);
+    }
+
+    public function actualizarDuracionLista(Lista $lista)
+    {
+        
+        $lista->num_canciones = $lista->canciones()->count();
+        
+       
+        $duracionTotal = $lista->canciones->sum(function ($cancion) {
+            $partes = explode(':', $cancion->duracion);
+            
+            if (count($partes) === 3) {
+                return ($partes[0] * 3600) + ($partes[1] * 60) + $partes[2];
+            }
+            
+            if (count($partes) === 2) { 
+                return ($partes[0] * 60) + $partes[1];
+            }
+            
+            return $partes[0];
+        });
+    
+        $horas = floor($duracionTotal / 3600);
+        $minutos = floor(($duracionTotal % 3600) / 60);
+        $segundos = $duracionTotal % 60;
+    
+        $lista->duracion_total = sprintf('%02d:%02d:%02d', $horas, $minutos, $segundos);
+        $lista->save();
+    }
+
     /**
      * Recibir las listas de el usuario iniciado.
      */
     public function getListasUser($userId)
     {
-        $listas = Lista::where('id_usuario', $userId)->get();
+    $listas = Lista::with('canciones')
+        ->where('id_usuario', $userId)
+        ->get();
 
-        return ListaResource::collection($listas); 
-    }
+    return ListaResource::collection($listas);
+    }   
 
     /**
      * Update the specified resource in storage.

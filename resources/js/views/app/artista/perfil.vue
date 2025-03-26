@@ -1,4 +1,9 @@
 <template>
+      <ListaCanciones 
+                v-if="cancionParaCompartir" 
+                :cancion="cancionParaCompartir"
+                @close="cancionParaCompartir = null"
+            />
     <div class="showDialog"></div>
     <div class="perfil-artista-banner">
         <span>
@@ -125,8 +130,14 @@
     import { authStore } from "@/store/auth.js";
     import { useLikeCancion } from "@/composables/likes.js";
     import { usePlayerStore } from "@/store/player";
-    const player = usePlayerStore(); 
 
+    import ListaCanciones from '@/components/ListaCanciones.vue'
+
+
+
+
+    const player = usePlayerStore(); 
+    const cancionParaCompartir = ref(null)
     const reproducirCancion = (cancion) => {
         const index = populares.value.findIndex(c => c.id === cancion.id);
         player.setPlaylist(populares.value); 
