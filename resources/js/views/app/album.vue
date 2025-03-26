@@ -1,4 +1,9 @@
 <template>
+     <ListaCanciones 
+                v-if="cancionParaCompartir" 
+                :cancion="cancionParaCompartir"
+                @close="cancionParaCompartir = null"
+            />
     <div class="album-banner">
         <div class="detalles-album">
             <div class="album-banner-img">
@@ -69,7 +74,7 @@
                 <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
                 <span class="cancion-album-span">
                     <i class="pi pi-heart"></i>
-                    <i class="pi pi-plus"></i>
+                    <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)"></i>
                 </span>
             </div>
         </div>
@@ -82,7 +87,9 @@
     import axios from 'axios';
     import { usePlayerStore } from "@/store/player";
     import { useLikeAlbum } from "@/composables/likes.js";
+    import ListaCanciones from '@/components/listaCanciones.vue'
 
+    const cancionParaCompartir = ref(null)
     const player = usePlayerStore();
     const route = useRoute();
     const albumId = ref(route.params.id);
@@ -113,6 +120,10 @@
             }
         }
     };
+    
+    const mostrarListaCanciones = (cancion) => {
+        cancionParaCompartir.value = cancion
+    }
 
     // Función para reproducir una canción específica al hacer clic
     const reproducirCancion = (cancion) => {

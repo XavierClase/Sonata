@@ -178,7 +178,7 @@
     };
     const mostrarListaCanciones = (cancion) => {
         cancionParaCompartir.value = cancion
-        }
+    }
 
     const likeCancion = async (idCancion, event) => {
         event.stopPropagation();
