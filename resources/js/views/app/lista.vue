@@ -1,4 +1,9 @@
 <template>
+     <ListaCanciones 
+                v-if="cancionParaCompartir" 
+                :cancion="cancionParaCompartir"
+                @close="cancionParaCompartir = null"
+            />
     <div class="showDialog"></div>
     <div class="lista-banner">
         <div class="detalles-lista">
@@ -40,8 +45,8 @@
                 @click="visible = true"
             ></i>
         </div>
-        <div class="lista-banner-play">
-            <svg viewBox="0 0 100 100">
+        <div class="lista-banner-play" @click="toggleAlbumPlayback">
+            <svg  v-if="!isPlaying" viewBox="0 0 100 100">
                 <!-- Definición del degradado -->
                 <defs>
                     <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -56,7 +61,7 @@
                 <!-- Triángulo de play blanco -->
                 <path d="M35 25 L35 75 L75 50 Z" fill="white"/>
             </svg>
-            <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+            <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
                  Definición del degradado 
                 <defs>
                     <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -71,7 +76,7 @@
                  Barras de pausa (dos rectángulos) 
                 <rect x="35" y="30" width="10" height="40" fill="white" rx="2"/>
                 <rect x="55" y="30" width="10" height="40" fill="white" rx="2"/>
-            </svg> -->
+            </svg> 
         </div>
         
     </div>
@@ -84,14 +89,15 @@
             <p class="col-md-2">Duración</p>
         </div>
         <div class="lista-canciones-detalles">
-            <div class="row cancion-lista" v-for="(cancion, index) in canciones">
+            <div class="row cancion-lista" v-for="(cancion, index) in canciones" :key="cancion.id"
+            @click="reproducirCancion(cancion)">
                 <p class="col-md-1 num-cancion-lista">{{ index + 1 }}</p> 
                 <p class="col-md-5 cancion-lista-nombre">{{ cancion.nombre }}</p>
                 <p class="col-md-3 cancion-lista-reproducciones">{{ cancion.reproducciones }}</p>
                 <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
                 <span class="cancion-lista-span">
                     <i class="pi pi-heart"></i>
-                    <i class="pi pi-plus"></i>
+                    <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)"></i>
                 </span>
             </div>
         </div>
@@ -129,18 +135,20 @@
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, reactive, onMounted, computed } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
     import { useLikeLista } from "@/composables/likes.js";
+    import ListaCanciones from '@/components/listaCanciones.vue'
+    import { usePlayerStore } from "@/store/player";
 
-
-
+    const cancionParaCompartir = ref(null)
     const PreviewImagenLista = ref(null);
     const visible = ref(false);
     const isHovered = ref(false);
     const userPropio = authStore().user;
+    const player = usePlayerStore();
     const route = useRoute(); 
     const listaId = ref(route.params.id);
     const lista = ref(null);
@@ -156,6 +164,32 @@
         esFavoritoLista.value = !esFavoritoLista.value; // Cambia el estado manualmente
     };
 
+    const isPlaying = computed(() => player.isPlaying);
+
+
+    const toggleAlbumPlayback = () => {
+        if (isPlaying.value && player.currentPlaylist === canciones.value) {
+            player.togglePlay(); // Pausar si ya está reproduciendo este álbum
+        } else {
+            player.setPlaylist(canciones.value); // Cargar toda la lista de reproducción
+            
+            // Verificar que la primera canción no se sobreponga
+            if (!player.currentSong || player.currentSong.id !== canciones.value[0].id) {
+                player.playSong(canciones.value[0], 0); // Reproducir desde la primera canción solo si no está ya en reproducción
+            }
+        }
+    };
+
+    const reproducirCancion = (cancion) => {
+        const index = canciones.value.findIndex(c => c.id === cancion.id);
+        player.setPlaylist(canciones.value); // Asegura que todas las canciones del álbum están en la lista
+        player.playSong(cancion, index);
+    };
+
+    const mostrarListaCanciones = (cancion) => {
+        event.stopPropagation();
+        cancionParaCompartir.value = cancion
+    }
 
     onMounted(async () => {
         try {
@@ -169,13 +203,13 @@
 
         esFavoritoLista.value = await esFavorito(listaId.value);
 
-        // try {
-        //     const response = await axios.get(`/api/listas/${listaId.value}/canciones`);
-        //     canciones.value = response.data.data;
-        //     console.log(canciones.value);
-        // } catch (error) {
-        //     console.error('Error encontrando las canciones:', error);
-        // }
+         try {
+             const response = await axios.get(`/api/listas/${listaId.value}/canciones`);
+             canciones.value = response.data.data;
+             console.log(canciones.value);
+        } catch (error) {
+             console.error('Error encontrando las canciones:', error);
+        }
     });
 
     function getImageUrl(lista) {
