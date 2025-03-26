@@ -92,5 +92,9 @@ Route::post('listas/update/{id}', [ListaController::class,'update']);
 Route::get('buscador', [BuscarController::class, 'buscar']);
 
 
-Route::post('/like/cancion', [LikeController::class, 'likeCancion']);
-Route::get('/canciones/favoritos', [LikeController::class, 'obtenerCancionesFav']);
+Route::post('/like/cancion/{id_cancion}', [LikeController::class, 'toggleLikeCancion']);
+Route::get('/cancion/likes', [LikeController::class, 'cancionesFavoritas']);
+
+Route::post('/like/album/{idAlbum}', [LikeController::class, 'toggleLikeAlbum']);
+Route::get('/album/favorito/{idAlbum}', [LikeController::class, 'esAlbumFavorito']);
+

@@ -9,50 +9,70 @@ use Auth;
 
 class LikeController extends Controller
 {
-    public function likeCancion(Request $request)
-{
-    $request->validate([
-        'id_cancion' => 'required|exists:canciones,id',
-        'orden' => 'required|integer', 
-    ]);
 
-    $user = Auth::user(); 
-
-    $cancionFavorita = CancionFavorita::where('id_cancion', $request->id_cancion)
-                                      ->where('id_usuario', $user->id)
-                                      ->first();
-
-    if ($cancionFavorita) {
-        CancionFavorita::where('id_cancion', $request->id_cancion)
-                      ->where('id_usuario', $user->id)
-                      ->delete();
-        return response()->json(['message' => 'Canción eliminada de favoritos'], 200);
-    }
-
-    // Si no existe, crear el registro
-    CancionFavorita::create([
-        'id_cancion' => $request->id_cancion,
-        'id_usuario' => $user->id, 
-        'orden' => $request->orden, 
-    ]);
-
-    return response()->json(['message' => 'Canción agregada a tus favoritos'], 200);
-}
-
-
-    public function obtenerCancionesFav()
+    public function cancionesFavoritas()
     {
         $user = Auth::user();
-        $favoritos = CancionFavorita::where('id_usuario', $user->id)->pluck('id_cancion');
-
-        if ($favoritos->isEmpty()) {
-            return response()->json([], 200);
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
         }
 
-        return response()->json($favoritos, 200);
+        return response()->json([
+            'favoritos' => $user->cancionesFavoritas()->pluck('canciones.id') 
+        ]);
     }
-    
 
+
+    public function toggleLikeCancion($id_cancion)
+    {
+        $user = Auth::user(); 
+        
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
+        }
+        
+        $user->cancionesFavoritas()->toggle($id_cancion);
+
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Like actualizado correctamente',
+            'favoritos' => $user->cancionesFavoritas()->pluck('id') 
+        ]);
+    }
+
+    public function toggleLikeAlbum($id_album)
+    {
+        $user = Auth::user(); 
+        
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
+        }
+        
+        $user->albumesFavoritos()->toggle($id_album);
+
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Like actualizado correctamente',
+            'favoritos' => $user->albumesFavoritos()->pluck('id') 
+        ]);
+    }
+
+    public function esAlbumFavorito($id_album)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
+        }
+
+        $esFavorito = $user->albumesFavoritos()->where('albums.id', $id_album)->exists();
+
+        return response()->json([
+            'es_favorito' => $esFavorito
+        ]);
+    }
 
 
 }

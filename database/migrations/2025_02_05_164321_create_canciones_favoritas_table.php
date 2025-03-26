@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('canciones_favoritas', function (Blueprint $table) {
+            $table->id();
+
             $table->unsignedBigInteger('id_cancion');
             $table->unsignedBigInteger('id_usuario');
-            $table->integer('orden');
             $table->timestamps();
         
-            $table->primary(['id_cancion', 'id_usuario']);
             
             $table->foreign('id_cancion')->references('id')->on('canciones')->cascadeOnDelete();
             $table->foreign('id_usuario')->references('id')->on('users')->cascadeOnDelete();

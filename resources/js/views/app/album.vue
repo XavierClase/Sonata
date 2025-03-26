@@ -19,7 +19,11 @@
                     <p>{{ album?.duracion_total }}</p>
                 </span>
             </div>
-            <i :class="'pi pi-heart'" style="font-size: 2.4rem"></i>
+            <i 
+                :class="esFavoritoAlbum ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                style="font-size: 2.4rem; cursor: pointer"
+                @click="likeAlbum(album?.id, $event)"
+            ></i>
         </div>
 
         <!-- Botón de Reproducción -->
@@ -77,12 +81,21 @@
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { usePlayerStore } from "@/store/player";
+    import { useLikeAlbum } from "@/composables/likes.js";
 
     const player = usePlayerStore();
     const route = useRoute();
     const albumId = ref(route.params.id);
     const album = ref(null);
     const canciones = ref(null);
+    const { favoritos, toggleLike, esFavorito } = useLikeAlbum();
+    const esFavoritoAlbum = ref(false);
+
+    const likeAlbum = async (idAlbum, event) => {
+        event.stopPropagation();
+        await toggleLike(idAlbum);
+        esFavoritoAlbum.value = esFavorito(albumId.value); // Usar el Set de favoritos para determinar si es favorito
+    };
 
     // Estado reactivo para detectar si se está reproduciendo una canción
     const isPlaying = computed(() => player.isPlaying);
@@ -123,6 +136,14 @@
         } catch (error) {
             console.error('Error fetching canciones:', error);
         }
+
+        
+        esFavoritoAlbum.value = await esFavorito(albumId.value); // Esperar la respuesta
+
+        
+
+        console.log("a? ",esFavoritoAlbum.value);
+
     });
 
     // Función para obtener la URL de la imagen
@@ -130,6 +151,7 @@
         return new URL(album?.portada, import.meta.url).href;
     }
 </script>
+
 
 <style scoped>
     .row {

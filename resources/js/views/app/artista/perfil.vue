@@ -3,7 +3,7 @@
     <div class="perfil-artista-banner">
         <span>
             <div class="perfil-artista-banner-img">
-                <img :src="getImagePerfilUrl(user)" />
+                <img :src="getImageUrl(user?.avatar)" />
             </div>
             <h1>
                 {{ user?.name }}
@@ -25,35 +25,32 @@
         <div class="col-md-7 perfil-artista-medio-populares">
             <h2>Canciones populares</h2>    
             <div class="canciones-populares">
-        <div v-for="(cancion, index) in populares" :key="cancion.id" 
-                class="cancion-popular" 
-                @click="reproducirCancion(cancion)">
-                
-                <span class="cancion-popular-span1 col-md-2">
-                    <p class="num-cancion-popular">{{ index + 1 }}</p> 
-                    <img :src="getImageAlbumUrl(cancion)" />
-                </span>
-                <span class="cancion-popular-span2 col-md-5">
-                    <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
-                    <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
-                </span>
-                <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
-                <i
-                    :class="esFavorita(cancion.id) ? 'pi pi-heart-fill text-red-500' : 'pi pi-heart col-md-1'"
-                    @click="likeCancion(cancion.id)"
-                ></i>
-
-                <i class="pi pi-plus col-md-1"></i>
+                <div v-for="(cancion, index) in populares" :key="cancion.id" 
+                     class="cancion-popular" 
+                     @click="reproducirCancion(cancion)">
+                    <span class="cancion-popular-span1 col-md-2">
+                        <p class="num-cancion-popular">{{ index + 1 }}</p> 
+                        <img :src="getImageUrl(cancion.portada)" />
+                    </span>
+                    <span class="cancion-popular-span2 col-md-5">
+                        <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
+                        <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
+                    </span>
+                    <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
+                    <i
+                        :class="esFavorita(cancion.id) ? 'pi pi-heart-fill col-md-1' : 'pi pi-heart col-md-1'"
+                        @click="likeCancion(cancion.id, $event)"
+                    ></i>
+                    <i class="pi pi-plus col-md-1"></i>
+                </div>
             </div>
-        </div>
-
         </div>
 
         <div class="col-md-5 perfil-artista-medio-detalles">
             <h2>Detalles</h2>
             <div class="detalles-contenido">
                 <div class="detalles-img">
-                    <img :src="getImageDetalleslUrl(user)" alt="Imagen de detalles del usuario artista">
+                    <img :src="getImageUrl(user?.fotoDetalles)" alt="Imagen de detalles del usuario artista">
                 </div>
                 <div class="detalles-descripcion">
                     <p> {{ user?.descripcion }} </p>
@@ -72,7 +69,7 @@
                 :to="{ name: 'app.album', params: {id: album.id} }"
             >
                 <div class="album-img">
-                    <img :src="getImageAlbumUrl(album)" />
+                    <img :src="getImageUrl(album.portada)" />
                 </div>
                 <div class="album-detalles">
                     <h4>{{ album.nombre }}</h4>
@@ -90,13 +87,13 @@
             <div class="config-imagenes col-md-6">
                 <!-- Imagen de perfil -->
                 <div class="imagen-config-perfil">
-                    <img :src="PreviewImagenPerfil || getImagePerfilUrl(user) || '/images/placeholder1.jpg'" class="estilo_imagen">
-                    <input type="file" @change="manejarImagenPerfil" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+                    <img :src="PreviewImagenPerfil || getImageUrl(user?.avatar)" class="estilo_imagen">
+                    <input type="file" @change="(event) => manejarImagen(event, 'perfil')" accept="image/*" class="añadir_archivo">  
                 </div>
                 <!-- Imagen de detalles -->
                 <div class="imagen-config-detalles">
-                    <img :src="PreviewImagenDetalles || '/images/placeholder1.jpg'" class="estilo_imagen">
-                    <input type="file" @change="manejarImagenDetalles" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+                    <img :src="PreviewImagenDetalles || getImageUrl(user?.fotoDetalles)" class="estilo_imagen">
+                    <input type="file" @change="(event) => manejarImagen(event, 'detalles')" accept="image/*" class="añadir_archivo">  
                 </div>
             </div>
             <div class="col-md-6">
@@ -120,12 +117,13 @@
     </Dialog>
 </template>
 
+
 <script setup>
     import { ref, reactive, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
-    import { useLikes } from "@/composables/likeCancion.js";
+    import { useLikeCancion } from "@/composables/likes.js";
     import { usePlayerStore } from "@/store/player";
     const player = usePlayerStore(); 
 
@@ -135,12 +133,10 @@
         player.playSong(cancion, index); 
     };
 
-
-    const { likeCancion, esFavorita, cargarFavoritos } = useLikes();
+    const { favoritos, cargarFavoritos, toggleLike, esFavorita } = useLikeCancion();
 
     const visible = ref(false);
     const userPropio = authStore().user;
-    const isHovered = ref(false);
     const route = useRoute(); 
     const userId = ref(route.params.id);
     const user = ref(null);
@@ -150,172 +146,133 @@
     const PreviewImagenDetalles = ref(null); 
     const nombreUsuarioMod = ref('');
     const descripcionUsuarioMod = ref('');
-    const UsuarioMod = ref('');
 
     onMounted(async () => {
-        try {
-            const response = await axios.get(`/api/user/${userId.value}`);
-            user.value = response.data.data; 
-            nombreUsuarioMod.value = user.value.name;
-            descripcionUsuarioMod.value = user.value.descripcion;
-        } catch (error) {
-            console.error('Error recogiendo los datos del usuario:', error);
-        }
+        await fetchData(`/api/user/${userId.value}`, (data) => user.value = data);
+        await fetchData(`/api/canciones/populares/${userId.value}`, (data) => populares.value = data);
+        await fetchData(`/api/albumes/${userId.value}`, (data) => albums.value = data);
+        await cargarFavoritos();
 
-        try {
-            const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
-            populares.value = cancionResponse.data.data;
-            console.log(populares.value);
-        } catch (error) {
-            console.error('Error recogiendo las canciones populares del artista:', error);
-        }
-
-        try {
-            const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
-            albums.value = albumResponse.data.data;
-        } catch (error) {
-            console.error('Error recogiendo los albumes del artista:', error);
-        }
-
+        nombreUsuarioMod.value = user.value?.name || '';  
+        descripcionUsuarioMod.value = user.value?.descripcion || '';
     });
 
-    
+    // Función reutilizable para obtener datos de la API
+    const fetchData = async (url, setter) => {
+        try {
+            const response = await axios.get(url);
+            setter(response.data.data);
+        } catch (error) {
+            console.error(`Error al obtener los datos desde ${url}:`, error);
+        }
+    };
+
+    const likeCancion = async (idCancion, event) => {
+        event.stopPropagation();
+        await toggleLike(idCancion);
+        await cargarFavoritos();
+    };
+
+    // Función generalizada para obtener URLs de imágenes
+    const getImageUrl = (path) => {
+        return path ? new URL(path, import.meta.url).href : '/images/placeholder1.jpg';
+    };
+
+    // Función generalizada para manejar imágenes
+    const manejarImagen = (event, tipo) => {
+        const file = event.target.files[0];
+        if (file) {
+            const previewKey = tipo === 'perfil' ? PreviewImagenPerfil : PreviewImagenDetalles;
+            const imagenDataKey = tipo === 'perfil' ? imagenDataPerfil : imagenDataDetalles;
+
+            // Revocar la URL anterior si existe
+            if (previewKey.value) {
+                URL.revokeObjectURL(previewKey.value);
+            }
+
+            // Crear nueva vista previa y asignar el archivo
+            imagenDataKey.portada = file;
+            previewKey.value = URL.createObjectURL(file);
+        }
+    };
 
 
-
-    
-
-
-    function getImageAlbumUrl(album) {
-        let image = album.portada;
-        return new URL(image, import.meta.url).href;
-    }
-
-    function getImagePerfilUrl(user) {
-        let image = user?.avatar;
-        return new URL(image, import.meta.url).href;
-    }
-
-    function getImageDetalleslUrl(user) {
-        let image = user?.fotoDetalles;
-        return new URL(image, import.meta.url).href;
-    }
-
+    // Datos reactivos para las imágenes
     const imagenDataPerfil = reactive({ portada: null });
     const imagenDataDetalles = reactive({ portada: null });
 
-    const manejarImagenPerfil = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (PreviewImagenPerfil.value) {
-                URL.revokeObjectURL(PreviewImagenPerfil.value);
-            }
-            imagenDataPerfil.portada = file;
-            PreviewImagenPerfil.value = URL.createObjectURL(file); 
-        }
-    };
-
-    const manejarImagenDetalles = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (PreviewImagenDetalles.value) {
-                URL.revokeObjectURL(PreviewImagenDetalles.value);
-            }
-            imagenDataDetalles.portada = file;
-            PreviewImagenDetalles.value = URL.createObjectURL(file); 
-        }
-    };
-
-    const guardarCambios = async () => {
-        if (imagenDataPerfil.portada) {
+    // Función para actualizar imágenes
+    const actualizarImagen = async (imagenData, endpoint, key) => {
+        if (imagenData.portada) {
             let formData = new FormData();
-            formData.append('id', userPropio.id); 
-            formData.append('picture', imagenDataPerfil.portada);
+            formData.append('id', userPropio.id);
+            formData.append('picture', imagenData.portada);
 
             try {
-                const response = await axios.post('/api/users/updateimg', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                const response = await axios.post(endpoint, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
                 });
 
-                if (response.data && response.data.media.length > 0) {
-                    const nuevaImagen = response.data.media[0].original_url;
-                    PreviewImagenPerfil.value = nuevaImagen;
-                    user.value.avatar = nuevaImagen; 
+                const nuevaImagen = response.data[key];
+                if (nuevaImagen) {
+                    imagenData.portada = nuevaImagen;
+                    user.value[key] = nuevaImagen;
                 }
-
-                console.log("Imagen actualizada correctamente", response.data);
             } catch (error) {
-                console.error("Error al actualizar la imagen:", error);
+                console.error(`Error al actualizar la imagen en ${endpoint}:`, error);
             }
+        }
+    };
+
+    // Función para guardar los cambios en el perfil
+    const guardarCambios = async () => {
+        if (imagenDataPerfil.portada) {
+            await actualizarImagen(imagenDataPerfil, '/api/users/updateimg', 'avatar');
         }
 
         if (imagenDataDetalles.portada) {
-            let formData = new FormData();
-            formData.append('id', userPropio.id); 
-            formData.append('picture', imagenDataDetalles.portada);
-
-            try {
-                const response = await axios.post('/api/users/updateimgdetalles', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-
-                if (response.data) {
-                    const nuevaImagen = response.data.fotoDetalles;
-                    if (nuevaImagen) {
-                        PreviewImagenDetalles.value = nuevaImagen;
-                        user.value.fotoDetalles = nuevaImagen;
-                    }
-                }
-
-                console.log("Imagen de detalles actualizada correctamente", response.data);
-            } catch (error) {
-                console.error("Error al actualizar la imagen de detalles:", error);
-            }
+            await actualizarImagen(imagenDataDetalles, '/api/users/updateimgdetalles', 'fotoDetalles');
         }
+
 
         if (nombreUsuarioMod.value !== user.value.name || descripcionUsuarioMod.value !== user.value.descripcion) {
             try {
-                console.log("Datos enviados:", { 
-                    name: nombreUsuarioMod.value,
-                    descripcion: descripcionUsuarioMod.value
-                }); 
-
-                const response = await axios.put(`/api/users/${userId.value}`, {
+                await axios.put(`/api/users/${userId.value}`, {
                     name: nombreUsuarioMod.value,
                     descripcion: descripcionUsuarioMod.value
                 });
 
                 user.value.name = nombreUsuarioMod.value;
                 user.value.descripcion = descripcionUsuarioMod.value;
-                userPropio.name = nombreUsuarioMod.value;  
-
-                console.log("Datos actualizados correctamente", response.data);
+                userPropio.name = nombreUsuarioMod.value;
             } catch (error) {
                 console.error("Error al actualizar los datos del usuario:", error);
             }
         }
 
-        visible.value = false; 
-        await fetchUserData(); 
+        visible.value = false;
+        await fetchUserData();
+
+        // Forzar actualización de la imagen en la vista
+        PreviewImagenPerfil.value = null;
+        PreviewImagenDetalles.value = null;
     };
 
 
+
+    // Función para refrescar los datos del usuario
     const fetchUserData = async () => {
         try {
             const response = await axios.get(`/api/user/${userId.value}`);
             user.value = response.data.data;
         } catch (error) {
             console.error('Error al actualizar los datos del usuario:', error);
-            window.location.reload(); 
+            window.location.reload();
         }
     };
-
-
 </script>
+
+
 
 
 <style scoped>
@@ -423,6 +380,7 @@
     }
 
     .cancion-popular-span1 {
+        padding-left: 15px;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -460,7 +418,7 @@
         font-size: 1.2rem;
     }
 
-    .pi-heart {
+    .pi-heart, .pi-heart-fill {
         font-size: 1.5rem;
         z-index: 99;
     }

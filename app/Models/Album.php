@@ -32,10 +32,12 @@ class Album extends Model implements HasMedia
                     ->orderBy('detalles_albums.orden');
     }
     
-    public function favorito()
+    public function usuariosQueLaTienenComoFavorita()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'albumes_favoritos', 'id_album', 'id_usuario')
+            ->withTimestamps();
     }
+
 
     public function registerMediaCollections(): void
     {

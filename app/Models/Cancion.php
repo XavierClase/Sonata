@@ -38,12 +38,12 @@ class Cancion extends Model implements HasMedia
     }
     
 
-    public function usuariosFavoritos()
+    public function usuariosQueLaTienenComoFavorita()
     {
         return $this->belongsToMany(User::class, 'canciones_favoritas', 'id_cancion', 'id_usuario')
-                    ->withPivot('orden')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
+
 
 
     public function registerMediaCollections(): void
