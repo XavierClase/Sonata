@@ -25,7 +25,11 @@
                 </span>
                 <p class="lista-descripcion">{{ lista?.descripcion }}</p>
             </div>
-            <i :class="'pi pi-heart'" style="font-size: 2.4rem"v-if="userPropio?.name != lista?.creador" ></i>
+            <i 
+                :class="esFavoritoLista ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                style="font-size: 2.4rem; cursor: pointer"
+                @click="likeLista(lista?.id, $event)"
+            ></i>
             <i 
                 :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
                 style="font-size: 2rem"
@@ -128,6 +132,8 @@
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
+    import { useLikeLista } from "@/composables/likes.js";
+
 
 
     const PreviewImagenLista = ref(null);
@@ -140,6 +146,14 @@
     const canciones = ref(null);
     const nombreListaMod = ref('');
     const descripcionListaMod = ref('');
+    const { favoritos, toggleLike, esFavorito } = useLikeLista();
+    const esFavoritoLista = ref(false);
+
+    const likeLista = async (idLista, event) => {
+        event.stopPropagation();
+        await toggleLike(idLista);
+        esFavoritoLista.value = !esFavoritoLista.value; // Cambia el estado manualmente
+    };
 
 
     onMounted(async () => {
@@ -151,6 +165,8 @@
         } catch (error) {
             console.error('Error encontrando la lista:', error);
         }
+
+        esFavoritoLista.value = await esFavorito(listaId.value);
 
         // try {
         //     const response = await axios.get(`/api/listas/${listaId.value}/canciones`);

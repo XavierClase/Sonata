@@ -34,9 +34,10 @@ class Lista extends Model implements HasMedia
                     ->orderBy('detalles_listas.orden');
     }
     
-    public function favorito()
+    public function usuariosQueLaTienenComoFavorita()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'listas_favoritas', 'id_lista', 'id_usuario')
+            ->withTimestamps();
     }
     
     public function registerMediaCollections(): void

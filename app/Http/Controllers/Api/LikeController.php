@@ -74,5 +74,38 @@ class LikeController extends Controller
         ]);
     }
 
+    public function toggleLikeLista($id_lista)
+    {
+        $user = Auth::user(); 
+        
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
+        }
+        
+        $user->listasFavoritas()->toggle($id_lista);
+
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Like actualizado correctamente',
+            'favoritos' => $user->albumesFavoritos()->pluck('id') 
+        ]);
+    }
+
+    public function esListaFavorita($id_lista)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no autenticado'], 401);
+        }
+
+        $esFavorito = $user->listasFavoritas()->where('listas.id', $id_lista)->exists();
+
+        return response()->json([
+            'es_favorito' => $esFavorito
+        ]);
+    }
+
 
 }

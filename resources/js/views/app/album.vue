@@ -138,11 +138,10 @@
         }
 
         
-        esFavoritoAlbum.value = await esFavorito(albumId.value); // Esperar la respuesta
+        esFavoritoAlbum.value = await esFavorito(albumId.value);
 
         
 
-        console.log("a? ",esFavoritoAlbum.value);
 
     });
 

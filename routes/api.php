@@ -100,3 +100,5 @@ Route::get('/cancion/likes', [LikeController::class, 'cancionesFavoritas']);
 Route::post('/like/album/{idAlbum}', [LikeController::class, 'toggleLikeAlbum']);
 Route::get('/album/favorito/{idAlbum}', [LikeController::class, 'esAlbumFavorito']);
 
+Route::post('/like/lista/{idLista}', [LikeController::class, 'toggleLikeLista']);
+Route::get('/lista/favorito/{idLista}', [LikeController::class, 'esListaFavorita']);
