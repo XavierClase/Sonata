@@ -109,9 +109,8 @@
                     v-if="userPropio?.name === lista?.creador" 
                     class="pi pi-times-circle" 
                     style="cursor: pointer; color: red;" 
-                    @click="eliminarCancionDeLista(cancion.id, $event)"
+                    @click="prepararEliminarCancion(cancion)"
                 ></i>
-
             </div>
         </div>
     </div>
@@ -141,17 +140,73 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2">
-                <Button type="button" label="Guardar" @click="enviarFormulario"></Button>
-                <Button type="button" label="Eliminar Lista" severity="danger" @click="eliminarLista"></Button>
+                <Button type="button" id="cancelarButton" label="Guardar" @click="enviarFormulario"></Button>
+                <Button 
+                    type="button" 
+                    id="eliminarButton" 
+                    label="Eliminar Lista" 
+                    severity="danger" 
+                    @click="prepararEliminarLista" 
+                ></Button>
             </div>
         </form>
     </Dialog>
+
+    <Dialog 
+        v-model:visible="mostrarConfirmacionEliminarCancion" 
+        modal 
+        header="Confirmar eliminación" 
+        class="confirmarEliminacion"
+    >
+        <p>¿Estás seguro de que quieres eliminar la canción "{{ selectedCancion?.nombre }}" de la lista?</p>
+        <p class="text-red-500">Esta acción no se puede deshacer.</p>
+        <div class="flex justify-end gap-2 mt-4">
+            <Button 
+                type="button" 
+                label="Cancelar" 
+                id="cancelarButton"
+                @click="mostrarConfirmacionEliminarCancion = false"
+            ></Button>
+            <Button 
+                type="button" 
+                label="Eliminar" 
+                id="eliminarButton" 
+                @click="confirmarEliminarCancion"
+            ></Button>
+        </div>
+    </Dialog>
+
+    <Dialog 
+        v-model:visible="mostrarConfirmacionEliminarLista" 
+        modal 
+        header="Confirmar eliminación de lista" 
+        class="confirmarEliminacion"
+    >
+        <p>¿Estás seguro de que quieres eliminar la lista "{{ lista?.nombre }}"?</p>
+        <p class="text-red-500">Esta acción no se puede deshacer y eliminará permanentemente la lista.</p>
+        <div class="flex justify-end gap-2 mt-4">
+            <Button 
+                type="button" 
+                label="Cancelar" 
+                class="boton_cancelar" 
+                @click="mostrarConfirmacionEliminarLista = false"
+            ></Button>
+            <Button 
+                type="button" 
+                label="Eliminar" 
+                severity="danger"
+                id="eliminarButton"  
+                @click="confirmarEliminarLista"
+            ></Button>
+        </div>
+    </Dialog>
+
 
 </template>
 
 <script setup>
     import { ref, reactive, onMounted, computed } from 'vue';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
     import { useLikeLista, useLikeCancion } from "@/composables/likes.js";
@@ -173,6 +228,12 @@
     const { favoritos, toggleLike, esFavorito } = useLikeLista();
     const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
     const esFavoritoLista = ref(false);
+
+     // Add router for navigation after deletion
+     const router = useRouter();
+
+    // New reactive state for list deletion confirmation
+    const mostrarConfirmacionEliminarLista = ref(false);
 
     const likeLista = async (idLista, event) => {
         event.stopPropagation();
@@ -303,21 +364,72 @@
         }
     };
 
-    const eliminarCancionDeLista = async (cancionId, event) => {
-        event.stopPropagation(); // Evita que se active la reproducción al hacer clic en eliminar
 
-        if (!confirm("¿Seguro que quieres eliminar esta canción de la lista?")) return;
+    // New reactive state for confirmation dialog
+    const mostrarConfirmacionEliminarCancion = ref(false);
+    const selectedCancion = ref(null);
+
+    // Modified method to prepare for song deletion
+    const prepararEliminarCancion = (cancion) => {
+        event.stopPropagation(); // Prevent song playback
+        selectedCancion.value = cancion;
+        mostrarConfirmacionEliminarCancion.value = true;
+    };
+
+    const prepararEliminarLista = () => {
+        // Close the edit modal first
+        visible.value = false;
+        
+        // Show the confirmation dialog
+        mostrarConfirmacionEliminarLista.value = true;
+    };
+
+    // Modified deletion method
+    const confirmarEliminarCancion = async () => {
+        if (!selectedCancion.value) return;
 
         try {
-            await axios.delete(`/api/listas/${listaId.value}/cancion/${cancionId}`);
-            canciones.value = canciones.value.filter(c => c.id !== cancionId); // Actualiza la lista localmente
+            await axios.delete(`/api/listas/${listaId.value}/cancion/${selectedCancion.value.id}`);
+            
+            // Remove the song from the local list
+            canciones.value = canciones.value.filter(c => c.id !== selectedCancion.value.id);
 
+            // Close the confirmation dialog
+            mostrarConfirmacionEliminarCancion.value = false;
+            
+            // Optional: Show a success message
             alert("Canción eliminada correctamente");
         } catch (error) {
             console.error("Error al eliminar la canción:", error);
             alert("No se pudo eliminar la canción");
         }
+
+        // Reset the selected song
+        selectedCancion.value = null;
     };
+
+    const confirmarEliminarLista = async () => {
+        try {
+            await axios.delete(`/api/listas/del/${listaId.value}`);
+            
+            // Close the confirmation dialog
+            mostrarConfirmacionEliminarLista.value = false;
+            
+            // Show success message
+            alert("Lista eliminada correctamente");
+            
+            // Redirect to a suitable page after deletion
+            // For example, might be a lists overview page or user profile
+            router.push('/listas');
+        } catch (error) {
+            console.error("Error al eliminar la lista:", error);
+            alert("No se pudo eliminar la lista");
+            
+            // Reopen the edit modal in case of error
+            visible.value = true;
+        }
+    };
+
 
 
     
@@ -338,7 +450,7 @@
 
     .lista-banner {
         height: 180px;
-        width: 90%;
+        width: 100%;
         background: linear-gradient(to bottom, #4f226530, #2622653d);
         display: flex;
         align-items: center;
@@ -400,6 +512,7 @@
     }
 
     .lista-banner-play {
+        margin-right: 120px;
         height: 100px;
         width: 100px;
     }
@@ -514,7 +627,7 @@
 
     .pi-times-circle {
         font-size: 1.2rem;
-        color: rgb(251, 1, 1);
+        color: #EF4444 !important;
         width: auto;
     }
 
@@ -585,4 +698,20 @@
         opacity: 0;
         cursor: pointer;
     }
+
+    #eliminarButton {
+        background-color: #EF4444 !important;
+    }
+
+    #cancelarButton {
+        background-color: #4B5563 !important;
+    }
+
+    .confirmarEliminacion {
+        background-color: #200834 !important;
+        border: 1px solid purple !important;
+        color: white !important;
+    }
+
+
 </style>

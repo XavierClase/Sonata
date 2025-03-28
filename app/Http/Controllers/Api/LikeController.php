@@ -3,12 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AlbumResource;
+use App\Http\Resources\CancionResource;
+use App\Http\Resources\ListaResource;
 use Illuminate\Http\Request;
-use App\Models\CancionFavorita;
 use Auth;
 
 class LikeController extends Controller
 {
+
+    public function getAlbumesFavoritos()
+    {
+        $user = Auth::user();
+
+        $albumesFavoritos = $user->albumesFavoritos()
+            ->with(['user', 'media']) 
+            ->get();
+
+        return AlbumResource::collection($albumesFavoritos);
+    }
+
+    public function getListasFavoritas()
+    {
+        $user = Auth::user();
+
+        $listasFavoritas = $user->listasFavoritas()
+            ->with(['user', 'media']) 
+            ->get();
+
+        return ListaResource::collection($listasFavoritas);
+    }
+
+
+    public function getCancionesFavoritas()
+    {
+        $user = Auth::user();
+    
+        // Cargamos las relaciones necesarias para el Resource
+        $cancionesFavoritas = $user->cancionesFavoritas()
+            ->with(['user', 'albums.media']) // Precargamos relaciones necesarias
+            ->get();
+        
+        return CancionResource::collection($cancionesFavoritas);
+
+    }
 
     public function cancionesFavoritas()
     {

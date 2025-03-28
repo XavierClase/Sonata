@@ -189,7 +189,7 @@
 
     .album-banner {
         height: 180px;
-        width: 90%;
+        width: 100%;
         background: linear-gradient(to bottom, #4f226530, #2622653d);
         display: flex;
         align-items: center;
@@ -249,6 +249,7 @@
     }
 
     .album-banner-play {
+        margin-right: 120px;
         height: 100px;
         width: 100px;
     }

@@ -95,11 +95,14 @@ Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class,
 Route::get('buscador', [BuscarController::class, 'buscar']);
 
 
+Route::get('/mostrar/cancion/likes', [LikeController::class, 'getCancionesFavoritas']);
 Route::post('/like/cancion/{id_cancion}', [LikeController::class, 'toggleLikeCancion']);
 Route::get('/cancion/likes', [LikeController::class, 'cancionesFavoritas']);
 
+Route::get('/mostrar/album/likes', [LikeController::class, 'getAlbumesFavoritos']);
 Route::post('/like/album/{idAlbum}', [LikeController::class, 'toggleLikeAlbum']);
 Route::get('/album/favorito/{idAlbum}', [LikeController::class, 'esAlbumFavorito']);
 
+Route::get('/mostrar/lista/likes', [LikeController::class, 'getListasFavoritas']);
 Route::post('/like/lista/{idLista}', [LikeController::class, 'toggleLikeLista']);
 Route::get('/lista/favorito/{idLista}', [LikeController::class, 'esListaFavorita']);

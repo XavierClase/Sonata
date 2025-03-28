@@ -13,10 +13,33 @@
 
     <div class="biblioteca-content">
         <div class="biblioteca-tusListas">
+            <router-link :to="{ name: 'app.likes' }" class="biblioteca_tarjeta">
+                <img src="images/imgLikes.webp" class="imagen_caja ">
+                <p>Me Gustas</p>
+            </router-link>
             <router-link :to="{ name: 'app.lista', params: {id: lista.id} }" class="biblioteca_tarjeta" v-for="(lista, index) in listas" :key="lista.id">
                 <img :src="getImageUrl(lista)" :alt="lista.nombre" class="imagen_caja">
                 <p>{{ lista.nombre }}</p>
             </router-link>
+        </div>
+
+        
+        <div class="biblioteca-favoritos">
+            <h2>Listas Favoritas</h2>
+            <div class="bliblioteca-favoritos-tarjetas">
+                <router-link :to="{ name: 'app.lista', params: {id: lista.id} }" class="biblioteca_tarjeta" v-for="(lista, index) in listasFavoritas" :key="lista.id">
+                    <img :src="getImageUrl(lista)" :alt="lista.nombre" class="imagen_caja">
+                    <p>{{ lista.nombre }}</p>
+                </router-link>
+            </div>
+
+            <h2>Álbumes Favoritos</h2>
+            <div class="bliblioteca-favoritos-tarjetas">
+                <router-link :to="{ name: 'app.album', params: {id: album.id} }" class="biblioteca_tarjeta" v-for="(album, index) in albumesFavoritos" :key="album.id">
+                    <img :src="getImageUrl(album)" :alt="album.nombre" class="imagen_caja">
+                    <p>{{ album.nombre }}</p>
+                </router-link>
+            </div> 
         </div>
     </div>
 
@@ -57,24 +80,23 @@
     import { ref, reactive, computed, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
-    import { authStore } from "@/store/auth.js";
+    import { datosBiblioteca } from "@/composables/biblioteca.js";
+
+    
+    const { getListasUsuario, listas, getListasFavs, listasFavoritas, getAlbumesFavs, albumesFavoritos } = datosBiblioteca();
+
+
 
     const visible = ref(false);
-    const userPropio = authStore().user;
     const isHovered = ref(false);    
     const PreviewImagenLista = ref(null); 
-    const listas = ref([]);
 
     const imagenDataPerfil = reactive({ portada: null });
 
     onMounted(async () => {
-        try {
-            const response = await axios.get(`/api/listas/${userPropio.id}`);
-            listas.value = response.data.data; 
-
-        } catch (error) {
-            console.error('Error encontrando listas:', error);
-        }
+        await getListasUsuario();
+        await getListasFavs();
+        await getAlbumesFavs();
     });
 
     function getImageUrl(lista) {
@@ -176,13 +198,17 @@
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: space-between;
         color: white;
+    }
+
+    .biblioteca-top h1 {
+        margin-left: 90px;
     }
 
     .pi-plus {
         color: white;
-        margin: 20px;
+        margin-right: 100px;
     }
 
     .pi:hover {
@@ -199,6 +225,22 @@
 
     .biblioteca-tusListas {
         width: 85%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 50px;
+    }
+
+    .biblioteca-favoritos {
+        width: 85%;
+        padding-bottom: 20px;
+    }
+
+    .biblioteca-favoritos h2 {
+        padding-top: 60px;
+    }
+
+    .bliblioteca-favoritos-tarjetas {
+        width: 100%;
         display: flex;
         flex-wrap: wrap;
         gap: 50px;

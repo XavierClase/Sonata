@@ -4,14 +4,31 @@ import { authStore } from "@/store/auth.js";
 
 export function useLikeCancion() {
     const store = authStore(); 
-    const cancionesFaoritas = ref(new Set()); 
+    const cancionesFavoritas = ref(new Set()); 
+    const cancionesFavoritasMostrar = ref([]);
+
+    const mostrarFavoritosCanciones = async () => {
+        if (!store.user) return;
+        
+        try {
+            const response = await axios.get("/api/mostrar/cancion/likes");
+            console.log("Response:", response); // Verifica la respuesta de la API
+            cancionesFavoritasMostrar.value = response.data.data;  // Asegúrate de que `data` contiene lo esperado
+            console.log("favs: ", cancionesFavoritasMostrar.value);
+        } catch (error) {
+            console.error("Error al cargar favoritos", error);
+        }
+    };
+    
+
+    
 
     const cargarFavoritosCanciones = async () => {
         if (!store.user) return;
 
         try {
             const response = await axios.get("/api/cancion/likes");
-            cancionesFaoritas.value = new Set(response.data.favoritos); 
+            cancionesFavoritas.value = new Set(response.data.favoritos); 
         } catch (error) {
             console.error("Error al cargar favoritos", error);
         }
@@ -25,17 +42,19 @@ export function useLikeCancion() {
 
         try {
             const response = await axios.post(`/api/like/cancion/${idCancion}`);
-            cancionesFaoritas.value = new Set(response.data.favoritos); 
+            cancionesFavoritas.value = new Set(response.data.favoritos); 
         } catch (error) {
             console.error("Error al dar/quitar like", error);
         }
     };
 
-    const esFavoritaCancion = (idCancion) => cancionesFaoritas.value.has(idCancion);
+    const esFavoritaCancion = (idCancion) => cancionesFavoritas.value.has(idCancion);
 
 
     return {
-        cancionesFaoritas,
+        mostrarFavoritosCanciones,
+        cancionesFavoritas,
+        cancionesFavoritasMostrar,
         cargarFavoritosCanciones,
         toggleLikeCancion,
         esFavoritaCancion,

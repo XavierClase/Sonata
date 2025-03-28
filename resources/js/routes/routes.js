@@ -234,6 +234,12 @@ export default [
                 meta: { breadCrumb: 'lista' }
             },
             {
+                name: 'app.likes',
+                path: 'likes',
+                component: () => import('../views/app/likes.vue'),
+                meta: { breadCrumb: 'likes' }
+            },
+            {
                 name: 'app.perfil',
                 path: 'perfil/:id',
                 component: () => import('../views/app/perfilUsuario.vue'),
