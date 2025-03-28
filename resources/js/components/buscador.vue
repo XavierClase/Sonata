@@ -50,7 +50,7 @@
                 <img :src="lista.portada" alt="Portada" class="imagen-resultado">
                 <div class="info-resultado">
                   <span class="titulo-resultado">{{ lista.nombre }}</span>
-                  <span class="subtitulo-resultado">Lista • {{ lista.canciones_count || 0 }} canciones</span>
+                  <span class="subtitulo-resultado">Lista • {{ lista.num_canciones || 0 }} canciones</span>
                 </div>
               </div>
             </li>
