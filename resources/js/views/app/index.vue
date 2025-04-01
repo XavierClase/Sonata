@@ -26,21 +26,19 @@
       <section class="section">
         <h2 class="titulo_seccion">Otras listas</h2>
         <div class="imagenes_contenedor">
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Recopilación jazz" class="imagen_caja ">
-            <p class="titulos_album ">Recopilación jazz</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Música para entrenar" class="imagen_caja ">
-            <p class="titulos_album ">Música para entrenar</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Canciones cine kinki" class="imagen_caja ">
-            <p class="titulos_album ">Canciones cine kinki</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Chill" class="imagen_caja ">
-            <p class="titulos_album ">Chill</p>
+          <div 
+            v-for="lista in randomListas" 
+            :key="lista.id" 
+            class="imagen_tarjeta cursor-pointer"
+            @click="irADetallesLista(lista.id)"
+          >
+            <img 
+              :src="lista.portada" 
+              :alt="lista.nombre" 
+              class="imagen_caja"
+            >
+            <p class="titulos_album">{{ lista.nombre }}</p>
+            <p class="text-sm text-gray-400">{{ lista.creador }}</p>
           </div>
         </div>
       </section>
@@ -48,21 +46,19 @@
       <section class="section">
         <h2 class="titulo_seccion">Otros álbumes</h2>
         <div class="imagenes_contenedor">
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Alcalá Norte" class="imagen_caja ">
-            <p class="titulos_album ">Alcalá Norte</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Artaud" class="imagen_caja ">
-            <p class="titulos_album ">Artaud</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Sistema de entretenimiento" class="imagen_caja ">
-            <p class="titulos_album ">Sistema de entretenimiento</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Inadaptados" class="imagen_caja ">
-            <p class="titulos_album ">Inadaptados</p>
+          <div 
+            v-for="album in randomAlbums" 
+            :key="album.id" 
+            class="imagen_tarjeta cursor-pointer"
+            @click="irADetallesAlbum(album.id)"
+          >
+            <img 
+              :src="album.portada || 'images/placeholder.jpg'" 
+              :alt="album.nombre" 
+              class="imagen_caja"
+            >
+            <p class="titulos_album">{{ album.nombre }}</p>
+            <p class="text-sm text-gray-400">{{ album.artista }}</p>
           </div>
         </div>
       </section>
@@ -70,32 +66,39 @@
       <section class="section">
         <h2 class="titulo_seccion">Otros artistas</h2>
         <div class="imagenes_contenedor">
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="La Banda Trapera Del Río" class="imagen_caja  artista_radius">
-            <p class="titulos_album ">La Banda Trapera Del Río</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="La Plata" class="imagen_caja  artista_radius">
-            <p class="titulos_album ">La Plata</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Gorillaz" class="imagen_caja artista_radius">
-            <p class="titulos_album ">Gorillaz</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="BRUX" class="imagen_caja  artista_radius">
-            <p class="titulos_album ">BRUX</p>
+          <div v-for="artist in randomArtistas" :key="artist.id" class="imagen_tarjeta"
+          @click="irAPerfilArtista(artist.id)">
+            <img 
+              :src="artist.avatar || 'images/placeholder.jpg'" 
+              :alt="artist.name" 
+              class="imagen_caja artista_radius"
+            >
+            <p class="titulos_album">{{ artist.name }}</p>
           </div>
         </div>
       </section>
+
     </div>
   </div>
 </template>
 
 
-<script>
+<script setup>
+import { onMounted } from 'vue';
+import { useHome } from '@/composables/home.js';
 
+const { randomArtistas, fetchRandomArtistas, irAPerfilArtista, randomAlbums, fetchRandomAlbums, irADetallesLista, fetchRandomListas, randomListas, irADetallesAlbum } = useHome(); 
+
+
+
+onMounted(() => {
+  fetchRandomListas();
+  fetchRandomArtistas();
+  fetchRandomAlbums();
+});
 </script>
+
+
 
 <style scoped>
 .contenedor_sonata {
@@ -146,11 +149,11 @@
   
 }
 
-
 .imagen_tarjeta {
   cursor: pointer;
   transition: all 0.3s ease;
-  max-width: 220px; 
+  min-width: 220px; 
+  max-width: 220px;
 }
 
 .imagen_tarjeta:hover {
@@ -165,6 +168,7 @@
   margin-bottom: 10px; 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
+
 
 
 .artista_radius {

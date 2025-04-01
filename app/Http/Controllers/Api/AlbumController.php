@@ -65,6 +65,8 @@ class AlbumController extends Controller
             ], 500);
         }
     }
+
+
     
     /**
      * Recibir los datos de un álbum por su id.
@@ -233,4 +235,14 @@ class AlbumController extends Controller
             ], 500);
         }
     }
+
+    public function obtenerAlbumsAleatorios()
+    {
+        $albumes = Album::with(['user', 'media'])
+            ->get()
+            ->shuffle()
+            ->take(4);
+        return AlbumResource::collection($albumes);
+    }
+    
 }

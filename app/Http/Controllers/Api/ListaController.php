@@ -257,4 +257,16 @@ class ListaController extends Controller
     }
 
 
+    public function obtenerListasAleatorias()
+    {
+        $listas = Lista::with(['user', 'media'])
+            ->get()
+            ->shuffle()
+            ->take(4);
+
+            
+        return ListaResource::collection($listas);
+    }
+
+
 }
