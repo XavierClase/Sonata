@@ -87,14 +87,14 @@
 import { onMounted } from 'vue';
 import { useHome } from '@/composables/home.js';
 
-const { randomArtistas, fetchRandomArtistas, irAPerfilArtista, randomAlbums, fetchRandomAlbums, irADetallesLista, fetchRandomListas, randomListas, irADetallesAlbum } = useHome(); 
+const { randomArtistas, fetchRandomArtistas, irAPerfilArtista, randomAlbums, fetchRandomAlbums, irADetallesAlbum,randomListas,fetchRandomListas,irADetallesLista  } = useHome(); 
 
 
 
 onMounted(() => {
-  fetchRandomListas();
   fetchRandomArtistas();
   fetchRandomAlbums();
+  fetchRandomListas();
 });
 </script>
 

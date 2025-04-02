@@ -238,10 +238,9 @@ class ListaController extends Controller
                 ], 403);
             }
 
-            // Eliminar la canción de la lista
             $lista->canciones()->detach($cancion_id);
 
-            // Actualizar la duración total y el número de canciones
+        
             $this->actualizarDuracionLista($lista);
 
             return response()->json([
@@ -258,13 +257,13 @@ class ListaController extends Controller
 
 
     public function obtenerListasAleatorias()
+
     {
         $listas = Lista::with(['user', 'media'])
+
             ->get()
             ->shuffle()
             ->take(4);
-
-            
         return ListaResource::collection($listas);
     }
 

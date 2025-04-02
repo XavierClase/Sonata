@@ -69,7 +69,7 @@ Route::get('albumes/{id}/canciones', [AlbumController::class, 'getCancionesAlbum
 Route::put('albumes/{id}', [AlbumController::class, 'update']);
 Route::delete('albumes/{id}', [AlbumController::class, 'destroy']);
 Route::post('/albumes/{id}/portada', [AlbumController::class, 'updatePortada']);
-Route::get('/albums/aleatorios', [AlbumController::class, 'obtenerAlbumsAleatorios']);    
+Route::get('albums/aleatorios', [AlbumController::class, 'obtenerAlbumsAleatorios']);    
 
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 Route::post('canciones', [CancionController::class, 'store']);
@@ -81,7 +81,7 @@ Route::post('reproducciones/{id}', [CancionController::class, 'sumarRepro']);
 Route::get('user/{id}', [UserController::class, 'getUser']);
 Route::post('users/cambiarRol', [UserController::class, 'cambiarRol']);
 
-
+Route::get('listas/aleatorias', [ListaController::class, 'obtenerListasAleatorias']);
 Route::post('listas', [ListaController::class, 'store']);
 Route::get('listas/{id}', [ListaController::class, 'getListasUser']);
 Route::get('lista/{id}', [ListaController::class, 'show']);
@@ -92,7 +92,7 @@ Route::get('listas/usuario/{userId}', [ListaController::class, 'getListasUser'])
 Route::post('/listas/añadirCancion', [ListaController::class, 'añadirCancionALista']);
 Route::delete('listas/del/{id}', [ListaController::class, 'destroy']);
 Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class, 'eliminarCancionDeLista']);
-Route::get('/listas/aleatorias', [ListaController::class, 'obtenerListasAleatorias']);
+
 
 
 Route::get('buscador', [BuscarController::class, 'buscar']);

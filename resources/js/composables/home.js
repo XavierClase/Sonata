@@ -35,20 +35,22 @@ export function useHome() {
   const fetchRandomListas = async () => {
     try {
       const response = await axios.get('/api/listas/aleatorias');
-      console.log('Respuesta de listas:', response); 
       randomListas.value = response.data.data;
     } catch (error) {
       console.error('Error obteniendo listas aleatorias:', error);
     }
   };
+  
+  const irADetallesLista = (idLista) => {
+    router.push({ name: 'app.lista', params: { id: idLista } });
+  };
+
+
 
   const irAPerfilArtista = (idArtista) => { 
     router.push({ name: 'artista.perfil', params: { id: idArtista } });
   };
   
-const irADetallesLista = (idLista) => {
-    router.push({ name: 'app.lista', params: { id: idLista } });
-  };
 
 const irADetallesAlbum = (idAlbum) => {
     router.push({ name: 'app.album', params: { id: idAlbum } });
@@ -56,14 +58,14 @@ const irADetallesAlbum = (idAlbum) => {
 
 
   return {
-    randomListas,
     randomAlbums,
     randomArtistas,
+    randomListas,
     irADetallesAlbum,
-    fetchRandomAlbums,
     irADetallesLista,
-    fetchRandomListas,
+    fetchRandomAlbums,
     fetchRandomArtistas,
+    fetchRandomListas,
     irAPerfilArtista
   };
 }

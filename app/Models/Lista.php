@@ -10,7 +10,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Lista extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
-
+    protected $table = 'listas';
     protected $fillable = [
         'nombre',
         'descripcion',
