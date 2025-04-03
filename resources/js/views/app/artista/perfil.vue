@@ -129,22 +129,12 @@
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
     import { useLikeCancion } from "@/composables/likes.js";
-    import { usePlayerStore } from "@/store/player";
+    import { usePlayer } from "@/composables/usePlayer.js"; 
     import ListaCanciones from '@/components/listaCanciones.vue'
 
+    const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
 
-
-
-    const player = usePlayerStore(); 
-    const cancionParaCompartir = ref(null)
-    const reproducirCancion = (cancion) => {
-        const index = populares.value.findIndex(c => c.id === cancion.id);
-        player.setPlaylist(populares.value); 
-        player.playSong(cancion, index); 
-    };
-
-    const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
-    
+    const cancionParaCompartir = ref(null);
     const visible = ref(false);
     const userPropio = authStore().user;
     const route = useRoute(); 
@@ -157,6 +147,23 @@
     const nombreUsuarioMod = ref('');
     const descripcionUsuarioMod = ref('');
 
+    const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
+
+    const reproducirCancion = (cancion) => {
+        playSong(cancion, populares.value);
+    };
+
+    const mostrarListaCanciones = (cancion) => {
+        event.stopPropagation();
+        cancionParaCompartir.value = cancion;
+    };
+
+    const likeCancion = async (idCancion, event) => {
+        event.stopPropagation();
+        await toggleLikeCancion(idCancion);
+        await cargarFavoritosCanciones();
+    };
+
     onMounted(async () => {
         await fetchData(`/api/user/${userId.value}`, (data) => user.value = data);
         await fetchData(`/api/canciones/populares/${userId.value}`, (data) => populares.value = data);
@@ -167,7 +174,6 @@
         descripcionUsuarioMod.value = user.value?.descripcion || '';
     });
 
-    // Función reutilizable para obtener datos de la API
     const fetchData = async (url, setter) => {
         try {
             const response = await axios.get(url);
@@ -176,46 +182,29 @@
             console.error(`Error al obtener los datos desde ${url}:`, error);
         }
     };
-    const mostrarListaCanciones = (cancion) => {
-        event.stopPropagation();
-        cancionParaCompartir.value = cancion
-    }
 
-    const likeCancion = async (idCancion, event) => {
-        event.stopPropagation();
-        await toggleLikeCancion(idCancion);
-        await cargarFavoritosCanciones();
-    };
-
-    // Función generalizada para obtener URLs de imágenes
     const getImageUrl = (path) => {
         return path ? new URL(path, import.meta.url).href : '/images/placeholder1.jpg';
     };
 
-    // Función generalizada para manejar imágenes
     const manejarImagen = (event, tipo) => {
         const file = event.target.files[0];
         if (file) {
             const previewKey = tipo === 'perfil' ? PreviewImagenPerfil : PreviewImagenDetalles;
             const imagenDataKey = tipo === 'perfil' ? imagenDataPerfil : imagenDataDetalles;
 
-            // Revocar la URL anterior si existe
             if (previewKey.value) {
                 URL.revokeObjectURL(previewKey.value);
             }
 
-            // Crear nueva vista previa y asignar el archivo
             imagenDataKey.portada = file;
             previewKey.value = URL.createObjectURL(file);
         }
     };
 
-
-    // Datos reactivos para las imágenes
     const imagenDataPerfil = reactive({ portada: null });
     const imagenDataDetalles = reactive({ portada: null });
 
-    // Función para actualizar imágenes
     const actualizarImagen = async (imagenData, endpoint, key) => {
         if (imagenData.portada) {
             let formData = new FormData();
@@ -238,7 +227,6 @@
         }
     };
 
-    // Función para guardar los cambios en el perfil
     const guardarCambios = async () => {
         if (imagenDataPerfil.portada) {
             await actualizarImagen(imagenDataPerfil, '/api/users/updateimg', 'avatar');
@@ -247,7 +235,6 @@
         if (imagenDataDetalles.portada) {
             await actualizarImagen(imagenDataDetalles, '/api/users/updateimgdetalles', 'fotoDetalles');
         }
-
 
         if (nombreUsuarioMod.value !== user.value.name || descripcionUsuarioMod.value !== user.value.descripcion) {
             try {
@@ -267,14 +254,10 @@
         visible.value = false;
         await fetchUserData();
 
-        // Forzar actualización de la imagen en la vista
         PreviewImagenPerfil.value = null;
         PreviewImagenDetalles.value = null;
     };
 
-
-
-    // Función para refrescar los datos del usuario
     const fetchUserData = async () => {
         try {
             const response = await axios.get(`/api/user/${userId.value}`);

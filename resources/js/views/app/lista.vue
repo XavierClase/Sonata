@@ -201,44 +201,61 @@
         </div>
     </Dialog>
 
-
+    <Toast />
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted, computed } from 'vue';
+    import { ref, reactive, onMounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
     import { useLikeLista, useLikeCancion } from "@/composables/likes.js";
     import ListaCanciones from '@/components/listaCanciones.vue'
-    import { usePlayerStore } from "@/store/player";
+    import { usePlayer } from "@/composables/usePlayer.js"; // Importamos el composable
+    import { useToast } from 'primevue/usetoast';
 
-    const cancionParaCompartir = ref(null)
+    const toast = useToast();
+    const router = useRouter();
+    const route = useRoute(); 
+
+    const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
+
+    const cancionParaCompartir = ref(null);
     const PreviewImagenLista = ref(null);
     const visible = ref(false);
     const isHovered = ref(false);
     const userPropio = authStore().user;
-    const player = usePlayerStore();
-    const route = useRoute(); 
     const listaId = ref(route.params.id);
     const lista = ref(null);
     const canciones = ref(null);
     const nombreListaMod = ref('');
     const descripcionListaMod = ref('');
+    const nuevaImagenLista = reactive({ portada: null });
+    const mostrarConfirmacionEliminarLista = ref(false);
+    const mostrarConfirmacionEliminarCancion = ref(false);
+    const selectedCancion = ref(null);
+
     const { favoritos, toggleLike, esFavorito } = useLikeLista();
     const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
     const esFavoritoLista = ref(false);
 
-     // Add router for navigation after deletion
-     const router = useRouter();
+    const toggleAlbumPlayback = () => {
+        playPlaylist(canciones.value);
+    };
 
-    // New reactive state for list deletion confirmation
-    const mostrarConfirmacionEliminarLista = ref(false);
+    const reproducirCancion = (cancion) => {
+        playSong(cancion, canciones.value);
+    };
+
+    const mostrarListaCanciones = (cancion) => {
+        event.stopPropagation();
+        cancionParaCompartir.value = cancion;
+    };
 
     const likeLista = async (idLista, event) => {
         event.stopPropagation();
         await toggleLike(idLista);
-        esFavoritoLista.value = !esFavoritoLista.value; // Cambia el estado manualmente
+        esFavoritoLista.value = !esFavoritoLista.value;
     };
 
     const likeCancion = async (idCancion, event) => {
@@ -247,66 +264,10 @@
         await cargarFavoritosCanciones();
     };
 
-    const isPlaying = computed(() => player.isPlaying);
-
-
-    const toggleAlbumPlayback = () => {
-        if (isPlaying.value && player.currentPlaylist === canciones.value) {
-            player.togglePlay(); // Pausar si ya está reproduciendo este álbum
-        } else {
-            player.setPlaylist(canciones.value); // Cargar toda la lista de reproducción
-            
-            // Verificar que la primera canción no se sobreponga
-            if (!player.currentSong || player.currentSong.id !== canciones.value[0].id) {
-                player.playSong(canciones.value[0], 0); // Reproducir desde la primera canción solo si no está ya en reproducción
-            }
-        }
+    const getImageUrl = (lista) => {
+        const image = lista?.portada;
+        return new URL(image, import.meta.url).href;
     };
-
-    const reproducirCancion = (cancion) => {
-        const index = canciones.value.findIndex(c => c.id === cancion.id);
-        player.setPlaylist(canciones.value); // Asegura que todas las canciones del álbum están en la lista
-        player.playSong(cancion, index);
-    };
-
-    const mostrarListaCanciones = (cancion) => {
-        event.stopPropagation();
-        cancionParaCompartir.value = cancion
-    }
-
-    onMounted(async () => {
-        try {
-            const response = await axios.get(`/api/lista/${listaId.value}`);
-            lista.value = response.data.data; 
-            nombreListaMod.value = lista.value.nombre; 
-            descripcionListaMod.value = lista.value.descripcion; 
-        } catch (error) {
-            console.error('Error encontrando la lista:', error);
-        }
-
-        esFavoritoLista.value = await esFavorito(listaId.value);
-
-         try {
-             const response = await axios.get(`/api/listas/${listaId.value}/canciones`);
-             canciones.value = response.data.data;
-             console.log(canciones.value);
-        } catch (error) {
-             console.error('Error encontrando las canciones:', error);
-        }
-
-        await cargarFavoritosCanciones();
-
-    });
-
-    function getImageUrl(lista) {
-        let image
-
-        image = lista?.portada
-        
-        return new URL(image, import.meta.url).href
-    }
-    
-    const nuevaImagenLista = reactive({ portada: null });
 
     const manejarImagenLista = (event) => {
         const file = event.target.files[0];
@@ -343,96 +304,73 @@
             }
 
             visible.value = false;
-            console.log("Lista actualizada correctamente");
+            toast.add({ severity: 'success', summary: 'Éxito', detail: 'Lista actualizada correctamente', life: 3000 });
         } catch (error) {
             console.error("Error al actualizar la lista:", error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar la lista', life: 3000 });
         }
-    };
-
-    const eliminarLista = async () => {
-        if (!confirm("¿Estás seguro de que quieres eliminar esta lista?")) return;
-
-        try {
-            await axios.delete(`/api/listas/del/${listaId.value}`);
-            alert("Lista eliminada correctamente");
-
-            visible.value = false; // Cerrar modal
-            // Aquí puedes redirigir o actualizar la lista en la UI
-        } catch (error) {
-            console.error("Error al eliminar la lista:", error);
-            alert("Error al eliminar la lista");
-        }
-    };
-
-
-    // New reactive state for confirmation dialog
-    const mostrarConfirmacionEliminarCancion = ref(false);
-    const selectedCancion = ref(null);
-
-    // Modified method to prepare for song deletion
-    const prepararEliminarCancion = (cancion) => {
-        event.stopPropagation(); // Prevent song playback
-        selectedCancion.value = cancion;
-        mostrarConfirmacionEliminarCancion.value = true;
     };
 
     const prepararEliminarLista = () => {
-        // Close the edit modal first
         visible.value = false;
-        
-        // Show the confirmation dialog
         mostrarConfirmacionEliminarLista.value = true;
-    };
-
-    // Modified deletion method
-    const confirmarEliminarCancion = async () => {
-        if (!selectedCancion.value) return;
-
-        try {
-            await axios.delete(`/api/listas/${listaId.value}/cancion/${selectedCancion.value.id}`);
-            
-            // Remove the song from the local list
-            canciones.value = canciones.value.filter(c => c.id !== selectedCancion.value.id);
-
-            // Close the confirmation dialog
-            mostrarConfirmacionEliminarCancion.value = false;
-            
-            // Optional: Show a success message
-            alert("Canción eliminada correctamente");
-        } catch (error) {
-            console.error("Error al eliminar la canción:", error);
-            alert("No se pudo eliminar la canción");
-        }
-
-        // Reset the selected song
-        selectedCancion.value = null;
     };
 
     const confirmarEliminarLista = async () => {
         try {
             await axios.delete(`/api/listas/del/${listaId.value}`);
             
-            // Close the confirmation dialog
             mostrarConfirmacionEliminarLista.value = false;
-            
-            // Show success message
-            alert("Lista eliminada correctamente");
-            
-            // Redirect to a suitable page after deletion
-            // For example, might be a lists overview page or user profile
-            router.push('/listas');
+            toast.add({ severity: 'success', summary: 'Éxito', detail: 'Lista eliminada correctamente', life: 3000 });
+            router.push('/app/biblioteca');
         } catch (error) {
             console.error("Error al eliminar la lista:", error);
-            alert("No se pudo eliminar la lista");
-            
-            // Reopen the edit modal in case of error
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar la lista', life: 3000 });
             visible.value = true;
         }
     };
 
+    const prepararEliminarCancion = (cancion) => {
+        event.stopPropagation();
+        selectedCancion.value = cancion;
+        mostrarConfirmacionEliminarCancion.value = true;
+    };
 
+    const confirmarEliminarCancion = async () => {
+        if (!selectedCancion.value) return;
 
-    
+        try {
+            await axios.delete(`/api/listas/${listaId.value}/cancion/${selectedCancion.value.id}`);
+            
+            canciones.value = canciones.value.filter(c => c.id !== selectedCancion.value.id);
+            mostrarConfirmacionEliminarCancion.value = false;
+            toast.add({ severity: 'success', summary: 'Éxito', detail: 'Canción eliminada correctamente', life: 3000 });
+        } catch (error) {
+            console.error("Error al eliminar la canción:", error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar la canción', life: 3000 });
+        }
+
+        selectedCancion.value = null;
+    };
+
+    onMounted(async () => {
+        try {
+            const [listaResponse, cancionesResponse] = await Promise.all([
+                axios.get(`/api/lista/${listaId.value}`),
+                axios.get(`/api/listas/${listaId.value}/canciones`)
+            ]);
+            
+            lista.value = listaResponse.data.data;
+            canciones.value = cancionesResponse.data.data;
+            nombreListaMod.value = lista.value.nombre;
+            descripcionListaMod.value = lista.value.descripcion;
+            
+            esFavoritoLista.value = await esFavorito(listaId.value);
+            await cargarFavoritosCanciones();
+        } catch (error) {
+            console.error('Error cargando datos:', error);
+        }
+    });
 </script>
 
 <style scoped>

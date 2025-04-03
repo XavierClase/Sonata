@@ -85,19 +85,21 @@
 </template>
 
 <script setup>
-    import { ref, onMounted, computed } from 'vue';
+    import { ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
-    import { usePlayerStore } from "@/store/player";
     import { useLikeAlbum, useLikeCancion } from "@/composables/likes.js";
-    import ListaCanciones from '@/components/listaCanciones.vue'
+    import { usePlayer } from "@/composables/usePlayer.js";
+    import ListaCanciones from '@/components/listaCanciones.vue';
 
-    const cancionParaCompartir = ref(null)
-    const player = usePlayerStore();
+    const cancionParaCompartir = ref(null);
     const route = useRoute();
     const albumId = ref(route.params.id);
     const album = ref(null);
     const canciones = ref(null);
+
+    const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
+
     const { favoritos, toggleLike, esFavorito } = useLikeAlbum();
     const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
     const esFavoritoAlbum = ref(false);
@@ -105,7 +107,7 @@
     const likeAlbum = async (idAlbum, event) => {
         event.stopPropagation();
         await toggleLike(idAlbum);
-        esFavoritoAlbum.value = esFavorito(albumId.value); // Usar el Set de favoritos para determinar si es favorito
+        esFavoritoAlbum.value = esFavorito(albumId.value);
     };
 
     const likeCancion = async (idCancion, event) => {
@@ -114,60 +116,36 @@
         await cargarFavoritosCanciones();
     };
 
-    // Estado reactivo para detectar si se está reproduciendo una canción
-    const isPlaying = computed(() => player.isPlaying);
-
-    // Función para alternar la reproducción del álbum
     const toggleAlbumPlayback = () => {
-        if (isPlaying.value && player.currentPlaylist === canciones.value) {
-            player.togglePlay(); // Pausar si ya está reproduciendo este álbum
-        } else {
-            player.setPlaylist(canciones.value); // Cargar toda la lista de reproducción
-            
-            // Verificar que la primera canción no se sobreponga
-            if (!player.currentSong || player.currentSong.id !== canciones.value[0].id) {
-                player.playSong(canciones.value[0], 0); // Reproducir desde la primera canción solo si no está ya en reproducción
-            }
-        }
+        playPlaylist(canciones.value);
     };
-    
+
     const mostrarListaCanciones = (cancion) => {
         event.stopPropagation();
-        cancionParaCompartir.value = cancion
-    }
-
-    // Función para reproducir una canción específica al hacer clic
-    const reproducirCancion = (cancion) => {
-        const index = canciones.value.findIndex(c => c.id === cancion.id);
-        player.setPlaylist(canciones.value); // Asegura que todas las canciones del álbum están en la lista
-        player.playSong(cancion, index);
+        cancionParaCompartir.value = cancion;
     };
 
-    // Cargar datos del álbum y sus canciones
+    const reproducirCancion = (cancion) => {
+        playSong(cancion, canciones.value);
+    };
+
     onMounted(async () => {
         try {
-            const response = await axios.get(`/api/album/${albumId.value}`);
-            album.value = response.data.data;
+            const [albumResponse, cancionesResponse] = await Promise.all([
+                axios.get(`/api/album/${albumId.value}`),
+                axios.get(`/api/albumes/${albumId.value}/canciones`)
+            ]);
+            
+            album.value = albumResponse.data.data;
+            canciones.value = cancionesResponse.data.data;
+            
+            esFavoritoAlbum.value = await esFavorito(albumId.value);
+            await cargarFavoritosCanciones();
         } catch (error) {
-            console.error('Error fetching album:', error);
+            console.error('Error fetching data:', error);
         }
-
-        try {
-            const response = await axios.get(`/api/albumes/${albumId.value}/canciones`);
-            canciones.value = response.data.data;
-        } catch (error) {
-            console.error('Error fetching canciones:', error);
-        }
-
-        
-        esFavoritoAlbum.value = await esFavorito(albumId.value);
-        await cargarFavoritosCanciones();
-        
-
-
     });
 
-    // Función para obtener la URL de la imagen
     function getImageUrl(album) {
         return new URL(album?.portada, import.meta.url).href;
     }

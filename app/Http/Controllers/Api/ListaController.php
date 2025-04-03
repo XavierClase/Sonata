@@ -156,7 +156,7 @@ class ListaController extends Controller
         ->where('id_usuario', $userId)
         ->get();
 
-    return ListaResource::collection($listas);
+        return ListaResource::collection($listas);
     }   
 
     /**
