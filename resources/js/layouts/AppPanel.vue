@@ -36,6 +36,9 @@ const model = ref([
 
 <style lang="scss" scoped>
 
+.router-link-active {
+    font-weight: bold;
+}
 
 .h1_panel{
     font-size: 40px;

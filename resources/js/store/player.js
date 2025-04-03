@@ -12,6 +12,7 @@ export const usePlayerStore = defineStore("player", {
     duration: 0,
     isShuffle: false,
     isLoop: false,
+    volume: 0.2, // Añadido para mantener un estado de volumen consistente
     _mediaListenerActive: false
   }),
 
@@ -26,7 +27,11 @@ export const usePlayerStore = defineStore("player", {
       // Si es la misma canción y el sonido ya existe, solo reanudar
       if (this.currentSong?.id === song.id && this.sound) {
         if (!this.sound.playing()) {
-          console.log(" Reanudando en:", this.sound.seek());
+          const currentPosition = this.progress > 0 ? this.progress : 0;
+          console.log(" Reanudando en:", currentPosition);
+          
+          // IMPORTANTE: Primero hacer seek y luego reproducir
+          this.sound.seek(currentPosition);
           this.sound.play();
           this.isPlaying = true;
           requestAnimationFrame(this.updateProgress);
@@ -36,9 +41,12 @@ export const usePlayerStore = defineStore("player", {
 
       console.log("🔄 Cargando nueva canción...");
 
+      // Guardamos el volumen actual antes de limpiar
+      const currentVolume = this.sound ? this.sound.volume() : this.volume;
+
       // Limpiar el reproductor anterior completamente
       if (this.sound) {
-        this.sound.off(); // Eliminar todos los listeners
+        this.sound.off(); 
         this.sound.stop();
         this.sound.unload();
         this.sound = null;
@@ -50,6 +58,7 @@ export const usePlayerStore = defineStore("player", {
       this.sound = new Howl({
         src: [song.archivo],
         html5: true,
+        volume: currentVolume,
         onend: () => {
           console.log('Evento onend disparado', {
             isPlaying: this.isPlaying,
@@ -73,7 +82,12 @@ export const usePlayerStore = defineStore("player", {
           requestAnimationFrame(this.updateProgress);
         },
         onpause: () => {
-          console.log(" Pausada en:", this.sound.seek());
+          // Capturamos la posición exacta en el momento de la pausa
+          const exactPosition = this.sound.seek();
+          console.log(" Pausada en:", exactPosition);
+          
+          // Guardamos la posición actual en nuestro estado
+          this.progress = exactPosition;
           this.isPlaying = false;
         },
         onstop: () => {
@@ -93,21 +107,31 @@ export const usePlayerStore = defineStore("player", {
         soundExists: !!this.sound,
         soundPlaying: this.sound.playing(),
         currentSeek: this.sound.seek(),
+        storedProgress: this.progress
       });
 
       if (this.sound.playing()) {
-        console.log(" Pausando en:", this.sound.seek());
-        this.progress = this.sound.seek(); // Guardar posición actual
+        // Guardar posición antes de pausar
+        const exactPosition = this.sound.seek();
+        this.progress = exactPosition;
+        console.log(" Pausando en:", exactPosition);
         this.sound.pause();
         this.isPlaying = false;
       } else {
+        // Al reanudar, usar la posición guardada de manera explícita
         console.log(" Reanudando desde:", this.progress);
         
-        // Asegurar que se reanude desde la posición correcta
-        if (this.progress > 0) {
+        // CLAVE: Primero hacer seek, luego reproducir
+        // Verificamos si this.progress es válido
+        if (this.progress > 0 && this.progress < this.duration) {
           this.sound.seek(this.progress);
+        } else {
+          // Si no es válido, iniciamos desde 0
+          this.progress = 0;
+          this.sound.seek(0);
         }
         
+        // Ahora reproducimos
         this.sound.play();
         this.isPlaying = true;
         requestAnimationFrame(this.updateProgress);
@@ -122,7 +146,7 @@ export const usePlayerStore = defineStore("player", {
         do {
           console.log("Canción aleatoria");
           newIndex = Math.floor(Math.random() * this.playlist.length);
-        } while (newIndex === this.currentIndex);
+        } while (newIndex === this.currentIndex && this.playlist.length > 1);
     
         this.currentIndex = newIndex;
       } else {
@@ -167,6 +191,7 @@ export const usePlayerStore = defineStore("player", {
 
     updateProgress() {
       if (this.sound && this.sound.playing()) {
+        // Actualizar progress solo si estamos reproduciendo
         this.progress = this.sound.seek();
         requestAnimationFrame(this.updateProgress);
       }
@@ -174,9 +199,17 @@ export const usePlayerStore = defineStore("player", {
 
     setSeek(time) {
       if (this.sound) {
-        this.sound.seek(time);
-        this.progress = time;
+        // Aseguramos que time sea un valor válido dentro del rango de la canción
+        const validTime = Math.max(0, Math.min(time, this.duration));
+        
+        // Almacenamos el valor en el estado antes de aplicarlo
+        this.progress = validTime;
+        
+        // Aplicamos el seek al audio
+        this.sound.seek(validTime);
+        
         if (!this.isPlaying) {
+          // Si está pausado, mantener el estado de pausa
           this.sound.pause();
         } else {
           requestAnimationFrame(this.updateProgress);
@@ -187,12 +220,22 @@ export const usePlayerStore = defineStore("player", {
     setPlaylist(tracks) {
       // Comparación profunda para evitar actualizaciones innecesarias
       if (JSON.stringify(this.playlist) !== JSON.stringify(tracks)) {
-        this.playlist = [...tracks]; // Crear nueva copia
+        this.playlist = [...tracks];
         this.currentIndex = 0;
       }
       
       if (tracks.length && !this.sound) {
         this.playSong(tracks[0]);
+      }
+    },
+
+    setVolume(vol) {
+      // Guardamos el valor en el estado
+      this.volume = vol;
+      
+      // Si hay un sonido activo, aplicamos el volumen
+      if (this.sound) {
+        this.sound.volume(vol);
       }
     },
 

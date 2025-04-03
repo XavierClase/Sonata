@@ -8,6 +8,7 @@
             @mouseover="isHovered = true"
             @mouseleave="isHovered = false"
             @click="visible = true; resetFormulario()"
+            title="Crear una lista nueva"
         ></i>
     </div>
 
@@ -15,7 +16,7 @@
         <div class="biblioteca-tusListas">
             <router-link :to="{ name: 'app.likes' }" class="biblioteca_tarjeta">
                 <img src="images/imgLikes.webp" class="imagen_caja ">
-                <p>Me Gustas</p>
+                <p>Mis Favoritos</p>
             </router-link>
             <router-link :to="{ name: 'app.lista', params: {id: lista.id} }" class="biblioteca_tarjeta" v-for="(lista, index) in listas" :key="lista.id">
                 <img :src="getImageUrl(lista)" :alt="lista.nombre" class="imagen_caja">

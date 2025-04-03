@@ -100,8 +100,9 @@
                         <i
                             :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"
                             @click="likeCancion(cancion.id, $event)"
+                            title="Añadir la canción a favoritos"
                         ></i>
-                        <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)"></i>
+                        <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)" title="Añadir la canción a una lista"></i>
                     </span>
                 </div>
                 
@@ -110,6 +111,7 @@
                     class="pi pi-times-circle" 
                     style="cursor: pointer; color: red;" 
                     @click="prepararEliminarCancion(cancion)"
+                    title="Eliminar canción de la lista"
                 ></i>
             </div>
         </div>
@@ -144,9 +146,10 @@
                 <Button 
                     type="button" 
                     id="eliminarButton" 
-                    label="Eliminar Lista" 
+                    label="Eliminar" 
                     severity="danger" 
-                    @click="prepararEliminarLista" 
+                    @click="prepararEliminarLista"
+                    title="Eliminar la lista permanentemente"
                 ></Button>
             </div>
         </form>

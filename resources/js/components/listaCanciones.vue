@@ -11,9 +11,10 @@
     <div class="crear-lista-y-busqueda">
       <div class="crear-lista">
         <Button 
-          label="Crear Nueva Lista" 
+          label="Nueva Lista" 
           @click="mostrarModalCrearLista = true" 
           class="crear_album_boton"
+          title="Crear una lista nueva"
         />
       </div>
       <div class="busqueda-listas">
@@ -82,10 +83,11 @@
      
       <div class="añadir-cancion-seccion">
         <Button 
-        label="Añadir a Listas Seleccionadas" 
+        label="Añadir" 
         @click="agregarCancionAListas" 
         :disabled="listasSeleccionadas.length === 0"
         class="boton-añadir-cancion"
+        title="Añadir la canción a las listas seleccionadas"
         />
       </div>
 

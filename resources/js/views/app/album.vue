@@ -76,8 +76,9 @@
                     <i
                         :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"
                         @click="likeCancion(cancion.id, $event)"
+                        title="Añadir la canción a favoritos"
                     ></i>
-                    <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)"></i>
+                    <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)" title="Añadir la canción a una lista"></i>
                 </span>
             </div>
         </div>

@@ -67,7 +67,6 @@
 </template>
 
 <script setup>
-
     import axios from 'axios';
     import { ref, watch, onMounted, onUnmounted } from "vue";
     import { usePlayerStore } from "@/store/player";
@@ -93,12 +92,18 @@
         }
     });
 
-
     function getImageAlbumUrl(song) {
         return song?.portada ? song.portada : "/images/placeholder.jpg"; 
     }
 
     function handlePlayPause() {
+        // Capturar el estado actual para hacer debug si es necesario
+        console.log("Click en play/pause. Estado:", {
+            isPlaying: player.isPlaying,
+            progress: player.progress,
+            soundExists: !!player.sound
+        });
+        
         player.togglePlay();
     }
 
@@ -111,19 +116,20 @@
     }
 
     function setVolume() {
-        if (player.sound) {
-            player.sound.volume(volume.value);
-            updateVolumeStyle();
-        }
+        // Enviamos el valor al store para mantener consistencia
+        player.setVolume(volume.value);
+        updateVolumeStyle();
     }
 
     function startDragging() {
+        // Guardamos la posición actual al comenzar a arrastrar
         localProgress.value = player.progress;
         isDragging.value = true;
     }
 
     function stopDragging() {
         if (isDragging.value) {
+            // Al soltar, aplicamos la nueva posición
             player.setSeek(localProgress.value);
             isDragging.value = false;
         }
@@ -150,6 +156,15 @@
         }
     }
 
+    // Watch para sincronizar volumen con player store
+    watch(() => player.volume, (newVolume) => {
+        if (newVolume !== volume.value) {
+            volume.value = newVolume;
+            updateVolumeStyle();
+        }
+    });
+
+    // El resto de watchers
     watch(() => player.progress, () => {
         if (!isDragging.value) {
             updateProgressBar();
@@ -164,28 +179,31 @@
         updateProgressBar();
     });
 
-    watch(() => player.currentSong, () => {
-        if (player.sound && player.currentSong) {
-            player.sound.volume(volume.value);
-        }
-    });
-
     onMounted(() => {
-        if (player.sound) {
-            player.sound.volume(volume.value);
+        // Al montar, sincronizamos el volumen con el store
+        if (player.volume) {
+            volume.value = player.volume;
+        } else if (player.sound) {
+            // Si no hay volumen en store pero hay sonido, tomamos su volumen
+            volume.value = player.sound.volume();
         }
+        
+        player.setVolume(volume.value);
         updateVolumeStyle();
+        
         window.addEventListener('mouseup', stopDragging);
         
-        setInterval(() => {
+        // Verificación periódica de la sincronización de estado
+        const syncInterval = setInterval(() => {
             if (player.sound && player.sound.playing() !== player.isPlaying) {
                 player.isPlaying = player.sound.playing();
             }
         }, 1000);
-    });
-
-    onUnmounted(() => {
-        window.removeEventListener('mouseup', stopDragging);
+        
+        onUnmounted(() => {
+            window.removeEventListener('mouseup', stopDragging);
+            clearInterval(syncInterval);
+        });
     });
 </script>
 
@@ -426,12 +444,17 @@
     }
 
     .play-button {
-        background: linear-gradient(to right, #A855F7, #FF2A86);
+        background: linear-gradient(to left, #ab56f4, #ef70ba);
+        color: rgb(255, 255, 255);
         border: none;
         height: 70px;
         width: 70px;
         border-radius: 50px;
-        font-size: 2.3rem;
+        font-size: 2.5rem;
+        padding-left: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     

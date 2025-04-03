@@ -158,6 +158,11 @@ function getImageUrl() {
 </script>
 
 <style lang="scss" scoped>
+
+.topbar-link.router-link-active {
+    font-weight: bold;
+}
+
 .row {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
