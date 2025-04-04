@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ultimo_escuchado;
+use App\Http\Resources\UltimoEscuchadoResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,33 +14,14 @@ class UltimoEscuchadoController extends Controller
     {
         $userId = Auth::id();
         
-        // Obtener los últimos 4 elementos escuchados por el usuario, ordenados por fecha
+      
         $ultimosItems = Ultimo_escuchado::where('id_usuario', $userId)
-            ->with(['album', 'lista']) // Cargar relaciones
+            ->with(['album.user', 'lista.user']) 
             ->orderBy('ultima_reproduccion', 'desc')
             ->take(4)
-            ->get()
-            ->map(function ($item) {
-                if ($item->id_album) {
-                    return [
-                        'id' => $item->id_album,
-                        'nombre' => $item->album->nombre,
-                        'portada' => $item->album->portada,
-                        'artista' => $item->album->user->name,
-                        'tipo' => 'album'
-                    ];
-                } else {
-                    return [
-                        'id' => $item->id_lista,
-                        'nombre' => $item->lista->nombre,
-                        'portada' => $item->lista->portada,
-                        'creador' => $item->lista->user->name,
-                        'tipo' => 'lista'
-                    ];
-                }
-            });
+            ->get();
             
-        return response()->json(['data' => $ultimosItems]);
+        return UltimoEscuchadoResource::collection($ultimosItems);
     }
     
     public function store(Request $request)

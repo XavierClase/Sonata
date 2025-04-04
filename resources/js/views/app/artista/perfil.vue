@@ -151,8 +151,10 @@
     const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
 
     const reproducirCancion = (cancion) => {
-        playSong(cancion, populares.value);
+        playSong(cancion, populares.value, 'album', cancion.album_id);
     };
+
+    
 
     const mostrarListaCanciones = (cancion) => {
         event.stopPropagation();

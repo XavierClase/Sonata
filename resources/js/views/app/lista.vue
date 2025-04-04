@@ -45,7 +45,7 @@
                 @click="visible = true"
             ></i>
         </div>
-        <div class="lista-banner-play" @click="toggleAlbumPlayback">
+        <div class="lista-banner-play" @click="toggleListaPlayback">
             <svg  v-if="!isPlaying" viewBox="0 0 100 100">
                 <!-- Definición del degradado -->
                 <defs>
@@ -242,12 +242,12 @@
     const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
     const esFavoritoLista = ref(false);
 
-    const toggleAlbumPlayback = () => {
-        playPlaylist(canciones.value);
+    const toggleListaPlayback = () => {
+        playPlaylist(canciones.value, 'lista', lista.value.id);
     };
-
+    
     const reproducirCancion = (cancion) => {
-        playSong(cancion, canciones.value);
+     playSong(cancion, canciones.value, 'lista', lista.value.id);
     };
 
     const mostrarListaCanciones = (cancion) => {

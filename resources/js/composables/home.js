@@ -7,6 +7,7 @@ export function useHome() {
   const randomArtistas = ref([]);
   const randomAlbums = ref([]);
   const randomListas = ref([]);
+  const ultimosEscuchados = ref([]);
 
   const fetchRandomArtistas = async () => {
     try {
@@ -40,6 +41,26 @@ export function useHome() {
       console.error('Error obteniendo listas aleatorias:', error);
     }
   };
+
+
+  const fetchUltimosEscuchados = async () => {
+    try {
+      const response = await axios.get('/api/ultimo_escuchado');
+      ultimosEscuchados.value = response.data.data;
+      console.log('Últimos escuchados:', ultimosEscuchados.value);
+    } catch (error) {
+      console.error('Error obteniendo últimos escuchados:', error);
+    }
+  };;
+
+
+  const irADetalles = (item) => {
+    if (item.tipo === 'album') {
+      irADetallesAlbum(item.id);
+    } else {
+      irADetallesLista(item.id);
+    }
+  };
   
   const irADetallesLista = (idLista) => {
     router.push({ name: 'app.lista', params: { id: idLista } });
@@ -61,12 +82,15 @@ const irADetallesAlbum = (idAlbum) => {
     randomAlbums,
     randomArtistas,
     randomListas,
+    ultimosEscuchados,
     irADetallesAlbum,
     irADetallesLista,
     fetchRandomAlbums,
     fetchRandomArtistas,
     fetchRandomListas,
-    irAPerfilArtista
+    irAPerfilArtista,
+    fetchUltimosEscuchados,
+    irADetalles
   };
 }
 

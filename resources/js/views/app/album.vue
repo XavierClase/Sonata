@@ -117,8 +117,9 @@
         await cargarFavoritosCanciones();
     };
 
+
     const toggleAlbumPlayback = () => {
-        playPlaylist(canciones.value);
+        playPlaylist(canciones.value, 'album', album.value.id);
     };
 
     const mostrarListaCanciones = (cancion) => {
@@ -127,9 +128,9 @@
     };
 
     const reproducirCancion = (cancion) => {
-        playSong(cancion, canciones.value);
+     playSong(cancion, canciones.value, 'album', album.value.id);
     };
-
+    
     onMounted(async () => {
         try {
             const [albumResponse, cancionesResponse] = await Promise.all([

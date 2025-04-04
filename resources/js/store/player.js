@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { Howl } from "howler";
+import axios from "axios";
 
 export const usePlayerStore = defineStore("player", {
   state: () => ({
@@ -12,8 +13,10 @@ export const usePlayerStore = defineStore("player", {
     duration: 0,
     isShuffle: false,
     isLoop: false,
-    volume: 0.2, // Añadido para mantener un estado de volumen consistente
-    _mediaListenerActive: false
+    volume: 0.2, // Mantener un estado de volumen consistente
+    _mediaListenerActive: false,
+    currentPlaylistType: null, // 'album' o 'lista'
+    currentPlaylistId: null,
   }),
 
   actions: {
@@ -75,6 +78,9 @@ export const usePlayerStore = defineStore("player", {
           this.sound.play();
           this.isPlaying = true;
           requestAnimationFrame(this.updateProgress);
+          
+          // Registrar último escuchado cuando se carga completamente una canción
+          this.registrarUltimoEscuchado();
         },
         onplay: () => {
           console.log(" En reproducción:", song.id);
@@ -98,6 +104,33 @@ export const usePlayerStore = defineStore("player", {
 
       this._setupMediaListeners();
     },
+
+    // Nuevo método para registrar último escuchado
+    async registrarUltimoEscuchado() {
+      try {
+          const payload = {};
+          
+          // Caso 1: Si viene de una playlist (álbum o lista)
+          if (this.currentPlaylistType && this.currentPlaylistId) {
+              if (this.currentPlaylistType === 'album') {
+                  payload.id_album = this.currentPlaylistId; // ID del álbum completo
+              } else if (this.currentPlaylistType === 'lista') {
+                  payload.id_lista = this.currentPlaylistId; // ID de la lista
+              }
+          } 
+          // Caso 2: Si es una canción suelta (ej: desde el perfil del artista)
+          else if (this.currentSong?.album_id) {
+              payload.id_album = this.currentSong.album_id; // Album de la canción individual
+          }
+          
+          if (Object.keys(payload).length > 0) {
+              await axios.post('/api/ultimo_escuchado', payload);
+              console.log('✅ Registrado:', payload);
+          }
+      } catch (error) {
+          console.error('Error al registrar:', error);
+      }
+  },
 
     togglePlay() {
       if (!this.sound) return;
@@ -217,12 +250,15 @@ export const usePlayerStore = defineStore("player", {
       }
     },
 
-    setPlaylist(tracks) {
+    setPlaylist(tracks, playlistType = null, playlistId = null) {
       // Comparación profunda para evitar actualizaciones innecesarias
       if (JSON.stringify(this.playlist) !== JSON.stringify(tracks)) {
         this.playlist = [...tracks];
         this.currentIndex = 0;
       }
+      
+      this.currentPlaylistType = playlistType;
+      this.currentPlaylistId = playlistId;
       
       if (tracks.length && !this.sound) {
         this.playSong(tracks[0]);
@@ -242,7 +278,7 @@ export const usePlayerStore = defineStore("player", {
     _setupMediaListeners() {
       if (this._mediaListenerActive) return;
       
-      // Listener para teclas de medios físicas
+     
       if ('mediaSession' in navigator) {
         navigator.mediaSession.setActionHandler('play', () => {
           this.togglePlay();

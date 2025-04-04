@@ -4,21 +4,19 @@
       <section class="section">
         <h2 class="titulo_seccion_ultimo">Último escuchado</h2>
         <div class="imagenes_contenedor">
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="The new abnormal" class="imagen_caja">
-            <p class="titulos_album ">The new abnormal</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Yo, minoría absoluta" class="imagen_caja ">
-            <p class="titulos_album ">Yo, minoría absoluta</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Mi lista #1" class="imagen_caja ">
-            <p class="titulos_album ">Mi lista #1</p>
-          </div>
-          <div class="imagen_tarjeta">
-            <img src="images/placeholder.jpg" alt="Louder than bombs" class="imagen_caja ">
-            <p class="titulos_album ">Louder than bombs</p>
+          <div 
+            v-for="item in ultimosEscuchados" 
+            :key="`${item.tipo}-${item.id}`" 
+            class="imagen_tarjeta cursor-pointer"
+            @click="irADetalles(item)"
+          >
+            <img 
+              :src="item.portada || 'images/placeholder.jpg'" 
+              :alt="item.nombre" 
+              class="imagen_caja"
+            >
+            <p class="titulos_album">{{ item.nombre }}</p>
+            <p class="text-sm text-gray-400">{{ item.tipo === 'album' ? item.artista : item.creador }}</p>
           </div>
         </div>
       </section>
@@ -87,14 +85,27 @@
 import { onMounted } from 'vue';
 import { useHome } from '@/composables/home.js';
 
-const { randomArtistas, fetchRandomArtistas, irAPerfilArtista, randomAlbums, fetchRandomAlbums, irADetallesAlbum,randomListas,fetchRandomListas,irADetallesLista  } = useHome(); 
-
+const { 
+  randomArtistas, 
+  fetchRandomArtistas, 
+  irAPerfilArtista, 
+  randomAlbums, 
+  fetchRandomAlbums, 
+  irADetallesAlbum,
+  randomListas,
+  fetchRandomListas,
+  irADetallesLista,
+  irADetalles,
+  ultimosEscuchados,
+  fetchUltimosEscuchados
+} = useHome(); 
 
 
 onMounted(() => {
   fetchRandomArtistas();
   fetchRandomAlbums();
   fetchRandomListas();
+  fetchUltimosEscuchados();
 });
 </script>
 

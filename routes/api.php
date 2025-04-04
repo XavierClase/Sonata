@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\LikeController;
+use App\Http\Controllers\Api\UltimoEscuchadoController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Http\Request;
@@ -93,6 +94,8 @@ Route::post('/listas/añadirCancion', [ListaController::class, 'añadirCancionAL
 Route::delete('listas/del/{id}', [ListaController::class, 'destroy']);
 Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class, 'eliminarCancionDeLista']);
 
+Route::get('ultimo_escuchado', [UltimoEscuchadoController::class, 'index']);
+Route::post('ultimo_escuchado', [UltimoEscuchadoController::class, 'store']);
 
 
 Route::get('buscador', [BuscarController::class, 'buscar']);
