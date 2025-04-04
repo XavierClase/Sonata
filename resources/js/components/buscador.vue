@@ -2,7 +2,7 @@
   <div class="grupo-entrada contenedor-buscador">
     <InputText 
       v-model="consultaBusqueda" 
-      placeholder="Buscar álbumes, listas, usuarios..." 
+      placeholder="¿Que quieres encontrar?" 
       class="buscador" 
       @input="alBuscar" 
       @focus="mostrarResultados = true"
@@ -314,5 +314,15 @@ function usarRetraso(valor, retraso = 300) {
 .contenedor-carga {
   display: flex;
   justify-content: center;
+}
+
+/* Media queries para móviles */
+@media screen and (max-width: 500px) {
+  
+  .buscador {
+    width: 100%;
+  }
+
+    
 }
 </style>

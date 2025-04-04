@@ -11,7 +11,6 @@
             <div class="layout-reproductor">
                 <app-reproductor-global></app-reproductor-global>
             </div>
-            
         </div>
         
 
@@ -188,20 +187,31 @@ const isOutsideClicked = (event) => {
     display: flex;
 }
 
-
 .layout-main-home {
     display: flex;
+    
+    @media screen and (max-width: 500px) {
+        flex-direction: column;
+    }
 }
 
 .layout-main {
     background: linear-gradient(#262265, #200834);
     height: auto;
     max-width: 70vw;
+    
+    @media screen and (max-width: 500px) {
+        max-width: 100vw;
+        width: 100%;
+    }
 }
 
 .layout-main-content {
     min-height: 92vh;
     
+    @media screen and (max-width: 500px) {
+        min-height: 60vh;
+    }
 }
 
 .layout-reproductor {
@@ -215,5 +225,13 @@ const isOutsideClicked = (event) => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    
+    @media screen and (max-width: 500px) {
+        position: relative;
+        max-height: 40vh;
+        min-width: 100%;
+        top: 0;
+        right: unset;
+    }
 }
 </style>

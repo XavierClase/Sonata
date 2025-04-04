@@ -11,8 +11,17 @@
                 <img src="/images/home-icon.svg" alt="" class="layout-topbar-home-icon">
             </router-link>
             
-            <Buscador />
+            <div class="buscador-container">
+                <Buscador />
+            </div>
+
+            <div class="hamburger-menu" @click="toggleMobileMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
+
 
         <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
             <router-link class="topbar-link" :to=" { name: 'app.biblioteca' }">{{ $t('Biblioteca') }}</router-link>
@@ -41,9 +50,7 @@
                     </li>
                 </ul>
 
-                <span class="nav-link dropdown-toggle ms-3 me-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Hola, {{ authStore().user.name }}
-                </span>
+                
             </button>
                 <router-link 
                 class="topbar-link" 
@@ -53,7 +60,30 @@
                 params: {id: user?.id} 
                 }">
                 {{ $t('Perfil!') }}
-                </router-link>
+            </router-link>
+            
+        </div>
+
+        <!-- Menú móvil desplegable -->
+        <div class="mobile-menu" :class="{ 'active': mobileMenuActive }">
+            <div class="mobile-menu-header">
+                <div class="perfil-imagen-container-mobile">
+                    <img :src="getImageUrl()" alt="Perfil" class="perfil-imagen" />
+                </div>
+                <div class="perfil-info">
+                    <span>Hola, {{ authStore().user.name }}</span>
+                </div>
+                <div class="close-menu" @click="toggleMobileMenu">✕</div>
+            </div>
+            <div class="mobile-menu-links">
+                <router-link class="mobile-link" :to="{ name: 'app.biblioteca' }" @click="toggleMobileMenu">{{ $t('Biblioteca') }}</router-link>
+                <a v-if="userRole === 'user'" class="mobile-link" href="#" @click="mostrarDialogArtistaMovil">{{ $t('¡Conviertete en artista!') }}</a>
+                <router-link v-if="userRole === 'artista'" class="mobile-link" to="/app/artista/estadisticas" @click="toggleMobileMenu">{{ $t('Panel de artista!') }}</router-link>
+                <router-link class="mobile-link" :to="{ name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', params: {id: user?.id} }" @click="toggleMobileMenu">{{ $t('Perfil') }}</router-link>
+                <a v-if="true" class="mobile-link" href="#" @click="goToAdmin">Panel Admin</a>
+                <a v-if="true" class="mobile-link" href="#" @click="goToUser">Panel Usuario</a>
+                <a class="mobile-link logout" :class="{ 'opacity-25': processing }" :disabled="processing" href="javascript:void(0)" @click="logoutMobile">Cerrar sesión</a>
+            </div>
         </div>
 
         <Toast></Toast>
@@ -73,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted} from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useLayout } from '../composables/layout';
 import useAuth from "@/composables/auth";
 import { useRouter } from "vue-router";
@@ -91,9 +121,12 @@ const users = ref([]);
 const { onMenuToggle } = useLayout();
 const { processing, logout } = useAuth();
 const topbarMenuActive = ref(false);
+const mobileMenuActive = ref(false); // Nuevo: estado del menú hamburguesa
+const perfilMenuActive = ref(false); // Nuevo: estado del menú de perfil
 const router = useRouter();
 const dialogArtistaVisible = ref(false);
 
+// Funcionalidad existente
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -104,22 +137,62 @@ const topbarMenuClasses = computed(() => {
     };
 });
 
+// Nuevo: Funcionalidad del menú hamburguesa
+const toggleMobileMenu = () => {
+    mobileMenuActive.value = !mobileMenuActive.value;
+    // Si el menú móvil se abre, añadir clase al body para prevenir scroll
+    if (mobileMenuActive.value) {
+        document.body.classList.add('menu-open');
+    } else {
+        document.body.classList.remove('menu-open');
+    }
+    // Cerrar el menú de perfil si está abierto
+    if (perfilMenuActive.value) perfilMenuActive.value = false;
+};
+
+// Nuevo: Funcionalidad del menú de perfil
+const togglePerfilMenu = () => {
+    perfilMenuActive.value = !perfilMenuActive.value;
+};
+
 const userRole = computed(() => {
     return authStore().user?.roles?.length > 0 ? authStore().user.roles[0].name : '';
 });
 
+// Funcionalidad existente
 const mostrarDialogArtista = () => {
     dialogArtistaVisible.value = true;
 };
 
+// Nuevo: versión móvil del diálogo artista
+const mostrarDialogArtistaMovil = () => {
+    dialogArtistaVisible.value = true;
+    mobileMenuActive.value = false;
+};
 
+// Nuevo: navegación para móvil
+const goToAdmin = () => {
+    router.push({ name: 'admin.index' });
+    mobileMenuActive.value = false;
+};
+
+const goToUser = () => {
+    router.push({ name: 'app' });
+    mobileMenuActive.value = false;
+};
+
+// Nuevo: logout para móvil
+const logoutMobile = () => {
+    mobileMenuActive.value = false;
+    logout();
+};
+
+// Funcionalidad existente
 const confirmarCambioRol = async () => {
     loading.value = true;
     try {
-        
         const response = await axios.post('/api/users/cambiarRol', { role: 'artista' });
         
-       
         const store = authStore();
         store.user = response.data.data;
         
@@ -150,15 +223,51 @@ const confirmarCambioRol = async () => {
     }
 };
 
+// Función existente modificada para incluir fallback
 function getImageUrl() {
   let image = user?.avatar;
-  return image;
+  return image || '/images/default-avatar.png'; // Fallback a una imagen por defecto
 }
 
+// Nuevo: Función para manejar cambios de tamaño de la ventana
+const handleResize = () => {
+    if (window.innerWidth > 500 && mobileMenuActive.value) {
+        mobileMenuActive.value = false;
+        document.body.classList.remove('menu-open');
+    }
+};
+
+// Nuevo: Cerrar menús al hacer clic fuera
+const handleClickOutside = (event) => {
+    const perfilMenu = document.querySelector('.perfil-container');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    
+    if (perfilMenu && !perfilMenu.contains(event.target) && perfilMenuActive.value) {
+        perfilMenuActive.value = false;
+    }
+    
+    if (mobileMenu && hamburgerMenu && !mobileMenu.contains(event.target) && !hamburgerMenu.contains(event.target) && mobileMenuActive.value) {
+        mobileMenuActive.value = false;
+        document.body.classList.remove('menu-open');
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', handleResize);
+    document.removeEventListener('click', handleClickOutside);
+    // Asegurarse de que la clase menu-open se elimina al desmontar el componente
+    document.body.classList.remove('menu-open');
+});
 </script>
 
 <style lang="scss" scoped>
-
+/* Mantener los estilos anteriores aquí */
 .topbar-link.router-link-active {
     font-weight: bold;
 }
@@ -183,6 +292,28 @@ function getImageUrl() {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    flex-grow: 1;
+    
+    .buscador-container {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        max-width: 500px;
+    }
+
+    .layout-topbar-home-icon {
+        width: 50px;
+        margin-right: 10px;
+    }
+
+    .hamburger-menu {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 35px;
+        height: 25px;
+        margin-left: 10px;
+    }
 }
 
 .layout-topbar-home-icon {
@@ -247,11 +378,185 @@ function getImageUrl() {
     object-fit: cover;
 }
 
+/* Estilos para el menú hamburguesa */
+.hamburger-menu {
+    display: none !important;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 30px;
+    height: 21px;
+    cursor: pointer;
+    z-index: 110;
+    margin-left: 10px;
+    width: 47px;
+}
 
+.hamburger-menu span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: #F472B6;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Estilos para el menú móvil */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background-color: #1E1B4B;
+    z-index: 1000;
+    transition: right 0.3s ease;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.mobile-menu.active {
+    right: 0;
+}
+
+.mobile-menu-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #3b3770;
+    position: relative;
+}
+
+.perfil-imagen-container-mobile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #F472B6;
+    overflow: hidden;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.perfil-imagen-container-mobile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.perfil-info {
+    flex: 1;
+    color: white;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.close-menu {
+    color: #F472B6;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.mobile-link {
+    color: white;
+    text-decoration: none;
+    padding: 15px 0;
+    border-bottom: 1px solid #3b3770;
+    font-size: 1.1rem;
+}
+
+.mobile-link:hover {
+    color: #F472B6;
+}
+
+.mobile-link.logout {
+    color: #F472B6;
+    margin-top: 20px;
+    border-top: 1px solid #3b3770;
+    border-bottom: none;
+}
+
+
+/* Media queries para móviles - Ajustado para nueva posición del hamburger menu */
+@media screen and (max-width: 500px) {
+    .layout-topbar-centro {
+        justify-content: space-between;
+        flex-grow: 1;
+
+        .buscador-container {
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        .hamburger-menu {
+            margin-left: 0;
+            display: flex !important; 
+        }
+    }
+
+    .layout-topbar-home-icon {
+        padding: 0;
+        margin: 0;
+    }
+
+    .layout-topbar {
+        height: 60px;
+        padding: 0 10px;
+        justify-content: space-between;
+    }
+    
+    .layout-topbar-logo {
+        display: none;
+    }
+    
+    .layout-topbar-menu {
+        display: none;
+    }
+    
+    .topbar-link, .layout-topbar-button-c {
+        display: none;
+    }
+    
+    .hamburger-menu {
+        display: flex;
+    }
+    
+    .mobile-menu {
+        display: flex;
+    }
+    
+    .layout-topbar-centro {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    /* Estilo para cuando el menú está abierto en móvil */
+    :global(body.menu-open) {
+        overflow: hidden;
+    }
+
+    .topbar-link {
+        display: none;
+    }
+
+    .perfil-imagen-container {
+        display: none;
+    }
+
+
+}
 </style>
-<style >
 
-
+<style>
 .dialog_diseño {
     background-color: #200834 !important;
     border: 1px solid purple !important;
@@ -259,6 +564,12 @@ function getImageUrl() {
     width: 450px;
 }
 
+@media screen and (max-width: 500px) {
+    .dialog_diseño {
+        width: 90% !important;
+        max-width: 350px !important;
+    }
+}
 
 .p-button {
     background-color: #A855F7 !important;

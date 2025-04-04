@@ -1,18 +1,22 @@
 <template>
     <div class="reproductor">
+        
         <div class="cancion-detalles">
             <div class="cancion-img">
                 <img :src="getImageAlbumUrl(player.currentSong)" alt="Portada del álbum">
             </div>
-            <p v-if="player.currentSong">{{ player.currentSong.nombre }}</p>
-            <p v-else>No hay canción</p>
-            <p id="cancion-autor" v-if="player.currentSong">{{ player.currentSong.autor }}</p>
+            <!-- Div wrapper para la versión móvil -->
+            <div class="cancion-info">
+                <p v-if="player.currentSong">{{ player.currentSong.nombre }}</p>
+                <p v-else>No hay canción</p>
+                <p id="cancion-autor" v-if="player.currentSong">{{ player.currentSong.autor }}</p>
+            </div>
         </div>
 
         <div class="cancion-acciones">
-            <!-- Barra de progreso -->
-            <span class="barra-progreso-span">
-                <input 
+            <!-- Barra de progreso (versión desktop) -->
+            <span class="barra-progreso-span ">
+                <input
                     type="range" 
                     min="0"
                     :max="player.duration || 1"
@@ -47,7 +51,6 @@
                     :class="['boton-controles', { 'activo': player.isLoop }]"
                 ><i class="fa-solid fa-repeat"></i></button>
             </div>
-
 
             <!-- Barra de volumen -->
             <span class="barra-volumen-span">
@@ -209,6 +212,7 @@
 
 
 <style scoped>
+    /* Estilos originales que se mantienen para pantallas grandes */
     .reproductor {
         width: 74%;
         margin-top: 100px;
@@ -293,9 +297,7 @@
         color: #fc148c;
     }
 
-
     /* ----- ESTILOS PARA LA BARRA DE PROGRESO ----- */
-
     .barra-progreso-span {
         display: flex;
         flex-direction: column;
@@ -369,6 +371,10 @@
         background: #ffffff;
         border-radius: 50%;
         border: none;
+    }
+
+    .responsive-progreso {
+        max-width: 500px;
     }
 
     /* ----- ESTILOS PARA LA BARRA DE VOLUMEN ----- */
@@ -457,5 +463,125 @@
         justify-content: center;
     }
 
-    
+    /* --------- ESTILOS RESPONSIVE PARA PANTALLAS DE 500PX O MENOS --------- */
+
+    @media ( width > 500px) {
+        .responsive-progreso {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 500px) {
+        .reproductor {
+            width: 100%;
+            flex-direction: row;
+            padding: 8px;
+            height: 70px;
+            position: fixed;
+            bottom: 0;
+            z-index: 100;
+            background: linear-gradient(to right, #1e0627, #32093a);
+            z-index: 999;
+        }
+        
+        /* Barra de progreso en la parte superior */
+        .barra-progreso-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
+        
+        .barra-progreso-span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        
+        .barra-progreso {
+            margin-top: 0;
+            height: 5px;
+            border-radius: 0;
+        }
+        
+        .barra-progreso::-webkit-slider-runnable-track,
+        .barra-progreso::-moz-range-track {
+            border-radius: 0;
+            height: 5px;
+        }
+        
+        .progreso-tiempo {
+            display: none;
+        }
+        
+        /* Detalles de la canción */
+        .cancion-detalles {
+            width: auto;
+            flex-direction: row;
+            gap: 10px;
+            margin-right: auto;
+        }
+        
+        .cancion-img {
+            width: 40px;
+            height: 40px;
+            padding-top: 0;
+            position: relative;
+            flex-shrink: 0;
+            border-radius: 5px;
+        }
+        
+        .cancion-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cancion-detalles p {
+            font-size: 0.9rem;
+            margin-top: 0 !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+        
+        #cancion-autor {
+            font-size: 0.7rem;
+        }
+        
+        /* Controles */
+        .cancion-acciones {
+            width: auto;
+            flex-direction: row;
+            padding-top: 0;
+            gap: 10px;
+        }
+        
+        .controles {
+            gap: 10px;
+        }
+        
+        .boton-controles {
+            font-size: 1rem;
+            top: 0;
+        }
+        
+        .cambiar-cancion {
+            font-size: 1.2rem;
+        }
+        
+        .play-button {
+            height: 38px;
+            width: 38px;
+            font-size: 1.2rem;
+            background: #ff47a6;
+        }
+        
+        /* Ocultar volumen en móvil */
+        .barra-volumen-span {
+            display: none;
+        }
+    }
 </style>
