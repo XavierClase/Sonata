@@ -110,23 +110,24 @@ export const usePlayerStore = defineStore("player", {
       try {
           const payload = {};
           
-          // Caso 1: Si viene de una playlist (álbum o lista)
+        
           if (this.currentPlaylistType && this.currentPlaylistId) {
               if (this.currentPlaylistType === 'album') {
-                  payload.id_album = this.currentPlaylistId; // ID del álbum completo
+                  payload.id_album = this.currentPlaylistId; 
               } else if (this.currentPlaylistType === 'lista') {
-                  payload.id_lista = this.currentPlaylistId; // ID de la lista
+                  payload.id_lista = this.currentPlaylistId; 
               }
           } 
-          // Caso 2: Si es una canción suelta (ej: desde el perfil del artista)
+         
           else if (this.currentSong?.album_id) {
               payload.id_album = this.currentSong.album_id; // Album de la canción individual
           }
-          
-          if (Object.keys(payload).length > 0) {
+          else{
+            return;
+          }
               await axios.post('/api/ultimo_escuchado', payload);
               console.log('✅ Registrado:', payload);
-          }
+         
       } catch (error) {
           console.error('Error al registrar:', error);
       }
