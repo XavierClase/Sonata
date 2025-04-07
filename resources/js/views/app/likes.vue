@@ -180,7 +180,7 @@
         }
 
         player.setPlaylist(cancionesFavoritasMostrar.value); // Asegura que todas las canciones del álbum están en la lista
-        player.playSong(cancion, index);
+        player.playSong(cancion, index, 'album', cancion.album_id);
     };
 
 
