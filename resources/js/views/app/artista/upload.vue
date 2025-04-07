@@ -6,12 +6,12 @@
     <section class="contenidoUpload">
       <div class="maximo-contenido">
         <h1 class="titulo_subir_musica">Subir Música</h1>
-        <form @submit.prevent="enviarFormulario" class="formulario_album">
+        <form @submit.prevent="manejarSubmit" class="formulario_album">
           <div class="header_formulario">
             <div class="imagen_album">
               <img :src="PreviewImagen || '/images/placeholder1.jpg'" class="estilo_imagen">
               <input type="file" @change="manejarImagen" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
-              <!-- falta añadir un aviso que diga que puedes añadir una foto al album -->
+         
             </div>
 
             <div class="informacion_album">
@@ -46,11 +46,11 @@
             </button>
           </div>
 
-          <button type="submit" class="boton_confirmar" :disabled="!esFormularioValido">
+          <button type="submit" class="boton_confirmar">
             Confirmar
           </button>
 
-          <Toast />
+          <Toast  group="validacion" />
         </form>
       </div>
     </section>
@@ -108,6 +108,13 @@ const manejarImagen = (event) => {
     }
     albumData.portada = file;
     PreviewImagen.value = URL.createObjectURL(file);
+    
+    toast.add({
+      severity: 'info',
+      summary: 'Portada seleccionada',
+      detail: 'Imagen de portada añadida correctamente',
+      life: 3000
+    });
   }
 };
 
@@ -156,6 +163,7 @@ const quitarCancion = (index) => {
     life: 3000
   });
 };
+
 const calcularDuracionTotal = () => {
   return canciones.value.reduce((total, cancion) => {
     const [min, sec] = cancion.duracion.split(':').map(Number);
@@ -179,6 +187,64 @@ const esFormularioValido = computed(() => {
     canciones.value.length > 0 &&
     canciones.value.every(c => c.nombre);
 });
+
+const validarFormulario = () => {
+  let errores = [];
+  
+  if (!albumData.nombre) {
+    errores.push({
+      campo: 'nombre',
+      mensaje: 'Falta añadir el nombre del álbum'
+    });
+  }
+  
+  if (!albumData.portada) {
+    errores.push({
+      campo: 'portada',
+      mensaje: 'Falta añadir la portada del álbum'
+    });
+  }
+  
+  if (canciones.value.length === 0) {
+    errores.push({
+      campo: 'canciones',
+      mensaje: 'Debe añadir al menos una canción'
+    });
+  } else {
+    const cancionesSinNombre = canciones.value.filter(c => !c.nombre);
+    if (cancionesSinNombre.length > 0) {
+      errores.push({
+        campo: 'nombreCanciones',
+        mensaje: `${cancionesSinNombre.length} canción(es) sin nombre`
+      });
+    }
+  }
+  
+  return errores;
+};
+
+
+const manejarSubmit = () => {
+  const errores = validarFormulario();
+  
+  if (errores.length > 0) {
+   
+    toast.removeGroup('validacion');
+    
+    errores.forEach(error => {
+      toast.add({
+        severity: 'error',
+        summary: 'Error de validación',
+        detail: error.mensaje,
+        life: 5000,
+        group: 'validacion' 
+      });
+    });
+    return;
+  }
+  
+  enviarFormulario();
+};
 
 const enviarFormulario = async () => {
   try {
@@ -228,6 +294,12 @@ const enviarFormulario = async () => {
     
   } catch (error) {
     console.error('Error:', error.response?.data);
+    toast.add({
+      severity: 'error',
+      summary: 'Error al guardar',
+      detail: 'Ha ocurrido un error al crear el álbum',
+      life: 5000
+    });
   }
 };
 </script>

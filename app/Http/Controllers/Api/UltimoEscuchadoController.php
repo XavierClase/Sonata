@@ -37,7 +37,7 @@ class UltimoEscuchadoController extends Controller
         
         $userId = Auth::id();
         
-        // Buscar o crear el registro
+       
         Ultimo_escuchado::updateOrCreate(
             [
                 'id_usuario' => $userId,

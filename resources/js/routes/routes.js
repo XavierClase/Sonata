@@ -77,10 +77,10 @@ async function requireArtista(to, from, next) {
         if( hasArtista(user.roles)){
             next()
         }else{
-            next('/app/artista/estadisticas.vue')
+            next('/app')
         }
     } else {
-        next('/app/')
+        next('/')
     }
 }
 
@@ -226,6 +226,7 @@ export default [
                 path: 'album/:id',
                 component: () => import('../views/app/album.vue'),
                 meta: { breadCrumb: 'album' }
+                
             },
             {
                 name: 'app.lista',
@@ -269,13 +270,15 @@ export default [
                         name: 'artista.upload',
                         path: 'upload',
                         component: () => import('../views/app/artista/upload.vue'),
-                        meta: { breadCrumb: 'upload' }
+                        meta: { breadCrumb: 'upload' },
+                        beforeEnter: requireArtista
                     },
                     {
                         name: 'artista.edit',
                         path: 'edit',
                         component: () => import('../views/app/artista/edit.vue'),
-                        meta: { breadCrumb: 'edit' }
+                        meta: { breadCrumb: 'edit' },
+                        beforeEnter: requireArtista
                     },
                 ]
             }

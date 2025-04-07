@@ -26,43 +26,36 @@
         <div class="layout-topbar-menu col-md-4" :class="topbarMenuClasses">
             <router-link class="topbar-link" :to=" { name: 'app.biblioteca' }">{{ $t('Biblioteca') }}</router-link>
             <a v-if="userRole === 'user'" class="topbar-link" href="#" @click="mostrarDialogArtista">{{ $t('¡Conviertete en artista!') }}</a>
-            <router-link v-if="userRole === 'artista'" class="topbar-link" to="/app/artista/estadisticas">{{ $t('Panel de artista!') }}</router-link>
+            <router-link v-if="userRole === 'artista'" class="topbar-link" to="/app/artista/estadisticas">{{ $t('Panel de artista') }}</router-link>
             <button class="p-link layout-topbar-button layout-topbar-button-c nav-item dropdown " role="button"
                 data-bs-toggle="dropdown">
                 <div class="perfil-imagen-container">
                     <img :src="getImageUrl()" alt="Perfil" class="perfil-imagen" />
                 </div>
-                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
-                    <li>
-                        <a class="dropdown-item" :key="user?.id" @click="router.push({ name: 'artista.perfil' })">{{ $t('Perfil') }}</a>
-                    </li>
-                    <li v-if="true">
-                        <a class="dropdown-item" href="#" @click="router.push({ name: 'admin.index' })">Panel Admin</a>
-                    </li>
-                    <li v-if="true">
-                        <a class="dropdown-item" href="#" @click="router.push({ name: 'app' })">Panel Usuario</a>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li>
-                        <a class="dropdown-item" :class="{ 'opacity-25': processing }" :disabled="processing" href="javascript:void(0)" @click="logout">Cerrar sesión</a>
-                    </li>
-                </ul>
-
-                
-            </button>
-                <router-link 
-                class="topbar-link" 
-                :key="user?.id" 
-                :to="{ 
-                name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
-                params: {id: user?.id} 
-                }">
-                {{ $t('Perfil!') }}
-            </router-link>
-            
-        </div>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                        <li>
+                            <a class="dropdown-item" href="javascript:void(0)" @click.prevent="router.push({ 
+                                    name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil',
+                                    params: { id: user?.id }
+                                })">
+                                {{ $t('Perfil') }}
+                            </a>
+                        </li>
+                        <li v-if="esAdmin">
+                            <a class="dropdown-item" href="#" @click="router.push({ name: 'admin.index' })">Panel Admin</a>
+                        </li>
+                        <li v-if="esAdmin">
+                            <a class="dropdown-item" href="#" @click="router.push({ name: 'app' })">Panel Usuario</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item" :class="{ 'opacity-25': processing }" :disabled="processing" href="javascript:void(0)" @click="logout">Cerrar sesión</a>
+                        </li>
+                    </ul>
+                </button>  
+            </div>
 
         <!-- Menú móvil desplegable -->
         <div class="mobile-menu" :class="{ 'active': mobileMenuActive }">
@@ -78,10 +71,10 @@
             <div class="mobile-menu-links">
                 <router-link class="mobile-link" :to="{ name: 'app.biblioteca' }" @click="toggleMobileMenu">{{ $t('Biblioteca') }}</router-link>
                 <a v-if="userRole === 'user'" class="mobile-link" href="#" @click="mostrarDialogArtistaMovil">{{ $t('¡Conviertete en artista!') }}</a>
-                <router-link v-if="userRole === 'artista'" class="mobile-link" to="/app/artista/estadisticas" @click="toggleMobileMenu">{{ $t('Panel de artista!') }}</router-link>
+                <router-link v-if="userRole === 'artista'" class="mobile-link" to="/app/artista/estadisticas" @click="toggleMobileMenu">{{ $t('Panel de artista') }}</router-link>
                 <router-link class="mobile-link" :to="{ name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', params: {id: user?.id} }" @click="toggleMobileMenu">{{ $t('Perfil') }}</router-link>
-                <a v-if="true" class="mobile-link" href="#" @click="goToAdmin">Panel Admin</a>
-                <a v-if="true" class="mobile-link" href="#" @click="goToUser">Panel Usuario</a>
+                <a v-if="esAdmin" class="mobile-link" href="#" @click="goToAdmin">Panel Admin</a>
+                <a v-if="esAdmin" class="mobile-link" href="#" @click="goToUser">Panel Usuario</a>
                 <a class="mobile-link logout" :class="{ 'opacity-25': processing }" :disabled="processing" href="javascript:void(0)" @click="logoutMobile">Cerrar sesión</a>
             </div>
         </div>
@@ -131,6 +124,12 @@ const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
 
+const esAdmin = computed(() => {
+   
+    return authStore().user?.roles?.some(role => role.name.toLowerCase() === 'admin') || false;
+});
+
+
 const topbarMenuClasses = computed(() => {
     return {
         'layout-topbar-menu-mobile-active': topbarMenuActive.value
@@ -179,6 +178,8 @@ const logoutMobile = () => {
     mobileMenuActive.value = false;
     logout();
 };
+
+
 
 const confirmarCambioRol = async () => {
     loading.value = true;
@@ -255,6 +256,58 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+
+.dropdown-menu {
+    background-color: #1E1B4B !important;
+    border: 1px solid #3b3770 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    padding: 10px 0 !important;
+    min-width: 200px;
+}
+
+.dropdown-item .router-link-active  {
+    color: white !important;
+    padding: 10px 15px !important;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #2d275a !important;
+    color: #F472B6 !important;
+}
+
+.dropdown-divider {
+    border-top: 1px solid #3b3770 !important;
+    margin: 8px 0 !important;
+}
+
+
+.layout-topbar-button.nav-item.dropdown {
+    position: relative;
+}
+
+
+.layout-topbar-button.nav-item.dropdown::after {
+    display: none;
+}
+
+
+.dropdown-item:last-child {
+    color: #F472B6 !important;
+    border-top: 1px solid #3b3770;
+    margin-top: 5px;
+}
+
+.dropdown-item:last-child:hover {
+    color: #e04595 !important;
+}
+
+
+.dropdown-menu-end {
+    right: 0;
+    left: auto !important
+}
 
 .topbar-link.router-link-active {
     font-weight: bold;
@@ -387,6 +440,9 @@ onUnmounted(() => {
     border-radius: 3px;
     transition: all 0.3s ease;
 }
+
+
+
 
 /* Estilos para el menú móvil */
 .mobile-menu {

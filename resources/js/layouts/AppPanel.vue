@@ -2,7 +2,7 @@
     <section class="">
         <h1 class="h1_panel">Panel Artista</h1>
         <ul class="texto_panel">
-            <template v-for="(item, i) in model[0].items" :key="i">
+            <template v-for="(item, i) in Permisos" :key="i">
                 <li v-if="!item.separator" class="texto_panel">
                     <router-link :to="item.to" class="texto_panel">
                         {{ item.label }}
@@ -15,23 +15,41 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import {useAbility} from '@casl/vue'
+import { ref, computed } from 'vue';
+import { useAbility } from '@casl/vue';
 import { authStore } from "../store/auth";
 
-const {can} = useAbility();
+const { can } = useAbility();
 const auth = authStore();
-//const user = computed(() => auth.user.value)
-//console.log(auth.user);
+
 const model = ref([
     {
         items: [
-            { label: 'Estadísticas', to: '/app/artista/estadisticas', permision: '' },
-            { label: 'Subir Música', to: '/app/artista/upload', permision: '' },
-            { label: 'Modificar Música', to: '/app/artista/edit', permision: '' }
+            { 
+                label: 'Estadísticas', 
+                to: '/app/artista/estadisticas', 
+                permission: 'album-create' 
+            },
+            { 
+                label: 'Subir Música', 
+                to: '/app/artista/upload', 
+                permission: 'album-create' 
+            },
+            { 
+                label: 'Modificar Música', 
+                to: '/app/artista/edit', 
+                permission: 'album-edit' 
+            }
         ]
     }
 ]);
+
+
+const Permisos = computed(() => {
+    return model.value[0].items.filter(item => {
+        return item.separator || (item.permission && can(item.permission));
+    });
+});
 </script>
 
 <style lang="scss" scoped>

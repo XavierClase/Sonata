@@ -23,23 +23,45 @@
 
    
 
-    <div class="perfil-artista-albums">
-        <h2>Listas Creadas y guardadas</h2>
+    <div class="perfil-artista-listas">
+        <h2>Listas Creadas</h2>
         <div class="row gap-4">
             <router-link 
                 class="album col-md-2" 
-                v-for="album in albums" 
-                :key="album.id" 
-                :to="{ name: 'app.album', params: {id: album.id} }"
+                v-for="lista in listasCreadas" 
+                :key="lista.id" 
+                :to="{ name: 'app.lista', params: {id: lista.id} }"
             >
                 <div class="album-img">
-                    <img :src="getImageAlbumUrl(album)" />
+                    <img :src="getImageListaUrl(lista)" />
                 </div>
                 <div class="album-detalles">
-                    <h4>{{ album.nombre }}</h4>
-                    <p>Año: {{  new Date(album.created_at).getFullYear() }}</p>
-                    <p>Duración: {{ album.duracion_total }}</p>
-                    <p>Número de canciones: {{ album.num_canciones }}</p>
+                    <h4>{{ lista.nombre }}</h4>
+                    <p>Año: {{  new Date(lista.created_at).getFullYear() }}</p>
+                    <p>Duración: {{ lista.duracion_total }}</p>
+                    <p>Número de canciones: {{ lista.num_canciones }}</p>
+                </div>
+            </router-link>
+        </div>
+    </div>
+
+    <div class="perfil-artista-listas">
+        <h2>Listas guardadas</h2>
+        <div class="row gap-4">
+            <router-link 
+                class="album col-md-2" 
+                v-for="lista in listasGuardadas" 
+                :key="lista.id" 
+                :to="{ name: 'app.lista', params: {id: lista.id} }"
+            >
+                <div class="album-img">
+                    <img :src="getImageListaUrl(lista)" />
+                </div>
+                <div class="album-detalles">
+                    <h4>{{ lista.nombre }}</h4>
+                    <p>Año: {{  new Date(lista.created_at).getFullYear() }}</p>
+                    <p>Duración: {{ lista.duracion_total }}</p>
+                    <p>Número de canciones: {{ lista.num_canciones }}</p>
                 </div>
             </router-link>
         </div>
@@ -85,6 +107,8 @@
     const userId = ref(route.params.id);
     const user = ref(null);
     const albums = ref([]);
+    const listasCreadas = ref([]);
+    const listasGuardadas = ref([]);
     const populares = ref([]);
     const PreviewImagenPerfil = ref(null);  
     const PreviewImagenDetalles = ref(null); 
@@ -93,21 +117,26 @@
 
     onMounted(async () => {
         try {
+           
             const response = await axios.get(`/api/user/${userId.value}`);
             user.value = response.data.data; 
             nombreUsuarioMod.value = user.value.name; // Inicializa el nombre del usuario en el input
+          
+            const listasResponse = await axios.get(`/api/listas/${userId.value}`);
+            listasCreadas.value = listasResponse.data.data;
             
-            const albumResponse = await axios.get(`/api/albumes/${userId.value}`);
-            albums.value = albumResponse.data.data;
-            
-            const cancionResponse = await axios.get(`/api/canciones/populares/${userId.value}`);
-            populares.value = cancionResponse.data.data;
+          
+            if (userPropio?.id === parseInt(userId.value)) {
+                const listasGuardadasResponse = await axios.get('/api/mostrar/lista/likes');
+                listasGuardadas.value = listasGuardadasResponse.data.data;
+            }
         } catch (error) {
             console.error('Error fetching user or albums:', error);
         }
     });
 
-    function getImageAlbumUrl(album) {
+
+    function getImageListaUrl(album) {
         let image = album.portada;
         return new URL(image, import.meta.url).href;
     }
@@ -348,13 +377,13 @@
         border: 1px solid black;
     }
 
-    .perfil-artista-albums {
+    .perfil-artista-listas {
         margin-top: 20px;
         padding-left: 33px;
         padding-bottom: 40px;
     }
 
-    .perfil-artista-albums > div {
+    .perfil-artista-listas > div {
         display: flex;
         flex-wrap: wrap;
     }
