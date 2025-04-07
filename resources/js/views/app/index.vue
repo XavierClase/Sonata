@@ -1,83 +1,84 @@
 <template>
-  <div class="contenedor_sonata">
-    <div class="contenedor">
-      <section class="section">
-        <h2 class="titulo_seccion_ultimo">Último escuchado</h2>
-        <div class="imagenes_contenedor">
-          <div 
-            v-for="item in ultimosEscuchados" 
-            :key="`${item.tipo}-${item.id}`" 
-            class="imagen_tarjeta cursor-pointer"
-            @click="irADetalles(item)"
-          >
-            <img 
-              :src="item.portada || 'images/placeholder.jpg'" 
-              :alt="item.nombre" 
-              class="imagen_caja"
-            >
-            <p class="titulos_album">{{ item.nombre }}</p>
-            <p class="text-sm text-gray-400">{{ item.tipo === 'album' ? item.artista : item.creador }}</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="titulo_seccion">Otras listas</h2>
-        <div class="imagenes_contenedor">
-          <div 
-            v-for="lista in randomListas" 
-            :key="lista.id" 
-            class="imagen_tarjeta cursor-pointer"
-            @click="irADetallesLista(lista.id)"
-          >
-            <img 
-              :src="lista.portada" 
-              :alt="lista.nombre" 
-              class="imagen_caja"
-            >
-            <p class="titulos_album">{{ lista.nombre }}</p>
-            <p class="text-sm text-gray-400">{{ lista.creador }}</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="titulo_seccion">Otros álbumes</h2>
-        <div class="imagenes_contenedor">
-          <div 
-            v-for="album in randomAlbums" 
-            :key="album.id" 
-            class="imagen_tarjeta cursor-pointer"
-            @click="irADetallesAlbum(album.id)"
-          >
-            <img 
-              :src="album.portada || 'images/placeholder.jpg'" 
-              :alt="album.nombre" 
-              class="imagen_caja"
-            >
-            <p class="titulos_album">{{ album.nombre }}</p>
-            <p class="text-sm text-gray-400">{{ album.artista }}</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="titulo_seccion">Otros artistas</h2>
-        <div class="imagenes_contenedor">
-          <div v-for="artist in randomArtistas" :key="artist.id" class="imagen_tarjeta"
-          @click="irAPerfilArtista(artist.id)">
-            <img 
-              :src="artist.avatar || 'images/placeholder.jpg'" 
-              :alt="artist.name" 
-              class="imagen_caja artista_radius"
-            >
-            <p class="titulos_album">{{ artist.name }}</p>
-          </div>
-        </div>
-      </section>
-
+  <div class="home-content">
+    <div class="home-filas">
+      <h2 id="recientes-titulo">Escuchado Recientemente</h2>
+    <div class="home-fila">
+      <div 
+        v-for="item in ultimosEscuchados" 
+        :key="`${item.tipo}-${item.id}`" 
+        class="imagen_tarjeta cursor-pointer"
+        @click="irADetalles(item)"
+      >
+        <img 
+          :src="item.portada || 'images/placeholder.jpg'" 
+          :alt="item.nombre" 
+          class="imagen_caja"
+        >
+        <p class="titulos_album">{{ item.nombre }}</p>
+        <p class="text-sm text-gray-400">{{ item.tipo === 'album' ? item.artista : item.creador }}</p>
+      </div>
     </div>
+
+    <h2>Descubre cosas nuevas</h2>
+
+    <h3>Listas</h3>
+    <div class="home-fila">
+      <div 
+        v-for="lista in randomListas" 
+        :key="lista.id" 
+        class="imagen_tarjeta cursor-pointer"
+        @click="irADetallesLista(lista.id)"
+      >
+        <img 
+          :src="lista.portada" 
+          :alt="lista.nombre" 
+          class="imagen_caja"
+        >
+        <p class="titulos_album">{{ lista.nombre }}</p>
+        <p class="text-sm text-gray-400">{{ lista.creador }}</p>
+      </div>
+    </div>
+
+    <h3>Álbums</h3>
+
+    <div class="home-fila">
+      <div 
+        v-for="album in randomAlbums" 
+        :key="album.id" 
+        class="imagen_tarjeta cursor-pointer"
+        @click="irADetallesAlbum(album.id)"
+      >
+        <img 
+          :src="album.portada || 'images/placeholder.jpg'" 
+          :alt="album.nombre" 
+          class="imagen_caja"
+        >
+        <p class="titulos_album">{{ album.nombre }}</p>
+        <p class="text-sm text-gray-400">{{ album.artista }}</p>
+      </div>
+    </div>
+
+    <h3>Artistas</h3>
+
+    <div class="home-fila">
+      <div 
+        v-for="artist in randomArtistas" 
+        :key="artist.id" 
+        class="imagen_tarjeta"
+        @click="irAPerfilArtista(artist.id)"
+      >
+        <img 
+          :src="artist.avatar || 'images/placeholder.jpg'" 
+          :alt="artist.name" 
+          class="imagen_caja artista_radius"
+        >
+        <p class="titulos_album">{{ artist.name }}</p>
+      </div>
+    </div>
+    </div>
+    
   </div>
+  
 </template>
 
 
@@ -112,6 +113,31 @@ onMounted(() => {
 
 
 <style scoped>
+
+#recientes-titulo {
+  margin-top: 40px;
+}
+.home-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 50px;
+}
+
+.home-filas {
+  width: 85%;
+  padding-bottom: 20px;
+}
+.home-fila {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+  margin-left: 20px;
+  padding-bottom: 45px;
+}
+
 .contenedor_sonata {
   color: white;
   padding: 25px; 
@@ -130,6 +156,25 @@ onMounted(() => {
 
 .section {
   margin-bottom: 45px; 
+}
+
+h2 {
+  background: linear-gradient(to right, #F472B6, #A855F7);
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  font-size: 30px;
+  margin-bottom: 20px; 
+  font-weight: bold;
+}
+
+h3 {
+  color: #F472B6;
+  margin-left: 15px;
+}
+
+p {
+  color: white;
 }
 
 .titulo_seccion {
@@ -192,6 +237,18 @@ onMounted(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (width < 500px) {
+  .home-filas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .home-fila {
+    justify-content: center;
+  }
 }
 
 </style>

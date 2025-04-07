@@ -45,7 +45,6 @@
     </div>
 
 
-
     <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Crea una lista">
         <form @submit.prevent="enviarFormulario">
             <div class="row">

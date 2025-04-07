@@ -137,20 +137,16 @@ const topbarMenuClasses = computed(() => {
     };
 });
 
-// Nuevo: Funcionalidad del menú hamburguesa
 const toggleMobileMenu = () => {
     mobileMenuActive.value = !mobileMenuActive.value;
-    // Si el menú móvil se abre, añadir clase al body para prevenir scroll
     if (mobileMenuActive.value) {
         document.body.classList.add('menu-open');
     } else {
         document.body.classList.remove('menu-open');
     }
-    // Cerrar el menú de perfil si está abierto
     if (perfilMenuActive.value) perfilMenuActive.value = false;
 };
 
-// Nuevo: Funcionalidad del menú de perfil
 const togglePerfilMenu = () => {
     perfilMenuActive.value = !perfilMenuActive.value;
 };
@@ -164,13 +160,11 @@ const mostrarDialogArtista = () => {
     dialogArtistaVisible.value = true;
 };
 
-// Nuevo: versión móvil del diálogo artista
 const mostrarDialogArtistaMovil = () => {
     dialogArtistaVisible.value = true;
     mobileMenuActive.value = false;
 };
 
-// Nuevo: navegación para móvil
 const goToAdmin = () => {
     router.push({ name: 'admin.index' });
     mobileMenuActive.value = false;
@@ -181,13 +175,11 @@ const goToUser = () => {
     mobileMenuActive.value = false;
 };
 
-// Nuevo: logout para móvil
 const logoutMobile = () => {
     mobileMenuActive.value = false;
     logout();
 };
 
-// Funcionalidad existente
 const confirmarCambioRol = async () => {
     loading.value = true;
     try {
@@ -223,13 +215,11 @@ const confirmarCambioRol = async () => {
     }
 };
 
-// Función existente modificada para incluir fallback
 function getImageUrl() {
   let image = user?.avatar;
-  return image || '/images/default-avatar.png'; // Fallback a una imagen por defecto
+  return image || '/images/default-avatar.png'; 
 }
 
-// Nuevo: Función para manejar cambios de tamaño de la ventana
 const handleResize = () => {
     if (window.innerWidth > 500 && mobileMenuActive.value) {
         mobileMenuActive.value = false;
@@ -237,7 +227,6 @@ const handleResize = () => {
     }
 };
 
-// Nuevo: Cerrar menús al hacer clic fuera
 const handleClickOutside = (event) => {
     const perfilMenu = document.querySelector('.perfil-container');
     const mobileMenu = document.querySelector('.mobile-menu');
@@ -261,13 +250,12 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('resize', handleResize);
     document.removeEventListener('click', handleClickOutside);
-    // Asegurarse de que la clase menu-open se elimina al desmontar el componente
     document.body.classList.remove('menu-open');
 });
 </script>
 
 <style lang="scss" scoped>
-/* Mantener los estilos anteriores aquí */
+
 .topbar-link.router-link-active {
     font-weight: bold;
 }
@@ -486,7 +474,6 @@ onUnmounted(() => {
 }
 
 
-/* Media queries para móviles - Ajustado para nueva posición del hamburger menu */
 @media screen and (max-width: 500px) {
     .layout-topbar-centro {
         justify-content: space-between;
@@ -539,7 +526,6 @@ onUnmounted(() => {
         justify-content: center;
     }
     
-    /* Estilo para cuando el menú está abierto en móvil */
     :global(body.menu-open) {
         overflow: hidden;
     }
