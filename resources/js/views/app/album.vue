@@ -24,7 +24,8 @@
                     <p>{{ album?.duracion_total }}</p>
                 </span>
             </div>
-            <i 
+            <i
+                id="favAlbum"
                 :class="esFavoritoAlbum ? 'pi pi-heart-fill' : 'pi pi-heart'" 
                 style="font-size: 2.4rem; cursor: pointer"
                 @click="likeAlbum(album?.id, $event)"
@@ -61,16 +62,16 @@
     <div class="album-canciones-container">
         <div class="row album-canciones-categorias">
             <p class="col-md-1">#</p>
-            <p class="col-md-5">Título</p>
-            <p class="col-md-3">Reproducciones</p>
+            <p class="col-md-6">Título</p>
+            <p class="col-md-2">Reproducciones</p>
             <p class="col-md-2">Duración</p>
         </div>
         <div class="album-canciones-detalles">
             <div class="row cancion-album" v-for="(cancion, index) in canciones" :key="cancion.id"
                 @click="reproducirCancion(cancion)">
                 <p class="col-md-1 num-cancion-album">{{ index + 1 }}</p>
-                <p class="col-md-5 cancion-album-nombre">{{ cancion.nombre }}</p>
-                <p class="col-md-3 cancion-album-reproducciones">{{ cancion.reproducciones }}</p>
+                <p class="col-md-6 cancion-album-nombre">{{ cancion.nombre }}</p>
+                <p class="col-md-2 cancion-album-reproducciones">{{ cancion.reproducciones }}</p>
                 <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
                 <span class="cancion-album-span">
                     <i
@@ -322,8 +323,175 @@
     }
 
     .cancion-album-span {
-        width: 40px;
+        width: auto;
+        display: flex;
+        gap: 15px;
     }
 
+    .cancion-album-span .pi {
+        font-size: 1.3rem;
+    }
+
+
+
+@media (max-width: 500px) {
+    .row {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    /* Banner del álbum */
+    .album-banner {
+        height: auto;
+        padding: 20px 0;
+        flex-direction: column;
+    }
+
+    .detalles-album {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        width: 100%;
+        position: relative;
+        padding-bottom: 70px;
+    }
     
+    .album-banner-img {
+        margin-left: 0;
+        height: 200px;
+        width: 200px;
+    }
+
+    .datos-detalles-album {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 10px;
+    }
+
+    .datos-detalles-album h1 {
+        font-size: 1.5rem;
+        margin: 5px 0;
+    }
+
+    .datos-detalles-album span {
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    #favAlbum {
+        position: absolute;
+        left: 15px;
+        top: 343px;
+    }
+
+    /* Botón de reproducción */
+    .album-banner-play {
+        height: 70px;
+        width: 70px;
+        position: absolute;
+        right: 15px;
+        top: 343px;
+        margin: 0;
+        padding: 0;
+        
+    }
+
+    /* Contenedor de canciones */
+    .album-canciones-container {
+        padding: 0 10px 50px 10px;
+        height: full;
+    }
+
+    .album-canciones-container p {
+        padding-left: 5px;
+    }
+
+    .album-canciones-categorias {
+        display: none;
+    }
+
+    .album-canciones-categorias p {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .album-canciones-detalles {
+        min-width: 100%;
+        gap: 10px;
+    }
+
+    /* Canciones del álbum */
+    .cancion-album {
+        display: grid;
+        grid-template-columns: 0.5fr 4fr 1fr 1fr 1fr;
+        min-height: 50px;
+        padding: 8px 0;
+    }
+
+    .num-cancion-album {
+        font-size: 1.2rem;
+        border-right: none;
+        padding-left: 10px !important;
+    }
+
+    .cancion-album-nombre {
+        font-size: 1rem;
+        padding-left: 8px !important;
+    }
+
+    .cancion-album-reproducciones {
+        font-size: 0.9rem;
+        padding-left: 8px !important;
+    }
+
+    .duracion-cancion {
+        font-size: 0.9rem;
+        padding-left: 8px !important;
+    }
+
+    .cancion-album-span {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        width: auto;
+    }
+
+    .cancion-album-span i {
+        font-size: 0.9rem;
+    }
+}
+
+/* Ajustes específicos para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .album-canciones-categorias {
+        grid-template-columns: 0.5fr 2fr 1fr 1fr;
+    }
+
+    .cancion-album {
+        grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr;
+    }
+    
+    .cancion-album-nombre {
+        font-size: 0.85rem;
+    }
+    
+    .cancion-album-reproducciones, .duracion-cancion {
+        font-size: 0.8rem;
+    }
+    
+    .cancion-album-span i {
+        font-size: 0.8rem;
+    }
+
+    .datos-detalles-album h1 {
+        font-size: 1.3rem;
+    }
+}
 </style>

@@ -281,6 +281,29 @@
         text-overflow: ellipsis;
         color: white;
     }
+
+    @media (width < 500px) {
+
+        .biblioteca-top {
+            justify-content: space-around;
+        }
+
+        .biblioteca-top h1 {
+            margin: 0;
+        }
+
+        .pi-plus {
+            margin: 0;
+        }
+
+        .biblioteca-tusListas {
+            justify-content: center;
+        }
+
+        .biblioteca-favoritos {
+            justify-content: center;
+        }
+    }
 </style>
 
 
@@ -348,4 +371,73 @@
         opacity: 0;
         cursor: pointer;
     }
+
+    @media (width < 500px) {
+        .crearLista-modal {
+            width: 90% !important;
+            max-width: 320px !important;
+        }
+        
+        .crearLista-modal .row {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .crearLista-modal .config-imagenes, 
+        .crearLista-modal .col-md-4 {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .crearLista-modal .col-md-6 {
+            width: 100%;
+        }
+        
+        .crearLista-modal .flex.items-center {
+            width: 100%;
+        }
+        
+        .crearLista-modal .crearLista-input, 
+        .crearLista-modal #config-descripcion {
+            width: 100% !important;
+        }
+        
+        .crearLista-modal .flex.justify-end {
+            width: 100%;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .crearLista-modal Button {
+            width: 100%;
+        }
+        
+        /* Fix for close icon */
+        .crearLista-modal .p-dialog-header-icons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .crearLista-modal .p-dialog-header-icon {
+            color: #F472B6 !important;
+            background-color: transparent !important;
+            width: 2rem;
+            height: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .crearLista-modal .p-dialog-header {
+            position: relative;
+            padding-right: 30px !important;
+        }
+
+        .p-dialog-header button {
+            width: 30px !important;
+            height: 30px !important;
+        }
+}
 </style>

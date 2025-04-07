@@ -6,7 +6,7 @@
                 <div class="layout-main-content">
                     <router-view></router-view>
                 </div>
-                <app-footer></app-footer>
+                <app-footer class="footer"></app-footer>
             </div>
             <div class="layout-reproductor">
                 <app-reproductor-global></app-reproductor-global>
@@ -192,6 +192,7 @@ const isOutsideClicked = (event) => {
     
     @media screen and (max-width: 500px) {
         flex-direction: column;
+        height: 90vh;
     }
 }
 
@@ -232,6 +233,12 @@ const isOutsideClicked = (event) => {
         min-width: 100%;
         top: 0;
         right: unset;
+    }
+}
+
+@media (width < 500px) {
+    .footer {
+        display: none;
     }
 }
 </style>

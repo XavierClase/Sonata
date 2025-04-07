@@ -519,6 +519,171 @@
         color: white;
     }
 
+    /* Estilos responsivos para pantallas de 500px o menos */
+    @media (width < 500px) {
+        /* Ajustes generales */
+        .row {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+            width: 100%;
+            flex-direction: column;
+        }
+
+        /* Banner del perfil */
+        .perfil-artista-banner {
+            height: auto;
+            padding: 15px 0;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .perfil-artista-banner span {
+            flex-direction: column;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .perfil-artista-banner-img {
+            margin-left: 0;
+            height: 130px;
+            width: 130px;
+        }
+
+        .pi-cog {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin: 0;
+        }
+
+        /* Icono de compartir */
+        .pi-share-alt {
+            position: absolute;
+            top: 40px;
+        }
+
+        /* Sección media */
+        .perfil-artista-medio > div {
+            height: auto;
+            width: 100%;
+        }
+
+        .perfil-artista-medio-populares,
+        .perfil-artista-albums {
+            padding-top: 30px;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .perfil-artista-medio-detalles {
+            margin-top: 30px;
+        }
+
+        .canciones-populares {
+            height: auto;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Canciones populares */
+        .cancion-popular {
+            flex-wrap: wrap;
+            padding: 10px 0;
+            width: 100%;
+        }
+
+        .cancion-popular-span1 {
+            width: 20%;
+            padding-left: 5px;
+            gap: 10px;
+        }
+
+        .num-cancion-popular {
+            display: none;
+        }
+
+        .cancion-popular-span2 {
+            width: 45%;
+        }
+
+        .duracion-cancion {
+            width: 15%;
+            text-align: right;
+            padding-right: 5px;
+        }
+
+        .pi-heart, .pi-heart-fill, .pi-plus {
+            margin-top: 10px;
+            width: 10%;
+            text-align: center;
+        }
+
+        /* Detalles */
+        .detalles-contenido {
+            width: 100%;
+            height: auto;
+            max-height: 350px;
+        }
+
+        .detalles-img {
+            flex: none;
+            height: 200px;
+        }
+
+        /* Álbums */
+        .perfil-artista-albums {
+            margin-top: 30px;
+        }
+
+        .perfil-artista-albums .row {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px !important;
+        }
+
+        .album {
+            width: calc(50% - 15px);
+            height: 320px;
+            margin-bottom: 15px;
+        }
+
+        /* Modal configuración */
+        .banner-config-modal {
+            width: 90% !important;
+            height: auto !important;
+        }
+
+        .config-imagenes {
+            width: 100%;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .banner-config-input, #config-descripcion {
+            width: 100% !important;
+        }
+    }
+
+/* Ajustes específicos para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .album {
+        width: 100%;
+    }
+    
+    .cancion-popular-nombre {
+        font-size: 1rem;
+    }
+    
+    .cancion-popular-reproducciones {
+        font-size: 0.8rem;
+    }
+    
+    .duracion-cancion {
+        font-size: 1rem;
+    }
+}
 
 </style>
 
