@@ -71,6 +71,8 @@ Route::put('albumes/{id}', [AlbumController::class, 'update']);
 Route::delete('albumes/{id}', [AlbumController::class, 'destroy']);
 Route::post('/albumes/{id}/portada', [AlbumController::class, 'updatePortada']);
 Route::get('albums/aleatorios', [AlbumController::class, 'obtenerAlbumsAleatorios']);    
+Route::get('admin/albumes', [AlbumController::class, 'obtenerTodosLosAlbumes']);
+
 
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 Route::post('canciones', [CancionController::class, 'store']);
@@ -93,6 +95,9 @@ Route::get('listas/usuario/{userId}', [ListaController::class, 'getListasUser'])
 Route::post('/listas/añadirCancion', [ListaController::class, 'añadirCancionALista']);
 Route::delete('listas/del/{id}', [ListaController::class, 'destroy']);
 Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class, 'eliminarCancionDeLista']);
+Route::get('admin/listas', [ListaController::class, 'index']);
+Route::get('listas/{id}/canciones', [ListaController::class, 'index']);
+
 
 Route::get('ultimo_escuchado', [UltimoEscuchadoController::class, 'index']);
 Route::post('ultimo_escuchado', [UltimoEscuchadoController::class, 'store']);

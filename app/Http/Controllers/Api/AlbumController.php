@@ -244,5 +244,12 @@ class AlbumController extends Controller
             ->take(4);
         return AlbumResource::collection($albumes);
     }
+
+
+    public function obtenerTodosLosAlbumes()
+{
+    $albumes = Album::with(['user', 'media'])->get(); 
     
+    return AlbumResource::collection($albumes);
+}
 }

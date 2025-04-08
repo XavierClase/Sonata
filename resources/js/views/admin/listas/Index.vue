@@ -55,10 +55,6 @@
 
                     <Column class="pe-0 me-0 icon-column-3">
                         <template #body="slotProps">
-                            <router-link :to="{ name: 'listas.canciones', params: { id: slotProps.data.id } }">
-                                <Button icon="pi pi-list" severity="help" size="small" class="mr-1" 
-                                        v-tooltip.top="'Ver canciones'" />
-                            </router-link>
 
                             <router-link v-if="can('lista-edit')" :to="{ name: 'listas.edit', params: { id: slotProps.data.id } }">
                                 <Button icon="pi pi-pencil" severity="info" size="small" class="mr-1" 

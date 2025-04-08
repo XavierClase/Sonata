@@ -2,49 +2,49 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 
-export default function useListas() {
-    const listas = ref({ data: [] });
-    const lista = ref({});
+export default function useAlbumes() {
+    const albumes = ref({ data: [] });
+    const album = ref({});
     const errors = ref({});
     const loading = ref(false);
     const toast = useToast();
 
-    const getListas = async () => {
+    const getAlbumes = async () => {
         loading.value = true;
         try {
-            const response = await axios.get('/api/admin/listas');
-            listas.value = response.data;
+            const response = await axios.get('/api/admin/albumes');
+            albumes.value = response.data;
             loading.value = false;
         } catch (e) {
             loading.value = false;
             toast.add({
                 severity: 'error', 
                 summary: 'Error', 
-                detail: 'Error al cargar las listas de reproducción', 
+                detail: 'Error al cargar los álbumes', 
                 life: 3000
             });
         }
     };
 
-    const getLista = async (id) => {
+    const getAlbum = async (id) => {
         loading.value = true;
         try {
-            const response = await axios.get(`/api/admin/listas/${id}`);
-            lista.value = response.data.data;
+            const response = await axios.get(`/api/admin/albumes/${id}`);
+            album.value = response.data.data;
             loading.value = false;
-            return lista.value;
+            return album.value;
         } catch (e) {
             loading.value = false;
             toast.add({
                 severity: 'error', 
                 summary: 'Error', 
-                detail: 'Error al cargar los detalles de la lista', 
+                detail: 'Error al cargar los detalles del álbum', 
                 life: 3000
             });
         }
     };
 
-    const storeLista = async (form) => {
+    const storeAlbum = async (form) => {
         loading.value = true;
         errors.value = {};
         
@@ -58,17 +58,17 @@ export default function useListas() {
         }
 
         try {
-            const response = await axios.post('/api/admin/listas', formData, {
+            const response = await axios.post('/api/admin/albumes', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-            lista.value = response.data.lista;
+            album.value = response.data.album;
             loading.value = false;
             toast.add({
                 severity: 'success', 
                 summary: 'Éxito', 
-                detail: 'Lista de reproducción creada correctamente', 
+                detail: 'Álbum creado correctamente', 
                 life: 3000
             });
             return response;
@@ -80,25 +80,25 @@ export default function useListas() {
             toast.add({
                 severity: 'error', 
                 summary: 'Error', 
-                detail: 'Error al crear la lista de reproducción', 
+                detail: 'Error al crear el álbum', 
                 life: 3000
             });
             throw e;
         }
     };
 
-    const updateLista = async (id, form) => {
+    const updateAlbum = async (id, form) => {
         loading.value = true;
         errors.value = {};
 
         try {
-            const response = await axios.put(`/api/admin/listas/${id}`, form);
-            lista.value = response.data.data;
+            const response = await axios.put(`/api/admin/albumes/${id}`, form);
+            album.value = response.data.data;
             loading.value = false;
             toast.add({
                 severity: 'success', 
                 summary: 'Éxito', 
-                detail: 'Lista de reproducción actualizada correctamente', 
+                detail: 'Álbum actualizado correctamente', 
                 life: 3000
             });
             return response;
@@ -110,23 +110,23 @@ export default function useListas() {
             toast.add({
                 severity: 'error', 
                 summary: 'Error', 
-                detail: 'Error al actualizar la lista de reproducción', 
+                detail: 'Error al actualizar el álbum', 
                 life: 3000
             });
             throw e;
         }
     };
 
-    const deleteLista = async (id) => {
+    const deleteAlbum = async (id) => {
         loading.value = true;
         try {
-            await axios.delete(`/api/admin/listas/${id}`);
-            getListas(); 
+            await axios.delete(`/api/admin/albumes/${id}`);
+            getAlbumes(); 
             loading.value = false;
             toast.add({
                 severity: 'success', 
                 summary: 'Éxito', 
-                detail: 'Lista de reproducción eliminada correctamente', 
+                detail: 'Álbum eliminado correctamente', 
                 life: 3000
             });
         } catch (e) {
@@ -134,48 +134,7 @@ export default function useListas() {
             toast.add({
                 severity: 'error', 
                 summary: 'Error', 
-                detail: 'Error al eliminar la lista de reproducción', 
-                life: 3000
-            });
-            throw e;
-        }
-    };
-
-    const getCancionesLista = async (id) => {
-        loading.value = true;
-        try {
-            const response = await axios.get(`/api/listas/${id}/canciones`);
-            loading.value = false;
-            return response.data.data;
-        } catch (e) {
-            loading.value = false;
-            toast.add({
-                severity: 'error', 
-                summary: 'Error', 
-                detail: 'Error al cargar las canciones de la lista', 
-                life: 3000
-            });
-            throw e;
-        }
-    };
-
-    const eliminarCancionDeLista = async (listaId, cancionId) => {
-        loading.value = true;
-        try {
-            await axios.delete(`/api/listas/${listaId}/canciones/${cancionId}`);
-            loading.value = false;
-            toast.add({
-                severity: 'success', 
-                summary: 'Éxito', 
-                detail: 'Canción eliminada correctamente de la lista', 
-                life: 3000
-            });
-        } catch (e) {
-            loading.value = false;
-            toast.add({
-                severity: 'error', 
-                summary: 'Error', 
-                detail: 'Error al eliminar la canción de la lista', 
+                detail: 'Error al eliminar el álbum', 
                 life: 3000
             });
             throw e;
@@ -186,10 +145,10 @@ export default function useListas() {
         loading.value = true;
         const formData = new FormData();
         formData.append('id', id);
-        formData.append('picture', file);
+        formData.append('portada', file);
 
         try {
-            const response = await axios.post('/api/admin/listas/updateimg', formData, {
+            const response = await axios.post('/api/admin/albumes/update-portada', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -215,17 +174,15 @@ export default function useListas() {
     };
 
     return {
-        listas,
-        lista,
+        albumes,
+        album,
         errors,
         loading,
-        getListas,
-        getLista,
-        storeLista,
-        updateLista,
-        deleteLista,
-        getCancionesLista,
-        eliminarCancionDeLista,
+        getAlbumes,
+        getAlbum,
+        storeAlbum,
+        updateAlbum,
+        deleteAlbum,
         updatePortada
     };
 }

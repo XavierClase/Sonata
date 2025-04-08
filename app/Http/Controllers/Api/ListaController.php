@@ -15,9 +15,13 @@ class ListaController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
-    }
+{
+    
+    $listas = Lista::with(['user',  'media'])->get();
+    
+
+    return ListaResource::collection($listas);
+}
 
     /**
      * Store a newly created resource in storage.
