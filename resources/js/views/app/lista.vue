@@ -34,7 +34,6 @@
                 id="iconoBanner"
                 v-if="userPropio?.name !== lista?.creador"
                 :class="esFavoritoLista ? 'pi pi-heart-fill' : 'pi pi-heart'" 
-                style="font-size: 2.4rem; cursor: pointer"
                 @click="likeLista(lista?.id, $event)"
             ></i>
             <i 
@@ -48,7 +47,6 @@
         </div>
         <div class="lista-banner-play" @click="toggleListaPlayback">
             <svg  v-if="!isPlaying" viewBox="0 0 100 100">
-                <!-- Definición del degradado -->
                 <defs>
                     <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stop-color="#F472B6" />
@@ -56,10 +54,8 @@
                     </linearGradient>
                 </defs>
                 
-                <!-- Círculo de fondo con degradado -->
                 <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
                 
-                <!-- Triángulo de play blanco -->
                 <path d="M35 25 L35 75 L75 50 Z" fill="white"/>
             </svg>
             <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -110,7 +106,7 @@
                 <i 
                     v-if="userPropio?.name === lista?.creador" 
                     class="pi pi-times-circle" 
-                    style="cursor: pointer; color: red;" 
+                    style="cursor: pointer;" 
                     @click="prepararEliminarCancion(cancion)"
                     title="Eliminar canción de la lista"
                 ></i>
@@ -573,6 +569,10 @@
         width: auto;
     }
 
+    #iconoBanner {
+        font-size: 2.4rem;
+    }
+
     @media (max-width: 500px) {
         .row {
             margin-right: 0 !important;
@@ -614,12 +614,17 @@
         .datos-detalles-lista h1 {
             font-size: 1.5rem;
             margin: 5px 0;
+            font-weight: bold;
         }
 
         .datos-detalles-lista span {
             justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 10px;
+        }
+
+        .banner-creador-nombre {
+            font-size: 1rem;
         }
 
         .lista-descripcion {
@@ -664,11 +669,18 @@
             gap: 10px;
         }
 
-        /* Canciones de la lista */
         .cancion-lista {
             width: 100%;
             display: flex;
             flex-direction: row;
+        }
+
+        .cancion-lista:has(.pi-times-circle) div {
+            width: 90%; 
+        }
+
+        .cancion-lista:not(:has(.pi-times-circle)) div {
+            width: 100%; 
         }
 
         .cancion-lista div {
@@ -676,7 +688,7 @@
             grid-template-columns: 0.5fr 5fr 1fr 1fr 1fr 0.5fr;
             min-height: 50px;
             padding: 8px 0;
-            width: 90%;
+            width: auto;
         }
 
         .num-cancion-lista {
@@ -712,9 +724,7 @@
             font-size: 0.9rem;
         }
 
-        .pi-times-circle {
-            /* margin-left: 8px; */
-        }
+
     }
 
 /* Ajustes específicos para pantallas muy pequeñas */

@@ -400,7 +400,174 @@
         width: auto;
     }
 
-   
+    /* Estilos responsive para la vista de likes */
+    @media (max-width: 500px) {
+        .row {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+            width: 100%;
+            flex-direction: column;
+        }
+
+        /* Banner de la lista */
+        .lista-banner {
+            height: auto;
+            padding: 20px 0;
+            flex-direction: column;
+            width: 100%; /* Ajustado para ocupar todo el ancho */
+        }
+
+        .detalles-lista {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+            width: 100%;
+            position: relative;
+            padding-bottom: 40px;
+        }
+        
+        .lista-banner-img {
+            margin-left: 0;
+            height: 200px;
+            width: 200px;
+        }
+
+        .datos-detalles-lista {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centrado para esta vista */
+            padding: 0 10px;
+        }
+
+        .datos-detalles-lista h1 {
+            font-size: 1.5rem;
+            margin: 5px 0;
+        }
+
+        .datos-detalles-lista span {
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        /* Botón de reproducción */
+        .lista-banner-play {
+            height: 70px;
+            width: 70px;
+            position: absolute;
+            right: 15px;
+            top: 250px;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Contenedor de canciones */
+        .lista-canciones-container {
+            padding: 0 10px 50px 10px;
+            height: full;
+        }
+
+        .lista-canciones-container p {
+            padding-left: 5px;
+        }
+
+        .lista-canciones-categorias {
+            display: none;
+        }
+
+        .lista-canciones-detalles {
+            min-width: 100%;
+            gap: 10px;
+        }
+
+        /* Canciones de la lista */
+        .cancion-lista {
+            width: 100%; /* Ajustar al ancho completo */
+            margin-right: 0 !important;
+        }
+
+        .cancion-lista div {
+            width: 100%;
+            min-height: 50px;
+            padding: 8px 0;
+            display: grid;
+            grid-template-columns: 0.5fr 4fr 1fr 1fr 1fr;
+        }
+
+        .num-cancion-lista {
+            font-size: 1.2rem;
+            border-right: none;
+            padding-left: 10px !important;
+        }
+
+        .cancion-lista-nombre {
+            font-size: 1rem;
+            padding-left: 8px !important;
+        }
+
+        .cancion-lista-reproducciones {
+            font-size: 0.9rem;
+            padding-left: 8px !important;
+        }
+
+        .duracion-cancion {
+            font-size: 0.9rem;
+            padding-left: 8px !important;
+        }
+
+        .cancion-lista-span {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            width: auto;
+        }
+
+        .cancion-lista-span i {
+            font-size: 0.9rem;
+        }
+
+        /* Ajustes para el modal en móvil */
+        .crearLista-modal {
+            width: 90% !important;
+            max-width: 480px !important;
+        }
+
+        #config-descripcion {
+            width: 100%;
+        }
+
+        .config-imagenes {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    }
+
+    /* Ajustes específicos para pantallas muy pequeñas */
+    @media (max-width: 360px) {
+        .cancion-lista div {
+            grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr;
+        }
+        
+        .cancion-lista-nombre {
+            font-size: 0.85rem;
+        }
+        
+        .cancion-lista-reproducciones, .duracion-cancion {
+            font-size: 0.8rem;
+        }
+        
+        .cancion-lista-span i {
+            font-size: 0.8rem;
+        }
+
+        .datos-detalles-lista h1 {
+            font-size: 1.3rem;
+        }
+    }
 </style>
 
 <style>

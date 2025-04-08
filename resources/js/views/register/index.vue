@@ -163,4 +163,36 @@ const { registerForm, validationErrors, processing, submitRegister } = useAuth()
     .form-check-input {
         height: 15px !important;
     }
+
+     /* Media query para pantallas de 500px o menos */
+     @media (max-width: 500px) {
+        .card-body {
+            width: 100% !important;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        
+        .card-header {
+            width: 100% !important;
+        }
+        
+        .card-body input[type="email"],
+        .card-body input[type="password"] {
+            width: 100%;
+        }
+        
+        .form-control {
+            width: 100%;
+        }
+        
+        .card-body button {
+            width: 100%;
+        }
+        
+        /* El checkbox mantiene su tamaño original */
+        .form-check-input {
+            height: 15px !important;
+            width: 15px !important;
+        }
+    }
 </style>

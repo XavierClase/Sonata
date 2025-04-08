@@ -21,8 +21,6 @@
 
     <i class="pi pi-share-alt"></i>
 
-   
-
     <div class="perfil-artista-listas">
         <h2>Listas Creadas</h2>
         <div class="row gap-4">
@@ -45,7 +43,7 @@
         </div>
     </div>
 
-    <div class="perfil-artista-listas">
+    <div class="perfil-artista-listas" id="guardadas">
         <h2>Listas guardadas</h2>
         <div class="row gap-4">
             <router-link 
@@ -229,7 +227,6 @@
 
 
 <style scoped>
-
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -436,15 +433,91 @@
         color: white;
     }
 
+    /* Media query para pantallas de 500px o menos */
+    @media (max-width: 500px) {
+        .perfil-artista-banner {
+            height: auto;
+            padding: 20px 0;
+            flex-direction: column;
+        }
 
+        .perfil-artista-banner span {
+            flex-direction: column;
+            text-align: center;
+            width: 100%;
+        }
+
+        .perfil-artista-banner-img {
+            margin-left: 0;
+            margin: 0 auto;
+        }
+
+        .perfil-artista-banner h1 {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+
+        .pi-cog {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin: 0;
+        }
+
+        .pi-share-alt {
+            padding: 15px;
+            font-size: 1.5rem;
+            display: block;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .perfil-artista-listas {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .row.gap-4 {
+            justify-content: center;
+            gap: 15px !important;
+        }
+
+        .album {
+            width: 200px;
+            height: 300px;
+            margin: 0 5px 15px 5px;
+        }
+
+        .album-detalles h4 {
+            font-size: 1rem;
+        }
+
+        .album-detalles p {
+            font-size: 0.8rem;
+        }
+
+        .banner-config-modal {
+            width: 90% !important;
+            margin: 0 auto;
+        }
+
+        .config-imagenes {
+            align-items: center;
+        }
+
+        #guardadas {
+            padding-bottom: 100px;
+        }
+    }
 </style>
 
 
 <style>
-
     /* --- Modal --- */
-
-
     .banner-config-modal {
         background-color: #200834 !important;
         border: 1px solid purple !important;
@@ -480,7 +553,7 @@
         gap: 20px;
     }
 
-    .imagen-config-perfil{
+    .imagen-config-perfil {
         position: relative;
         width: 130px;
         height: 130px;
@@ -513,5 +586,38 @@
         height: 100%;
         opacity: 0;
         cursor: pointer;
+    }
+    
+    /* Media query para el estilo global del modal en pantallas pequeñas */
+    @media (max-width: 500px) {
+        .banner-config-modal {
+            width: 95% !important;
+            max-width: 95% !important;
+        }
+        
+        .banner-config-modal .p-dialog-content {
+            padding: 1rem !important;
+        }
+        
+        .banner-config-modal .row {
+            flex-direction: column;
+        }
+        
+        .banner-config-modal .col-md-6 {
+            width: 100%;
+        }
+        
+        .banner-config-input {
+            width: 100% !important;
+        }
+        
+        .flex.justify-end {
+            justify-content: center !important;
+        }
+        
+        .config-imagenes {
+            align-items: center;
+            margin-bottom: 1rem;
+        }
     }
 </style>
