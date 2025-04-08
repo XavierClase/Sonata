@@ -1,5 +1,5 @@
 <template>
-    <section class="">
+    <section >
         <h1 class="h1_panel">Panel Artista</h1>
         <ul class="texto_panel">
             <template v-for="(item, i) in Permisos" :key="i">
@@ -53,26 +53,34 @@ const Permisos = computed(() => {
 </script>
 
 <style lang="scss" scoped>
-
-.router-link-active {
-    font-weight: bold;
+    .router-link-active {
+        font-weight: bold;
+    }
+    .h1_panel{
+        font-size: 40px;
+        background: linear-gradient(to right, #F472B6,  #A855F7);
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+        margin-bottom: 30px;
+    }
+    .texto_panel{
+        display: flex;
+        flex-direction: column;
+        color: #F472B6;
+        font-size: 24px;
+        gap: 20px;
+    }
+    @media (width < 500px) {
+        .h1_panel {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .texto_panel {
+            flex-direction: row;
+            font-size: 17px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 }
-
-.h1_panel{
-    font-size: 40px;
-    background: linear-gradient(to right, #F472B6,  #A855F7);
-    background-clip: text; 
-    color: transparent; 
-    display: inline-block;
-    margin-bottom: 30px;
-}
-
-.texto_panel{
-    display: flex;
-    flex-direction: column;
-    color: #F472B6;
-    font-size: 24px;
-    gap: 20px;
-}
-
 </style>

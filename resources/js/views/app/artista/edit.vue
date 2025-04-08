@@ -647,14 +647,45 @@ p {
 .boton_borrar {
   color: #EF4444;
 }
+
+@media (width < 500px) {
+  .layout {
+    flex-direction: column;
+    padding-bottom: 100px;
+  }
+  
+  .appPanel {
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+    margin: 0;
+    border-right: none;
+    border-bottom: 2px solid #f472b5;
+    border-image: linear-gradient(to right, #f472b5, #A855F7) 1;
+    padding: 10px;
+    overflow-x: auto;
+    z-index: 1;
+  }
+  
+  .contenido_edit {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 20px;
+    padding: 15px;
+  }
+
+}
 </style>
 <style>
 /* Estilos para el Dialog */
 .dialog_estilo {
   background-color: #200834 !important;
   border: 1px solid purple !important;
-  width: 700px !important;
   color: white !important;
+  max-width: 700px !important;
+  width: 90% !important; /* Cambiado de width fijo a porcentaje */
 }
 
 .dialog_input {
@@ -682,6 +713,18 @@ p {
 
 .dialog_estilo .boton_eliminar {
   background-color: #EF4444 !important;
+}
+
+.song-item .boton_eliminar {
+  min-width: 2.5rem !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
 }
 
 .config_imagenes {
@@ -828,5 +871,63 @@ p {
   text-align: center;
   padding: 20px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 500px) {
+  .song-item {
+    padding: 8px 8px !important;
+  }
+  
+  .song-info {
+    gap: 8px !important;
+    overflow: hidden !important;
+  }
+  
+  .song-name {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 150px !important;
+  }
+  
+  .imagen_config_perfil {
+    width: 180px !important;
+    height: 180px !important;
+    margin: 0 auto !important;
+  }
+
+  /* Ajustar layout para pantallas pequeñas */
+  .dialog_estilo .row {
+    flex-direction: column !important;
+  }
+  
+  .dialog_estilo .col-md-6 {
+    width: 100% !important;
+    margin-bottom: 15px !important;
+  }
+  
+  /* Fijar botones inferiores */
+  .dialog_estilo .flex.justify-end {
+    flex-wrap: nowrap !important;
+  }
+  
+  .dialog_estilo .flex.justify-end button {
+    flex: 1 !important;
+    padding: 0.5rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Estilos adicionales para garantizar que el botón de eliminar se vea bien */
+.boton_eliminar .p-button-icon {
+  font-size: 1rem !important;
+}
+
+/* Mejorar visualización de canciones */
+.song-duration {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 70px !important;
+  justify-content: flex-end !important;
 }
 </style>

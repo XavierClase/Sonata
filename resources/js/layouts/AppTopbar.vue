@@ -323,6 +323,7 @@ onUnmounted(() => {
     height: 8vh;
     background-color: #1E1B4B;
     position: sticky;
+    z-index: 999;
 }
 
 .layout-topbar img {

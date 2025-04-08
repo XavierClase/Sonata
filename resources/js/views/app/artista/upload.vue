@@ -498,4 +498,67 @@ const enviarFormulario = async () => {
 .hidden {
   display: none;
 }
+
+@media (width < 500px) {
+  .layout {
+    flex-direction: column;
+    padding-bottom: 100px;
+  }
+  
+  .appPanel {
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: 0;
+    left: 0;
+    margin: 0;
+    border-right: none;
+    border-bottom: 2px solid #f472b5;
+    border-image: linear-gradient(to right, #f472b5, #A855F7) 1;
+    padding: 10px;
+    overflow-x: auto;
+    z-index: 1;
+  }
+  
+  .contenidoUpload {
+    margin-left: 0;
+    margin-top: 20px;
+    padding: 15px;
+  }
+  
+  .titulo_subir_musica {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  
+  .header_formulario {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .imagen_album {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .cancion {
+    flex-wrap: wrap;
+  }
+  
+  .numero_cancion {
+    width: 30px;
+    font-size: 14px;
+  }
+  
+  .input_cancion {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .duracion_cancion {
+    width: 50px;
+    font-size: 14px;
+  }
+}
 </style>
