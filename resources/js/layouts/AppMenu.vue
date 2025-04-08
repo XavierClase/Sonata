@@ -54,9 +54,9 @@ const model = ref([
     {
         label: 'Musica',
         items: [
-            { label: 'Albums', icon: 'pi pi-fw pi-headphones', to: '/', permision: 'role-list' },
-            { label: 'Canciones', icon: 'pi pi-fw pi-play-circle', to: '/', permision:'role-list' },
-            { label: 'Listas', icon: 'pi pi-fw pi-file', to: '/', permision:'role-list' }
+            { label: 'Albums', icon: 'pi pi-fw pi-headphones', to: '/admin/albumes', permision: 'role-list' },
+            { label: 'Canciones', icon: 'pi pi-fw pi-play-circle', to: '/admin/canciones', permision:'role-list' },
+            { label: 'Listas', icon: 'pi pi-fw pi-file', to: '/admin/listas', permision:'role-list' }
         ]
     },
 ]);

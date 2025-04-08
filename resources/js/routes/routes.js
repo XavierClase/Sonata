@@ -420,6 +420,99 @@ export default [
                     }
                 ]
             },
+            {
+                name: 'listas',
+                path: 'listas',
+                meta: { breadCrumb: 'Listas'},
+                children: [
+                    {
+                        name: 'listas.index',
+                        path: '',
+                        component: () => import('@/views/admin/listas/Index.vue'),
+                        meta: { breadCrumb: 'listas' }
+                    },
+                    {
+                        name: 'listas.create',
+                        path: 'create',
+                        component: () => import('@/views/admin/listas/Create.vue'),
+                        meta: {
+                            breadCrumb: 'Crear listas',
+                            linked: false,
+                        }
+                    },
+                    {
+                        name: 'listas.edit',
+                        path: 'edit/:id',
+                        component: () => import('../views/admin/listas/Edit.vue'),
+                        meta: {
+                            breadCrumb: 'editar listas',
+                            linked: false,
+                        }
+                    }
+                ]
+            },
+            {
+                name: 'canciones',
+                path: 'canciones',
+                meta: { breadCrumb: 'canciones'},
+                children: [
+                    {
+                        name: 'canciones.index',
+                        path: '',
+                        component: () => import('@/views/admin/canciones/Index.vue'),
+                        meta: { breadCrumb: 'canciones' }
+                    },
+                    {
+                        name: 'canciones.create',
+                        path: 'create',
+                        component: () => import('@/views/admin/canciones/Create.vue'),
+                        meta: {
+                            breadCrumb: 'Crear canciones',
+                            linked: false,
+                        }
+                    },
+                    {
+                        name: 'canciones.edit',
+                        path: 'edit/:id',
+                        component: () => import('../views/admin/canciones/Edit.vue'),
+                        meta: {
+                            breadCrumb: 'editar canciones',
+                            linked: false,
+                        }
+                    }
+                ]
+            },
+            {
+                name: 'albumes',
+                path: 'albumes',
+                meta: { breadCrumb: 'albums'},
+                children: [
+                    {
+                        name: 'albumes.index',
+                        path: '',
+                        component: () => import('@/views/admin/albumes/Index.vue'),
+                        meta: { breadCrumb: 'albumes' }
+                    },
+                    {
+                        name: 'canalbumescion.create',
+                        path: 'create',
+                        component: () => import('@/views/admin/albumes/Create.vue'),
+                        meta: {
+                            breadCrumb: 'Crear albumes',
+                            linked: false,
+                        }
+                    },
+                    {
+                        name: 'albumes.edit',
+                        path: 'edit/:id',
+                        component: () => import('../views/admin/albumes/Edit.vue'),
+                        meta: {
+                            breadCrumb: 'editar albumes',
+                            linked: false,
+                        }
+                    }
+                ]
+            },
 
             //TODO Organizar rutas
             {
