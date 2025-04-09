@@ -94,9 +94,9 @@ Route::post('listas/update/{id}', [ListaController::class,'update']);
 Route::get('listas/usuario/{userId}', [ListaController::class, 'getListasUser']);
 Route::post('/listas/añadirCancion', [ListaController::class, 'añadirCancionALista']);
 Route::delete('listas/del/{id}', [ListaController::class, 'destroy']);
-Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class, 'eliminarCancionDeLista']);
-Route::get('admin/listas', [ListaController::class, 'index']);
-Route::get('listas/{id}/canciones', [ListaController::class, 'index']);
+
+
+
 
 
 Route::get('ultimo_escuchado', [UltimoEscuchadoController::class, 'index']);
@@ -117,3 +117,11 @@ Route::get('/album/favorito/{idAlbum}', [LikeController::class, 'esAlbumFavorito
 Route::get('/mostrar/lista/likes', [LikeController::class, 'getListasFavoritas']);
 Route::post('/like/lista/{idLista}', [LikeController::class, 'toggleLikeLista']);
 Route::get('/lista/favorito/{idLista}', [LikeController::class, 'esListaFavorita']);
+
+Route::get('admin/listas', [ListaController::class, 'index']);
+Route::post('admin/listas', [ListaController::class, 'store']);
+Route::get('admin/listas/{id}', [ListaController::class, 'show']);
+Route::put('admin/listas/{id}', [ListaController::class, 'update']);
+Route::delete('admin/listas/{id}', [ListaController::class, 'destroy']);
+Route::post('admin/listas/updateimg', [ListaController::class, 'updateimg']);
+Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class, 'eliminarCancionDeLista']);

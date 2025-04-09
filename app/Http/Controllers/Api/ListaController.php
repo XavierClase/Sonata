@@ -175,7 +175,8 @@ class ListaController extends Controller
             'descripcion' => 'nullable|string',
         ]);
 
-        if (auth()->id() !== $lista->id_usuario) {
+      
+        if (auth()->id() !== $lista->id_usuario && !auth()->user()->hasRole('admin')) {
             return response()->json(['message' => 'No tienes permiso para actualizar esta lista'], 403);
         }
 
@@ -235,8 +236,8 @@ class ListaController extends Controller
     {
         try {
             $lista = Lista::findOrFail($lista_id);
-
-            if ($lista->id_usuario !== auth()->id()) {
+            
+            if (auth()->id() !== $lista->id_usuario && !auth()->user()->hasRole('admin')) {
                 return response()->json([
                     'message' => 'No tienes permiso para modificar esta lista'
                 ], 403);
@@ -258,6 +259,8 @@ class ListaController extends Controller
             ], 500);
         }
     }
+
+    
 
 
     public function obtenerListasAleatorias()
