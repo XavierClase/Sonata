@@ -196,7 +196,7 @@ class ListaController extends Controller
         try {
             $lista = Lista::findOrFail($id);
             
-            if ($lista->id_usuario !== auth()->id()) {
+            if (auth()->id() !== $lista->id_usuario && !auth()->user()->hasRole('admin')) {
                 return response()->json([
                     'message' => 'No tienes permiso para eliminar esta lista'
                 ], 403);
@@ -236,7 +236,7 @@ class ListaController extends Controller
     {
         try {
             $lista = Lista::findOrFail($lista_id);
-            
+
             if (auth()->id() !== $lista->id_usuario && !auth()->user()->hasRole('admin')) {
                 return response()->json([
                     'message' => 'No tienes permiso para modificar esta lista'
