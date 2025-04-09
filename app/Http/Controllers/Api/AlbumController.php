@@ -30,7 +30,7 @@ class AlbumController extends Controller
             'num_canciones' => 'required|integer',
             'duracion_total' => 'required|string',
             'tipo' => 'required|string',
-            'portada' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'portada' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
         try {
