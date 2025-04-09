@@ -63,7 +63,7 @@
           <div class="col-md-6">
             <div class="flex items-center gap-4 mb-4">
               <FloatLabel variant="on">
-                <InputText class="dialog_input" id="albumNombre" v-model="selectedAlbum.nombre" />
+                <InputText class="dialog_input" id="albumNombre" v-model="selectedAlbum.nombre" maxlength="45" />
                 <label for="albumNombre">Nombre del álbum</label>
               </FloatLabel>
             </div>
@@ -588,10 +588,15 @@ p {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  text-overflow: ellipsis; 
 }
 
 .nombre_album_texto {
   color: #F472B6;
+  width: 160px;
 }
 
 .detalle_album {

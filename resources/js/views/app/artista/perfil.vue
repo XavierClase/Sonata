@@ -472,7 +472,7 @@
     }
 
     .album {
-        height: 350px;
+        height: 380px;
         background-color: #721cc2;
     }
 
@@ -510,6 +510,7 @@
         background-clip: text;
         color: transparent;
         font-weight: bold;
+        max-height: 70px;
     }
 
 
@@ -641,11 +642,15 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 15px !important;
+            margin: 0 !important; 
+            width: 100%;
+            max-width: 100vw; 
+            overflow-x: hidden; 
         }
 
         .album {
-            width: calc(50% - 15px);
-            height: 320px;
+            width: 60vw;
+            height: 420px;
             margin-bottom: 15px;
         }
 

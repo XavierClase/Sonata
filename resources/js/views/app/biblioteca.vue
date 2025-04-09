@@ -27,7 +27,7 @@
         
         <div class="biblioteca-favoritos">
             <h2>Listas Favoritas</h2>
-            <div class="bliblioteca-favoritos-tarjetas">
+            <div class="biblioteca-favoritos-tarjetas">
                 <router-link :to="{ name: 'app.lista', params: {id: lista.id} }" class="biblioteca_tarjeta" v-for="(lista, index) in listasFavoritas" :key="lista.id">
                     <img :src="getImageUrl(lista)" :alt="lista.nombre" class="imagen_caja">
                     <p>{{ lista.nombre }}</p>
@@ -35,7 +35,7 @@
             </div>
 
             <h2>Álbumes Favoritos</h2>
-            <div class="bliblioteca-favoritos-tarjetas">
+            <div class="biblioteca-favoritos-tarjetas" id="albumsFavs">
                 <router-link :to="{ name: 'app.album', params: {id: album.id} }" class="biblioteca_tarjeta" v-for="(album, index) in albumesFavoritos" :key="album.id">
                     <img :src="getImageUrl(album)" :alt="album.nombre" class="imagen_caja">
                     <p>{{ album.nombre }}</p>
@@ -51,19 +51,19 @@
                 <div class="config-imagenes col-md-4">
                     <div class="imagen-crear-lista">
                         <img :src="PreviewImagenLista || '/images/placeholder1.jpg'" class="estilo_imagen">
-                        <input type="file" @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo" required>  
+                        <input type="file" @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo" required >  
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="flex items-center gap-4 mb-4">
                         <FloatLabel variant="on">
-                            <InputText class="crearLista-input" id="username"  v-model="listaData.nombre" required />
+                            <InputText class="crearLista-input" id="username"  v-model="listaData.nombre" required maxlength="45"/>
                             <label for="username">Nombre de la lista</label>
                         </FloatLabel>
                     </div>
                     <div class="flex items-center gap-4 mb-8">
                         <FloatLabel variant="on">
-                            <Textarea class="crearLista-input" id="config-descripcion" rows="5" cols="30" style="resize: none" v-model="listaData.descripcion"  />
+                            <Textarea class="crearLista-input" id="config-descripcion" rows="5" cols="30" style="resize: none" v-model="listaData.descripcion" maxlength="200" />
                             <label for="descripcion">Descripción</label>
                         </FloatLabel>
                     </div>
@@ -239,7 +239,7 @@
         padding-top: 60px;
     }
 
-    .bliblioteca-favoritos-tarjetas {
+    .biblioteca-favoritos-tarjetas {
         width: 100%;
         display: flex;
         flex-wrap: wrap;
@@ -301,7 +301,18 @@
         }
 
         .biblioteca-favoritos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 35px;
+        }
+
+        .biblioteca-favoritos-tarjetas {
             justify-content: center;
+        }
+
+        #albumsFavs {
+            padding-bottom: 70px;
         }
     }
 </style>

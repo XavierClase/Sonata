@@ -373,8 +373,13 @@
     }
 
     .datos-detalles-album h1 {
+        max-width: 90vw;
         font-size: 1.5rem;
         margin: 5px 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        text-overflow: ellipsis; 
     }
 
     .datos-detalles-album span {

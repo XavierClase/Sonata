@@ -15,7 +15,7 @@
             </div>
 
             <div class="informacion_album">
-              <input v-model="albumData.nombre" placeholder="Nombre álbum" class="inputs_form">
+              <input v-model="albumData.nombre" placeholder="Nombre álbum" class="inputs_form" maxlength="45">
            
               <select v-model="albumData.tipo" class="select_form">
                 <option value="Album">Álbum</option>
@@ -33,7 +33,7 @@
           <section class="lista_canciones">
             <div v-for="(cancion, index) in canciones" :key="index" class="cancion">
               <span class="numero_cancion">{{ index + 1 }}</span>
-              <input v-model="cancion.nombre" placeholder="Nombre de la canción" class="input_cancion">
+              <input v-model="cancion.nombre" placeholder="Nombre de la canción" class="input_cancion" maxlength="45">
               <span class="duracion_cancion">{{ cancion.duracion || '0:00' }}</span>
               <button @click.prevent="quitarCancion(index)" class="quitar_cancion">⨯</button>
             </div>

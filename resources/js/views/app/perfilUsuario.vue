@@ -227,11 +227,13 @@
 
 
 <style scoped>
+    /* Reset básico y configuración general */
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
-        margin-right: calc(0* var(--bs-gutter-x)) !important; 
-        margin-left: calc(0* var(--bs-gutter-x)) !important;
+        margin-right: 0 !important; 
+        margin-left: 0 !important;
+        box-sizing: border-box;
     }
 
     h2 {
@@ -239,6 +241,7 @@
         font-size: 2.3rem;
     }
 
+    /* Banner del perfil */
     .perfil-artista-banner {
         height: 180px;
         width: 100%;
@@ -290,104 +293,29 @@
         padding: 35px;
     }
 
-    .perfil-artista-medio > div {
-        height: 400px;
-    }
-
-    .perfil-artista-medio-populares {
-        padding-left: 33px;
-        display: flex;
-        flex-direction: column;
-        
-    }
-
-    .canciones-populares {
-        height: 330px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; 
-        gap: 20px;
-    }
-
-    .cancion-popular {
-        min-height: 50px;
-        display: flex;
-        align-items: center;
-        color: white;
-        flex-wrap: nowrap; 
-    }
-
-    .cancion-popular p {
-        margin: 0;
-        padding: 0;
-    }
-
-    .cancion-popular-span1 {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .cancion-popular img {
-        min-height: 50px;
-        max-height: 50px;
-
-        min-width: 50px;
-        max-width: 50px;
-    }
-
-    .cancion-popular-span2{
-        max-height: 50px;
-        min-height: 50px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .cancion-popular-nombre {
-        font-size: 1.3rem;
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-    }
-
-    .cancion-popular-reproducciones {
-        font-size: 0.9rem;
-        color: rgb(171, 171, 171);
-    }
-
-    .duracion-cancion {
-        font-size: 1.2rem;
-    }
-
-    .pi-heart {
-        font-size: 1.5rem;
-    }
-
-    .pi-plus {
-        font-size: 1.5rem;
-    }
-
-    .perfil-artista-medio-detalles div {
-        height: 330px;
-        width: 470px;
-        border: 1px solid black;
-    }
-
+    /* Sección de listas */
     .perfil-artista-listas {
         margin-top: 20px;
         padding-left: 33px;
+        padding-right: 33px; /* Añadido para balance */
         padding-bottom: 40px;
+        box-sizing: border-box;
+        width: 100%;
     }
 
     .perfil-artista-listas > div {
         display: flex;
         flex-wrap: wrap;
+        width: 100%;
+        margin: 0;
+        box-sizing: border-box;
     }
 
+    /* Estilos para álbumes */
     .album {
-        height: 350px;
+        height: 400px;
         background-color: #721cc2;
+        box-sizing: border-box;
     }
 
     .album div {
@@ -396,14 +324,14 @@
     }
 
     .album-img {
-        width:  100%;
+        width: 100%;
         position: relative;
         padding-top: 100%; 
         overflow: hidden;
         margin-bottom: 10px;
     }
     
-    .album-img img{
+    .album-img img {
         position: absolute;
         top: 0;
         left: 0;
@@ -424,8 +352,8 @@
         background-clip: text;
         color: transparent;
         font-weight: bold;
+        max-height: 70px;
     }
-
 
     .album-detalles p {
         margin: 0;
@@ -435,6 +363,12 @@
 
     /* Media query para pantallas de 500px o menos */
     @media (max-width: 500px) {
+        /* Fix para scroll horizontal solo en móviles */
+        .perfil-artista-listas {
+            overflow-x: hidden;
+        }
+        
+        /* Ajustes para el banner */
         .perfil-artista-banner {
             height: auto;
             padding: 20px 0;
@@ -476,48 +410,56 @@
             text-align: center;
         }
 
+        /* Ajustes para las listas */
         .perfil-artista-listas {
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-left: 15px;
+            padding-right: 15px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .row.gap-4 {
             justify-content: center;
             gap: 15px !important;
+            margin: 0 !important;
+            width: 100%;
+            max-width: 100vw;
+            box-sizing: border-box;
         }
 
         .album {
-            width: 200px;
-            height: 300px;
-            margin: 0 5px 15px 5px;
+            width: calc(100% - 30px); /* Ajuste para considerar el padding y gap */
+            max-width: 280px; /* Tamaño máximo para mejor visual */
+            height: 390px;
+            margin: 0 auto 15px auto;
         }
 
         .album-detalles h4 {
             font-size: 1rem;
+            
         }
 
         .album-detalles p {
             font-size: 0.8rem;
         }
 
-        .banner-config-modal {
-            width: 90% !important;
-            margin: 0 auto;
-        }
-
-        .config-imagenes {
-            align-items: center;
-        }
-
         #guardadas {
             padding-bottom: 100px;
         }
     }
+
+    /* Ajustes para pantallas muy pequeñas */
+    @media (max-width: 350px) {
+        .album {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
 </style>
 
-
 <style>
-    /* --- Modal --- */
+    /* Estilos globales para el modal */
     .banner-config-modal {
         background-color: #200834 !important;
         border: 1px solid purple !important;
@@ -525,15 +467,10 @@
         color: white !important;
     }
 
-    .banner-config-input{
+    .banner-config-input {
         background-color: #200834 !important;
         border: 1px solid #A855F7 !important;
         color: white !important;
-    }
-
-    #config-descripcion {
-        height: 180px;
-        width: 280px;
     }
 
     .banner-config-modal label {
@@ -562,15 +499,6 @@
         flex-shrink: 0;
     }
 
-    .imagen-config-detalles {
-        position: relative;
-        width: 200px;
-        height: 130px;
-        border: 2px dashed #f472b5;
-        overflow: hidden;
-        flex-shrink: 0;
-    }
-
     .estilo_imagen {
         width: 100%;
         height: 100%;
@@ -588,8 +516,14 @@
         cursor: pointer;
     }
     
-    /* Media query para el estilo global del modal en pantallas pequeñas */
+    /* Media query para el modal en pantallas pequeñas */
     @media (max-width: 500px) {
+        /* Fix para scroll horizontal solo en móviles */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+        
         .banner-config-modal {
             width: 95% !important;
             max-width: 95% !important;

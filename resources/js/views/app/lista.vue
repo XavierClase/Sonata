@@ -17,9 +17,9 @@
                 </h1>
                 <span>
                     <router-link  class="banner-creador-nombre" :key="lista?.id_creador"   :to="{ 
-                name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
-                params: {id: lista?.id_creador} }">{{ lista?.creador }}
-                </router-link>
+                        name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
+                        params: {id: lista?.id_creador} }">{{ lista?.creador }}
+                    </router-link>
 
                     
                     <p>{{  new Date(lista?.created_at).getFullYear() }}</p>
@@ -33,7 +33,7 @@
             <i
                 id="iconoBanner"
                 v-if="userPropio?.name !== lista?.creador"
-                :class="esFavoritoLista ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                :class="esFavoritoLista ? 'pi pi-heart-fill' : 'pi pi-heart'"
                 @click="likeLista(lista?.id, $event)"
             ></i>
             <i 
@@ -387,7 +387,7 @@
     }
 
     .lista-banner {
-        height: 180px;
+        min-height: 180px;
         width: 100%;
         background: linear-gradient(to bottom, #4f226530, #2622653d);
         display: flex;
@@ -583,9 +583,10 @@
 
         /* Banner de la lista */
         .lista-banner {
-            height: auto;
-            padding: 20px 0;
+            min-height: auto;
+            padding: 15px 0;
             flex-direction: column;
+            padding-bottom: 65px;
         }
 
         .detalles-lista {
@@ -594,7 +595,7 @@
             gap: 10px;
             width: 100%;
             position: relative;
-            padding-bottom: 70px;
+            padding-bottom: 20px; /* Reduced from 70px */
         }
         
         .lista-banner-img {
@@ -612,9 +613,14 @@
         }
 
         .datos-detalles-lista h1 {
+            max-width: 90vw;
             font-size: 1.5rem;
             margin: 5px 0;
             font-weight: bold;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            text-overflow: ellipsis; 
         }
 
         .datos-detalles-lista span {
@@ -628,14 +634,20 @@
         }
 
         .lista-descripcion {
-            max-width: 100%;
+            width: 90vw;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            text-overflow: ellipsis;
+            text-align: left;  
+
         }
 
         /* Posicionar el ícono de favorito o configuración */
         #iconoBanner {
             position: absolute;
-            left: 15px;
-            top: 343px;
+            right: 15px; /* Position from right instead of left */
+            top: 10px; /* Position from top */
             font-size: 2rem;
         }
 
@@ -643,11 +655,10 @@
         .lista-banner-play {
             height: 70px;
             width: 70px;
+            margin: 0; /* Remove margin */
             position: absolute;
-            right: 15px;
-            top: 343px;
-            margin: 0;
-            padding: 0;
+            right: 15px; /* Position from right */
+            bottom: 0; /* Position from bottom instead of top */
         }
 
         /* Contenedor de canciones */

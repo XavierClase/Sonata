@@ -245,6 +245,14 @@
         object-fit: cover;
     }
 
+    .cancion-info {
+        max-width: 340px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        text-overflow: ellipsis; 
+    }
+
     .cancion-detalles p {
         font-size: 1.8rem;
         color: white;
@@ -472,10 +480,10 @@
     }
     @media screen and (max-width: 500px) {
         .reproductor {
-            width: 100%;
+            width: 100VW;
             flex-direction: row;
             padding: 8px;
-            height: 70px;
+            height: 80px;
             position: fixed;
             bottom: 0;
             z-index: 100;
@@ -525,8 +533,8 @@
         }
         
         .cancion-img {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             padding-top: 0;
             position: relative;
             flex-shrink: 0;
@@ -536,6 +544,7 @@
         .cancion-info {
             display: flex;
             flex-direction: column;
+            max-width: 140px !important;
         }
         
         .cancion-detalles p {
@@ -561,21 +570,22 @@
         
         .controles {
             gap: 10px;
+            align-items: baseline;
         }
         
         .boton-controles {
-            font-size: 1rem;
+            font-size: 1.3rem;
             top: 0;
         }
         
         .cambiar-cancion {
-            font-size: 1.2rem;
+            font-size: 1.6rem;
         }
         
         .play-button {
-            height: 38px;
-            width: 38px;
-            font-size: 1.2rem;
+            height: 42px;
+            width: 42px;
+            font-size: 1.5rem;
             background: #ff47a6;
         }
         
