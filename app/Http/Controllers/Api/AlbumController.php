@@ -111,7 +111,7 @@ class AlbumController extends Controller
     public function updatePortada(Request $request, string $id)
     {
         $request->validate([
-            'portada' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'portada' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
         try {
