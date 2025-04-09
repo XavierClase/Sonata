@@ -108,9 +108,10 @@
 
     const likeAlbum = async (idAlbum, event) => {
         event.stopPropagation();
-        await toggleLike(idAlbum);
-        esFavoritoAlbum.value = esFavorito(albumId.value);
+        await toggleLike(idAlbum);  
+        esFavoritoAlbum.value = await esFavorito(idAlbum);  
     };
+
 
     const likeCancion = async (idCancion, event) => {
         event.stopPropagation();

@@ -126,7 +126,7 @@ class LikeController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Like actualizado correctamente',
-            'favoritos' => $user->albumesFavoritos()->pluck('id') 
+            'favoritos' => $user->listasFavoritas()->pluck('id') 
         ]);
     }
 
