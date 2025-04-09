@@ -41,6 +41,7 @@ export default function useListas() {
                 detail: 'Error al cargar los detalles de la lista', 
                 life: 3000
             });
+            throw e;
         }
     };
 
@@ -95,12 +96,6 @@ export default function useListas() {
             const response = await axios.put(`/api/admin/listas/${id}`, form);
             lista.value = response.data.data;
             loading.value = false;
-            toast.add({
-                severity: 'success', 
-                summary: 'Éxito', 
-                detail: 'Lista de reproducción actualizada correctamente', 
-                life: 3000
-            });
             return response;
         } catch (e) {
             if (e.response && e.response.status === 422) {
@@ -162,14 +157,9 @@ export default function useListas() {
     const eliminarCancionDeLista = async (listaId, cancionId) => {
         loading.value = true;
         try {
-            await axios.delete(`/api/listas/${listaId}/canciones/${cancionId}`);
+            await axios.delete(`/api/listas/${listaId}/cancion/${cancionId}`);
             loading.value = false;
-            toast.add({
-                severity: 'success', 
-                summary: 'Éxito', 
-                detail: 'Canción eliminada correctamente de la lista', 
-                life: 3000
-            });
+            return true;
         } catch (e) {
             loading.value = false;
             toast.add({
@@ -189,18 +179,12 @@ export default function useListas() {
         formData.append('picture', file);
 
         try {
-            const response = await axios.post('/api/admin/listas/updateimg', formData, {
+            const response = await axios.post('/api/listas/updateimg', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
             loading.value = false;
-            toast.add({
-                severity: 'success', 
-                summary: 'Éxito', 
-                detail: 'Portada actualizada correctamente', 
-                life: 3000
-            });
             return response.data;
         } catch (e) {
             loading.value = false;
@@ -208,6 +192,27 @@ export default function useListas() {
                 severity: 'error', 
                 summary: 'Error', 
                 detail: 'Error al actualizar la portada', 
+                life: 3000
+            });
+            throw e;
+        }
+    };
+
+    const añadirCancionALista = async (listaId, cancionId) => {
+        loading.value = true;
+        try {
+            const response = await axios.post('/api/listas/añadirCancion', {
+                lista_ids: [listaId],
+                cancion_id: cancionId
+            });
+            loading.value = false;
+            return response.data;
+        } catch (e) {
+            loading.value = false;
+            toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Error al añadir la canción a la lista',
                 life: 3000
             });
             throw e;
@@ -226,6 +231,7 @@ export default function useListas() {
         deleteLista,
         getCancionesLista,
         eliminarCancionDeLista,
-        updatePortada
+        updatePortada,
+        añadirCancionALista
     };
 }

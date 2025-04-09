@@ -44,7 +44,7 @@
                     </Column>
                     <Column field="duracion_total" header="Duración" sortable></Column>
                     <Column field="created_at" header="Creado el" sortable></Column>
-
+                    <Column field="updated_at" header="Actualizado el" sortable></Column>
                     <Column header="Portada">
                         <template #body="slotProps">
                             <img v-if="slotProps.data.portada" :src="slotProps.data.portada" alt="Portada" 
