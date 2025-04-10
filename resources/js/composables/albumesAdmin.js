@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 
-export default function useAlbumes() {
+export function useAlbumes() {
     const albumes = ref({ data: [] });
     const album = ref({});
     const errors = ref({});
