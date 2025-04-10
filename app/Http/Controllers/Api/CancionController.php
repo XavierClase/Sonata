@@ -15,7 +15,10 @@ class CancionController extends Controller
      */
     public function index()
     {
-        //
+        $canciones = Cancion::with(['album', 'artista']) 
+        ->orderBy('created_at', 'desc')
+        ->get();
+        return CancionResource::collection($canciones);
     }
 
     /**

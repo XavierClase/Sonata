@@ -87,7 +87,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import useListas from "@/composables/listas";
+import useListas from "@/composables/listasAdmin";
 import { useAbility } from '@casl/vue';
 import {FilterMatchMode} from "@primevue/core/api";
 

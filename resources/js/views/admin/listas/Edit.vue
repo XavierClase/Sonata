@@ -173,7 +173,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import useListas from "../../../composables/listas";
+import useListas from "@/composables/listasAdmin";
 import { useToast } from 'primevue/usetoast';
 
 const router = useRouter();
