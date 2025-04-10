@@ -15,7 +15,7 @@
     <div class="biblioteca-content">
         <div class="biblioteca-tusListas">
             <router-link :to="{ name: 'app.likes' }" class="biblioteca_tarjeta">
-                <img src="images/imgLikes.webp" class="imagen_caja ">
+                <img src="/images/imgLikes.jpg" class="imagen_caja" alt="Fondo degradado con corazón blanco en el centro">
                 <p>Mis Favoritos</p>
             </router-link>
             <router-link :to="{ name: 'app.lista', params: {id: lista.id} }" class="biblioteca_tarjeta" v-for="(lista, index) in listas" :key="lista.id">

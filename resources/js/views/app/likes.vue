@@ -8,15 +8,10 @@
     <div class="lista-banner">
     <div class="detalles-lista">
         <div class="lista-banner-img">
-            <img/>
+            <img src="/images/imgLikes.jpg" alt="Fondo degradado con corazón blanco en el centro">
         </div>
         <div class="datos-detalles-lista">
             <h1>Mis Favoritos</h1>
-            <!-- <span>                 
-                <p>{{ lista?.num_canciones }} canciones</p>
-                <p>·</p>
-                <p>{{ lista?.duracion_total }}</p>
-            </span> -->
         </div>
     </div>
     <div class="lista-banner-play" @click="toggleAlbumPlayback">
