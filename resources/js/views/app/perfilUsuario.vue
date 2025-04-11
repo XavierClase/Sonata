@@ -186,7 +186,7 @@
                 if (response.data && response.data.media.length > 0) {
                     const nuevaImagen = response.data.media[0].original_url;
                     PreviewImagenPerfil.value = nuevaImagen;
-                    user.value.avatar = nuevaImagen; // Actualiza el perfil localmente
+                    user.value.avatar = nuevaImagen; 
                 }
 
                 console.log("Imagen actualizada correctamente", response.data);
@@ -220,7 +220,7 @@
             user.value = response.data.data;
         } catch (error) {
             console.error('Error al actualizar los datos del usuario:', error);
-            window.location.reload(); // Recarga la página si no se pueden actualizar los datos
+            window.location.reload(); 
         }
     };
 </script>

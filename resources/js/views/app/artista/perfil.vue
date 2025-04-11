@@ -66,11 +66,11 @@
     </div>
 
     <div class="perfil-artista-albums">
-        <h2>Álbums</h2>
+        <h2>Álbumes</h2>
         <div class="row gap-4">
             <router-link 
                 class="album col-md-2" 
-                v-for="album in albums" 
+                v-for="album in albumes" 
                 :key="album.id" 
                 :to="{ name: 'app.album', params: {id: album.id} }"
             >
@@ -124,153 +124,74 @@
 </template>
 
 
-<script setup>
-    import { ref, reactive, onMounted } from 'vue';
-    import { useRoute } from 'vue-router';
-    import axios from 'axios';
-    import { authStore } from "@/store/auth.js";
-    import { useLikeCancion } from "@/composables/likes.js";
-    import { usePlayer } from "@/composables/usePlayer.js"; 
-    import ListaCanciones from '@/components/listaCanciones.vue'
+<script setup> 
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { authStore } from "@/store/auth.js";
+import { useLikeCancion } from "@/composables/likes.js";
+import { usePlayer } from "@/composables/usePlayer.js"; 
+import { mostrarMusica } from "@/composables/mostrarMusica.js";
+import { datosUser, useEditarUsuario } from "@/composables/datosUser.js";
+import ListaCanciones from '@/components/listaCanciones.vue';
 
-    const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
+const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
 
-    const cancionParaCompartir = ref(null);
-    const visible = ref(false);
-    const userPropio = authStore().user;
-    const route = useRoute(); 
-    const userId = ref(route.params.id);
-    const user = ref(null);
-    const albums = ref([]);
-    const populares = ref([]);
-    const PreviewImagenPerfil = ref(null);  
-    const PreviewImagenDetalles = ref(null); 
-    const nombreUsuarioMod = ref('');
-    const descripcionUsuarioMod = ref('');
+const cancionParaCompartir = ref(null);
+const visible = ref(false);
+const isHovered = ref(false);
 
-    const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
+const userPropio = authStore().user;
+const route = useRoute(); 
+const userId = ref(route.params.id);
 
-    const reproducirCancion = (cancion) => {
-        playSong(cancion, populares.value, 'album', cancion.album_id);
-    };
+// Datos de música y usuario
+const { populares, getPopulares, albumes, getAlbumesUser } = mostrarMusica(userId);
+const { user, getUser } = datosUser(userId);
 
-    
+// Composable para edición de usuario
+const { 
+    PreviewImagenPerfil, 
+    PreviewImagenDetalles,
+    nombreUsuarioMod, 
+    descripcionUsuarioMod,
+    manejarImagen, 
+    guardarCambios,
+    fetchUserData
+} = useEditarUsuario(user, userId, visible);
 
-    const mostrarListaCanciones = (cancion) => {
-        event.stopPropagation();
-        cancionParaCompartir.value = cancion;
-    };
+// Likes
+const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
 
-    const likeCancion = async (idCancion, event) => {
-        event.stopPropagation();
-        await toggleLikeCancion(idCancion);
-        await cargarFavoritosCanciones();
-    };
+const reproducirCancion = (cancion) => {
+    playSong(cancion, populares.value, 'album', cancion.album_id);
+};
 
-    onMounted(async () => {
-        await fetchData(`/api/user/${userId.value}`, (data) => user.value = data);
-        await fetchData(`/api/canciones/populares/${userId.value}`, (data) => populares.value = data);
-        await fetchData(`/api/albumes/${userId.value}`, (data) => albums.value = data);
-        await cargarFavoritosCanciones();
+const mostrarListaCanciones = (cancion) => {
+    event.stopPropagation();
+    cancionParaCompartir.value = cancion;
+};
 
-        nombreUsuarioMod.value = user.value?.name || '';  
-        descripcionUsuarioMod.value = user.value?.descripcion || '';
-    });
+const likeCancion = async (idCancion, event) => {
+    event.stopPropagation();
+    await toggleLikeCancion(idCancion);
+    await cargarFavoritosCanciones();
+};
 
-    const fetchData = async (url, setter) => {
-        try {
-            const response = await axios.get(url);
-            setter(response.data.data);
-        } catch (error) {
-            console.error(`Error al obtener los datos desde ${url}:`, error);
-        }
-    };
+const getImageUrl = (path) => {
+    return path ? new URL(path, import.meta.url).href : '/images/placeholder1.jpg';
+};
 
-    const getImageUrl = (path) => {
-        return path ? new URL(path, import.meta.url).href : '/images/placeholder1.jpg';
-    };
+onMounted(async () => {
+    await getUser();
+    await getPopulares();
+    await getAlbumesUser();
+    await cargarFavoritosCanciones();
 
-    const manejarImagen = (event, tipo) => {
-        const file = event.target.files[0];
-        if (file) {
-            const previewKey = tipo === 'perfil' ? PreviewImagenPerfil : PreviewImagenDetalles;
-            const imagenDataKey = tipo === 'perfil' ? imagenDataPerfil : imagenDataDetalles;
-
-            if (previewKey.value) {
-                URL.revokeObjectURL(previewKey.value);
-            }
-
-            imagenDataKey.portada = file;
-            previewKey.value = URL.createObjectURL(file);
-        }
-    };
-
-    const imagenDataPerfil = reactive({ portada: null });
-    const imagenDataDetalles = reactive({ portada: null });
-
-    const actualizarImagen = async (imagenData, endpoint, key) => {
-        if (imagenData.portada) {
-            let formData = new FormData();
-            formData.append('id', userPropio.id);
-            formData.append('picture', imagenData.portada);
-
-            try {
-                const response = await axios.post(endpoint, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-
-                const nuevaImagen = response.data[key];
-                if (nuevaImagen) {
-                    imagenData.portada = nuevaImagen;
-                    user.value[key] = nuevaImagen;
-                }
-            } catch (error) {
-                console.error(`Error al actualizar la imagen en ${endpoint}:`, error);
-            }
-        }
-    };
-
-    const guardarCambios = async () => {
-        if (imagenDataPerfil.portada) {
-            await actualizarImagen(imagenDataPerfil, '/api/users/updateimg', 'avatar');
-        }
-
-        if (imagenDataDetalles.portada) {
-            await actualizarImagen(imagenDataDetalles, '/api/users/updateimgdetalles', 'fotoDetalles');
-        }
-
-        if (nombreUsuarioMod.value !== user.value.name || descripcionUsuarioMod.value !== user.value.descripcion) {
-            try {
-                await axios.put(`/api/users/${userId.value}`, {
-                    name: nombreUsuarioMod.value,
-                    descripcion: descripcionUsuarioMod.value
-                });
-
-                user.value.name = nombreUsuarioMod.value;
-                user.value.descripcion = descripcionUsuarioMod.value;
-                userPropio.name = nombreUsuarioMod.value;
-            } catch (error) {
-                console.error("Error al actualizar los datos del usuario:", error);
-            }
-        }
-
-        visible.value = false;
-        await fetchUserData();
-
-        PreviewImagenPerfil.value = null;
-        PreviewImagenDetalles.value = null;
-    };
-
-    const fetchUserData = async () => {
-        try {
-            const response = await axios.get(`/api/user/${userId.value}`);
-            user.value = response.data.data;
-        } catch (error) {
-            console.error('Error al actualizar los datos del usuario:', error);
-            window.location.reload();
-        }
-    };
+    nombreUsuarioMod.value = user.value?.name || '';  
+    descripcionUsuarioMod.value = user.value?.descripcion || '';
+});
 </script>
+
 
 
 
