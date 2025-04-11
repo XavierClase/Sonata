@@ -1,131 +1,131 @@
 <template>
-      <ListaCanciones 
-                v-if="cancionParaCompartir" 
-                :cancion="cancionParaCompartir"
-                @close="cancionParaCompartir = null"
-            />
-    <div class="showDialog"></div>
-    <div class="perfil-artista-banner">
-        <span>
-            <div class="perfil-artista-banner-img">
-                <img :src="getImageUrl(user?.avatar)" />
-            </div>
-            <h1>
-                {{ user?.name }}
-            </h1>
-        </span>
-        <i 
-            :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
-            style="font-size: 2rem"
-            @mouseover="isHovered = true"
-            @mouseleave="isHovered = false"
-            v-if="userPropio?.name === user?.name" 
-            @click="visible = true"
-        ></i>
-    </div>
+    <ListaCanciones 
+              v-if="cancionParaCompartir" 
+              :cancion="cancionParaCompartir"
+              @close="cancionParaCompartir = null"
+          />
+  <div class="showDialog"></div>
+  <div class="perfil-artista-banner">
+      <span>
+          <div class="perfil-artista-banner-img">
+              <img :src="getImageUrl(user?.avatar)" />
+          </div>
+          <h1>
+              {{ user?.name }}
+          </h1>
+      </span>
+      <i 
+          :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
+          style="font-size: 2rem"
+          @mouseover="isHovered = true"
+          @mouseleave="isHovered = false"
+          v-if="esMiPerfil" 
+          @click="visible = true"
+      ></i>
+  </div>
 
-    <i class="pi pi-share-alt"></i>
+  <i class="pi pi-share-alt"></i>
 
-    <div class="row perfil-artista-medio">
-        <div class="col-md-7 perfil-artista-medio-populares">
-            <h2>Canciones populares</h2>    
-            <div class="canciones-populares">
-                <div v-for="(cancion, index) in populares" :key="cancion.id" 
-                     class="cancion-popular" 
-                     @click="reproducirCancion(cancion)">
-                    <span class="cancion-popular-span1 col-md-2">
-                        <p class="num-cancion-popular">{{ index + 1 }}</p> 
-                        <img :src="getImageUrl(cancion.portada)" />
-                    </span>
-                    <span class="cancion-popular-span2 col-md-5">
-                        <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
-                        <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
-                    </span>
-                    <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
-                    <i
-                        :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill col-md-1' : 'pi pi-heart col-md-1'"
-                        @click="likeCancion(cancion.id, $event)"
-                        title="Añadir la canción a favoritos"
-                    ></i>
-                    <i class="pi pi-plus col-md-1"  @click="mostrarListaCanciones(cancion)" title="Añadir la canción a una lista"></i>
-                </div>
-            </div>
-        </div>
+  <div class="row perfil-artista-medio">
+      <div class="col-md-7 perfil-artista-medio-populares">
+          <h2>Canciones populares</h2>    
+          <div class="canciones-populares">
+              <div v-for="(cancion, index) in populares" :key="cancion.id" 
+                   class="cancion-popular" 
+                   @click="reproducirCancion(cancion)">
+                  <span class="cancion-popular-span1 col-md-2">
+                      <p class="num-cancion-popular">{{ index + 1 }}</p> 
+                      <img :src="getImageUrl(cancion.portada)" />
+                  </span>
+                  <span class="cancion-popular-span2 col-md-5">
+                      <p class="cancion-popular-nombre">{{ cancion.nombre }}</p>
+                      <p class="cancion-popular-reproducciones">{{ cancion.reproducciones }} reproducciones</p>
+                  </span>
+                  <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
+                  <i
+                      :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill col-md-1' : 'pi pi-heart col-md-1'"
+                      @click="likeCancion(cancion.id, $event)"
+                      title="Añadir la canción a favoritos"
+                  ></i>
+                  <i class="pi pi-plus col-md-1"  @click="mostrarListaCanciones(cancion)" title="Añadir la canción a una lista"></i>
+              </div>
+          </div>
+      </div>
 
-        <div class="col-md-5 perfil-artista-medio-detalles">
-            <h2>Detalles</h2>
-            <div class="detalles-contenido">
-                <div class="detalles-img">
-                    <img :src="getImageUrl(user?.fotoDetalles)" alt="Imagen de detalles del usuario artista">
-                </div>
-                <div class="detalles-descripcion">
-                    <p> {{ user?.descripcion }} </p>
-                </div>
-            </div>
-        </div>
-    </div>
+      <div class="col-md-5 perfil-artista-medio-detalles">
+          <h2>Detalles</h2>
+          <div class="detalles-contenido">
+              <div class="detalles-img">
+                  <img :src="getImageUrl(user?.fotoDetalles)" alt="Imagen de detalles del usuario artista">
+              </div>
+              <div class="detalles-descripcion">
+                  <p> {{ user?.descripcion }} </p>
+              </div>
+          </div>
+      </div>
+  </div>
 
-    <div class="perfil-artista-albums">
-        <h2>Álbumes</h2>
-        <div class="row gap-4">
-            <router-link 
-                class="album col-md-2" 
-                v-for="album in albumes" 
-                :key="album.id" 
-                :to="{ name: 'app.album', params: {id: album.id} }"
-            >
-                <div class="album-img">
-                    <img :src="getImageUrl(album.portada)" />
-                </div>
-                <div class="album-detalles">
-                    <h4>{{ album.nombre }}</h4>
-                    <p>Año: {{  new Date(album.created_at).getFullYear() }}</p>
-                    <p>Duración: {{ album.duracion_total }}</p>
-                    <p>Número de canciones: {{ album.num_canciones }}</p>
-                </div>
-            </router-link>
-        </div>
-    </div>
+  <div class="perfil-artista-albums">
+      <h2>Álbumes</h2>
+      <div class="row gap-4">
+          <router-link 
+              class="album col-md-2" 
+              v-for="album in albumes" 
+              :key="album.id" 
+              :to="{ name: 'app.album', params: {id: album.id} }"
+          >
+              <div class="album-img">
+                  <img :src="getImageUrl(album.portada)" />
+              </div>
+              <div class="album-detalles">
+                  <h4>{{ album.nombre }}</h4>
+                  <p>Año: {{  new Date(album.created_at).getFullYear() }}</p>
+                  <p>Duración: {{ album.duracion_total }}</p>
+                  <p>Número de canciones: {{ album.num_canciones }}</p>
+              </div>
+          </router-link>
+      </div>
+  </div>
 
-    <Dialog class="banner-config-modal" v-model:visible="visible" modal header="Modificar Perfil" appendTo=".showDialog">
-        <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualiza tu información.</span>
-        <div class="row">
-            <div class="config-imagenes col-md-6">
-                <!-- Imagen de perfil -->
-                <div class="imagen-config-perfil">
-                    <img :src="PreviewImagenPerfil || getImageUrl(user?.avatar)" class="estilo_imagen">
-                    <input type="file" @change="(event) => manejarImagen(event, 'perfil')" accept="image/*" class="añadir_archivo">  
-                </div>
-                <!-- Imagen de detalles -->
-                <div class="imagen-config-detalles">
-                    <img :src="PreviewImagenDetalles || getImageUrl(user?.fotoDetalles)" class="estilo_imagen">
-                    <input type="file" @change="(event) => manejarImagen(event, 'detalles')" accept="image/*" class="añadir_archivo">  
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="flex items-center gap-4 mb-4">
-                    <FloatLabel variant="on">
-                        <InputText class="banner-config-input" id="username" v-model="nombreUsuarioMod" />
-                        <label for="username">Nombre de Usuario</label>
-                    </FloatLabel>
-                </div>
-                <div class="flex items-center gap-4 mb-8">
-                    <FloatLabel variant="on">
-                        <Textarea class="banner-config-input" id="config-descripcion" rows="5" cols="30" style="resize: none" maxlength="185" v-model="descripcionUsuarioMod"/>
-                        <label for="descripcion">Descripción</label>
-                    </FloatLabel>
-                </div>
-            </div>
-        </div>
-        <div class="flex justify-end gap-2">
-            <Button type="button" label="Guardar" @click="guardarCambios"></Button>
-        </div>
-    </Dialog>
+  <Dialog class="banner-config-modal" v-model:visible="visible" modal header="Modificar Perfil" appendTo=".showDialog">
+      <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualiza tu información.</span>
+      <div class="row">
+          <div class="config-imagenes col-md-6">
+              <!-- Imagen de perfil -->
+              <div class="imagen-config-perfil">
+                  <img :src="PreviewImagenPerfil || getImageUrl(user?.avatar)" class="estilo_imagen">
+                  <input type="file" @change="(event) => manejarImagen(event, 'perfil')" accept="image/*" class="añadir_archivo">  
+              </div>
+              <!-- Imagen de detalles -->
+              <div class="imagen-config-detalles">
+                  <img :src="PreviewImagenDetalles || getImageUrl(user?.fotoDetalles)" class="estilo_imagen">
+                  <input type="file" @change="(event) => manejarImagen(event, 'detalles')" accept="image/*" class="añadir_archivo">  
+              </div>
+          </div>
+          <div class="col-md-6">
+              <div class="flex items-center gap-4 mb-4">
+                  <FloatLabel variant="on">
+                      <InputText class="banner-config-input" id="username" v-model="nombreUsuarioMod" />
+                      <label for="username">Nombre de Usuario</label>
+                  </FloatLabel>
+              </div>
+              <div class="flex items-center gap-4 mb-8">
+                  <FloatLabel variant="on">
+                      <Textarea class="banner-config-input" id="config-descripcion" rows="5" cols="30" style="resize: none" maxlength="185" v-model="descripcionUsuarioMod"/>
+                      <label for="descripcion">Descripción</label>
+                  </FloatLabel>
+              </div>
+          </div>
+      </div>
+      <div class="flex justify-end gap-2">
+          <Button type="button" label="Guardar" @click="guardarCambios"></Button>
+      </div>
+  </Dialog>
 </template>
 
 
 <script setup> 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { authStore } from "@/store/auth.js";
 import { useLikeCancion } from "@/composables/likes.js";
@@ -144,51 +144,52 @@ const userPropio = authStore().user;
 const route = useRoute(); 
 const userId = ref(route.params.id);
 
-// Datos de música y usuario
 const { populares, getPopulares, albumes, getAlbumesUser } = mostrarMusica(userId);
 const { user, getUser } = datosUser(userId);
 
-// Composable para edición de usuario
+const esMiPerfil = computed(() => {
+  return userPropio && user.value && parseInt(userPropio.id) === parseInt(userId.value);
+});
+
 const { 
-    PreviewImagenPerfil, 
-    PreviewImagenDetalles,
-    nombreUsuarioMod, 
-    descripcionUsuarioMod,
-    manejarImagen, 
-    guardarCambios,
-    fetchUserData
+  PreviewImagenPerfil, 
+  PreviewImagenDetalles,
+  nombreUsuarioMod, 
+  descripcionUsuarioMod,
+  manejarImagen, 
+  guardarCambios,
+  fetchUserData
 } = useEditarUsuario(user, userId, visible);
 
-// Likes
 const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
 
 const reproducirCancion = (cancion) => {
-    playSong(cancion, populares.value, 'album', cancion.album_id);
+  playSong(cancion, populares.value, 'album', cancion.album_id);
 };
 
 const mostrarListaCanciones = (cancion) => {
-    event.stopPropagation();
-    cancionParaCompartir.value = cancion;
+  event.stopPropagation();
+  cancionParaCompartir.value = cancion;
 };
 
 const likeCancion = async (idCancion, event) => {
-    event.stopPropagation();
-    await toggleLikeCancion(idCancion);
-    await cargarFavoritosCanciones();
+  event.stopPropagation();
+  await toggleLikeCancion(idCancion);
+  await cargarFavoritosCanciones();
 };
 
 const getImageUrl = (path) => {
-    return path ? new URL(path, import.meta.url).href : '/images/placeholder1.jpg';
+  return path ? new URL(path, import.meta.url).href : '/images/placeholder1.jpg';
 };
 
 onMounted(async () => {
-    await getUser();
-    await getPopulares();
-    await getAlbumesUser();
-    await cargarFavoritosCanciones();
+  await getUser();
+  await getPopulares();
+  await getAlbumesUser();
+  await cargarFavoritosCanciones();
 
-    nombreUsuarioMod.value = user.value?.name || '';  
-    descripcionUsuarioMod.value = user.value?.descripcion || '';
+  nombreUsuarioMod.value = user.value?.name || '';  
+  descripcionUsuarioMod.value = user.value?.descripcion || '';
 });
 </script>
 
@@ -441,9 +442,8 @@ onMounted(async () => {
         color: white;
     }
 
-    /* Estilos responsivos para pantallas de 500px o menos */
+
     @media (width < 500px) {
-        /* Ajustes generales */
         .row {
             margin-right: 0 !important;
             margin-left: 0 !important;
@@ -478,13 +478,11 @@ onMounted(async () => {
             margin: 0;
         }
 
-        /* Icono de compartir */
         .pi-share-alt {
             position: absolute;
             top: 40px;
         }
 
-        /* Sección media */
         .perfil-artista-medio > div {
             height: auto;
             width: 100%;
@@ -541,7 +539,6 @@ onMounted(async () => {
             text-align: center;
         }
 
-        /* Detalles */
         .detalles-contenido {
             width: 100%;
             height: auto;
@@ -592,7 +589,6 @@ onMounted(async () => {
         }
     }
 
-/* Ajustes específicos para pantallas muy pequeñas */
 @media (max-width: 360px) {
     .album {
         width: 100%;

@@ -14,7 +14,7 @@
             style="font-size: 2rem"
             @mouseover="isHovered = true"
             @mouseleave="isHovered = false"
-            v-if="userPropio?.name === user?.name" 
+            v-if="esMiPerfil" 
             @click="visible = true"
         ></i>
     </div>
@@ -72,9 +72,8 @@
                 <!-- Imagen de perfil -->
                 <div class="imagen-config-perfil">
                     <img :src="PreviewImagenPerfil || getImagePerfilUrl(user) || '/images/placeholder1.jpg'" class="estilo_imagen">
-                    <input type="file" @change="manejarImagenPerfil" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+                    <input type="file" @change="(e) => manejarImagen(e, 'perfil')" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
                 </div>
-
             </div>
             <div class="col-md-6">
                 <div class="flex items-center gap-4 mb-3">
@@ -83,7 +82,6 @@
                         <label for="username">Nombre de Usuario</label>
                     </FloatLabel>
                 </div>
-                
             </div>
         </div>
         <div class="flex justify-end gap-2">
@@ -93,46 +91,51 @@
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted } from 'vue';
+    import { ref, onMounted, computed } from 'vue';
     import { useRoute } from 'vue-router';
     import axios from 'axios';
     import { authStore } from "@/store/auth.js";
+    import { datosUser, useEditarUsuario } from "@/composables/datosUser.js";
+    import { mostrarMusica } from "@/composables/mostrarMusica.js";
 
     const visible = ref(false);
     const userPropio = authStore().user;
     const isHovered = ref(false);
     const route = useRoute(); 
     const userId = ref(route.params.id);
-    const user = ref(null);
-    const albums = ref([]);
-    const listasCreadas = ref([]);
-    const listasGuardadas = ref([]);
-    const populares = ref([]);
-    const PreviewImagenPerfil = ref(null);  
-    const PreviewImagenDetalles = ref(null); 
-    const nombreUsuarioMod = ref('');
-    const UsuarioMod = ref('');
+
+    const { user, getUser } = datosUser(userId);
+    const { listas: listasCreadas, getListasUser, listasGuardadas, getListasFavsUser } = mostrarMusica(userId);
+
+    const { 
+        PreviewImagenPerfil,
+        nombreUsuarioMod,
+        manejarImagen,
+        guardarCambios,
+        fetchUserData
+    } = useEditarUsuario(user, userId, visible);
+
+    const esMiPerfil = computed(() => {
+        return userPropio && user.value && parseInt(userPropio.id) === parseInt(userId.value);
+    });
 
     onMounted(async () => {
         try {
-           
-            const response = await axios.get(`/api/user/${userId.value}`);
-            user.value = response.data.data; 
-            nombreUsuarioMod.value = user.value.name; // Inicializa el nombre del usuario en el input
-          
-            const listasResponse = await axios.get(`/api/listas/${userId.value}`);
-            listasCreadas.value = listasResponse.data.data;
+            await getUser();
+            await getListasUser();
+            await getListasFavsUser();
+            nombreUsuarioMod.value = user.value?.name;
             
-          
-            if (userPropio?.id === parseInt(userId.value)) {
-                const listasGuardadasResponse = await axios.get('/api/mostrar/lista/likes');
-                listasGuardadas.value = listasGuardadasResponse.data.data;
-            }
+            
+            
+            // if (esMiPerfil.value) {
+            //     const listasGuardadasResponse = await axios.get('/api/mostrar/lista/likes');
+            //     listasGuardadas.value = listasGuardadasResponse.data.data;
+            // }
         } catch (error) {
             console.error('Error fetching user or albums:', error);
         }
     });
-
 
     function getImageListaUrl(album) {
         let image = album.portada;
@@ -143,86 +146,6 @@
         let image = user?.avatar;
         return new URL(image, import.meta.url).href;
     }
-
-    const imagenDataPerfil = reactive({ portada: null });
-    const imagenDataDetalles = reactive({ portada: null });
-
-    const manejarImagenPerfil = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (PreviewImagenPerfil.value) {
-                URL.revokeObjectURL(PreviewImagenPerfil.value);
-            }
-            imagenDataPerfil.portada = file;
-            PreviewImagenPerfil.value = URL.createObjectURL(file); 
-        }
-    };
-
-    const manejarImagenDetalles = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (PreviewImagenDetalles.value) {
-                URL.revokeObjectURL(PreviewImagenDetalles.value);
-            }
-            imagenDataDetalles.portada = file;
-            PreviewImagenDetalles.value = URL.createObjectURL(file); 
-        }
-    };
-
-    const guardarCambios = async () => {
-        
-        if (imagenDataPerfil.portada) {
-            let formData = new FormData();
-            formData.append('id', userPropio.id); 
-            formData.append('picture', imagenDataPerfil.portada);
-
-            try {
-                const response = await axios.post('/api/users/updateimg', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-
-                if (response.data && response.data.media.length > 0) {
-                    const nuevaImagen = response.data.media[0].original_url;
-                    PreviewImagenPerfil.value = nuevaImagen;
-                    user.value.avatar = nuevaImagen; 
-                }
-
-                console.log("Imagen actualizada correctamente", response.data);
-            } catch (error) {
-                console.error("Error al actualizar la imagen:", error);
-            }
-        }
-
-        if (nombreUsuarioMod.value !== user.value.name) {
-            try {
-                console.log("Datos enviados:", { name: nombreUsuarioMod.value }); 
-                const response = await axios.put(`/api/users/${userId.value}`, {
-                    name: nombreUsuarioMod.value,
-                });
-                user.value.name = nombreUsuarioMod.value;
-                userPropio.name = nombreUsuarioMod.value;  
-
-                console.log("Nombre actualizado correctamente", response.data);
-            } catch (error) {
-                console.error("Error al actualizar el nombre:", error);
-            }
-        }
-
-        visible.value = false; 
-        await fetchUserData(); 
-    };
-
-    const fetchUserData = async () => {
-        try {
-            const response = await axios.get(`/api/user/${userId.value}`);
-            user.value = response.data.data;
-        } catch (error) {
-            console.error('Error al actualizar los datos del usuario:', error);
-            window.location.reload(); 
-        }
-    };
 </script>
 
 

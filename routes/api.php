@@ -115,6 +115,7 @@ Route::post('/like/album/{idAlbum}', [LikeController::class, 'toggleLikeAlbum'])
 Route::get('/album/favorito/{idAlbum}', [LikeController::class, 'esAlbumFavorito']);
 
 Route::get('/mostrar/lista/likes', [LikeController::class, 'getListasFavoritas']);
+Route::get('/mostrar/lista/likes/{idUser}', [LikeController::class, 'getListasFavoritasUser']);
 Route::post('/like/lista/{idLista}', [LikeController::class, 'toggleLikeLista']);
 Route::get('/lista/favorito/{idLista}', [LikeController::class, 'esListaFavorita']);
 

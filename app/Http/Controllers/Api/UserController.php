@@ -139,7 +139,7 @@ class UserController extends Controller
         $user = User::find($request->id);
 
         if($request->hasFile('picture')) {
-            $user->media()->delete();
+            $user->clearMediaCollection('images-users');
             $media = $user->addMediaFromRequest('picture')->preservingOriginal()->toMediaCollection('images-users');
 
         }
@@ -152,7 +152,6 @@ class UserController extends Controller
         $user = User::find($request->id);
 
         if($request->hasFile('picture')) {
-            // Eliminar solo la imagen anterior de la colección específica
             $user->clearMediaCollection('images-users-detalles');
 
             // Subir nueva imagen

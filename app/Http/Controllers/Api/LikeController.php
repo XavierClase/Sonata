@@ -7,6 +7,7 @@ use App\Http\Resources\AlbumResource;
 use App\Http\Resources\CancionResource;
 use App\Http\Resources\ListaResource;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Auth;
 
 class LikeController extends Controller
@@ -29,6 +30,17 @@ class LikeController extends Controller
 
         $listasFavoritas = $user->listasFavoritas()
             ->with(['user', 'media']) 
+            ->get();
+
+        return ListaResource::collection($listasFavoritas);
+    }
+
+    public function getListasFavoritasUser($idUser)
+    {
+        $targetUser = User::findOrFail($idUser);
+        
+        $listasFavoritas = $targetUser->listasFavoritas()
+            ->with(['user', 'media'])
             ->get();
 
         return ListaResource::collection($listasFavoritas);

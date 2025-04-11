@@ -4,6 +4,8 @@ import axios from "axios";
 export function mostrarMusica(userId) {
     const populares = ref([]);
     const albumes = ref([]);
+    const listas = ref([]);
+    const listasGuardadas = ref([]);
 
     const getPopulares = async () => {
         try {
@@ -23,10 +25,32 @@ export function mostrarMusica(userId) {
         }
     };
 
+    const getListasUser = async () => {
+        try {
+            const response = await axios.get(`/api/listas/${userId.value}`);
+            listas.value = response.data.data;
+        } catch (error) {
+            console.log("Error al cargar las listas del usuario", error)
+        }
+    }
+
+    const getListasFavsUser = async () => {
+        try {
+            const response = await axios.get(`/api/mostrar/lista/likes/${userId.value}`);
+            listasGuardadas.value = response.data.data; 
+        } catch (error) {
+            console.log("Error al cargar las listas favoritas del usuario", error )
+        }
+    }
+
     return {
         populares,
         getPopulares,
         albumes,
-        getAlbumesUser
+        getAlbumesUser,
+        listas,
+        getListasUser,
+        listasGuardadas,
+        getListasFavsUser
     };
 }

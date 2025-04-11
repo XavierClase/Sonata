@@ -60,13 +60,15 @@ export function useEditarUsuario(user, userId, visible) {
     
                 const nuevaImagen = response.data[key];
                 if (nuevaImagen) {
-                    imagenData.portada = nuevaImagen;
-                    user.value[key] = nuevaImagen;
                     if (key === 'avatar') {
                         avatarUrl.value = nuevaImagen;
+                        user.value.avatar = nuevaImagen;
                     } else if (key === 'fotoDetalles') {
                         fotoDetallesUrl.value = nuevaImagen;
+                        user.value.fotoDetalles = nuevaImagen;
                     }
+                    
+                    imagenData.portada = null;
                 }
             } catch (error) {
                 console.error(`Error al actualizar la imagen en ${endpoint}:`, error);
@@ -76,19 +78,16 @@ export function useEditarUsuario(user, userId, visible) {
     
 
     const guardarCambios = async () => {
-        const currentAvatarUrl = user.value.avatar;
-        const currentDetallesUrl = user.value.fotoDetalles;
-        
-        if (imagenDataPerfil.portada) {
-            await actualizarImagen(imagenDataPerfil, '/api/users/updateimg', 'avatar');
-        }
-        
-        if (imagenDataDetalles.portada) {
-            await actualizarImagen(imagenDataDetalles, '/api/users/updateimgdetalles', 'fotoDetalles');
-        }
-        
-        if (nombreUsuarioMod.value !== user.value.name || descripcionUsuarioMod.value !== user.value.descripcion) {
-            try {
+        try {
+            if (imagenDataPerfil.portada) {
+                await actualizarImagen(imagenDataPerfil, '/api/users/updateimg', 'avatar');
+            }
+            
+            if (imagenDataDetalles.portada) {
+                await actualizarImagen(imagenDataDetalles, '/api/users/updateimgdetalles', 'fotoDetalles');
+            }
+            
+            if (nombreUsuarioMod.value !== user.value.name || descripcionUsuarioMod.value !== user.value.descripcion) {
                 await axios.put(`/api/users/${userId.value}`, {
                     name: nombreUsuarioMod.value,
                     descripcion: descripcionUsuarioMod.value
@@ -99,32 +98,29 @@ export function useEditarUsuario(user, userId, visible) {
                 
                 userPropio.name = nombreUsuarioMod.value;
                 userPropio.descripcion = descripcionUsuarioMod.value;
-            } catch (error) {
-                console.error("Error al actualizar los datos del usuario:", error);
             }
+            
+            PreviewImagenPerfil.value = null;
+            PreviewImagenDetalles.value = null;
+            
+            await fetchUserData();
+            
+            if (avatarUrl.value && avatarUrl.value !== user.value.avatar) {
+                user.value.avatar = avatarUrl.value;
+            }
+            
+            if (fotoDetallesUrl.value && fotoDetallesUrl.value !== user.value.fotoDetalles) {
+                user.value.fotoDetalles = fotoDetallesUrl.value;
+            }
+            
+            userPropio.avatar = user.value.avatar;
+            userPropio.fotoDetalles = user.value.fotoDetalles;
+            
+            visible.value = false;
+        } catch (error) {
+            console.error("Error al guardar los cambios:", error);
         }
-        
-        PreviewImagenPerfil.value = null;
-        PreviewImagenDetalles.value = null;
-        
-        await fetchUserData();
-        
-        if (!user.value.avatar && currentAvatarUrl) {
-            user.value.avatar = currentAvatarUrl;
-        }
-        if (!user.value.fotoDetalles && currentDetallesUrl) {
-            user.value.fotoDetalles = currentDetallesUrl;
-        }
-        
-        userPropio.avatar = user.value.avatar;
-        userPropio.fotoDetalles = user.value.fotoDetalles;
-        
-        visible.value = false;
     };
-    
-    
-    
-    
 
     const fetchUserData = async () => {
         try {
