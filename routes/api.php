@@ -125,3 +125,5 @@ Route::put('admin/listas/{id}', [ListaController::class, 'update']);
 Route::delete('admin/listas/{id}', [ListaController::class, 'destroy']);
 Route::post('admin/listas/updateimg', [ListaController::class, 'updateimg']);
 Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class, 'eliminarCancionDeLista']);
+
+Route::post('admin/albumes', [AlbumController::class, 'store']);

@@ -87,7 +87,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import useAlbumes from "@/composables/albumes";
+import { useAlbumes } from "@/composables/albumesAdmin.js";
 import { useAbility } from '@casl/vue';
 import {FilterMatchMode} from "@primevue/core/api";
 
