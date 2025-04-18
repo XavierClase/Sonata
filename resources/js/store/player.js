@@ -17,44 +17,55 @@ export const usePlayerStore = defineStore("player", {
     _mediaListenerActive: false,
     currentPlaylistType: null, // 'album' o 'lista'
     currentPlaylistId: null,
+    _isLoadingSong: false, //  controlar carga
+    _lastRegistroTime: null, // controlar tiempo entre registros
   }),
 
   actions: {
     async playSong(song, index = null) {
+
+      if (this._isLoadingSong) {
+        console.log("⚠️ Evitando carga repetida de canción");
+        return;
+      }
+      
+      this._isLoadingSong = true;
+      
       if (index !== null) {
         this.currentIndex = index;
       }
-
+    
       console.log("🎵 Intentando reproducir:", song.id);
-
-      // Si es la misma canción y el sonido ya existe, solo reanudar
+    
+ 
       if (this.currentSong?.id === song.id && this.sound) {
         if (!this.sound.playing()) {
           const currentPosition = this.progress > 0 ? this.progress : 0;
           console.log(" Reanudando en:", currentPosition);
           
-          // IMPORTANTE: Primero hacer seek y luego reproducir
+        
           this.sound.seek(currentPosition);
           this.sound.play();
           this.isPlaying = true;
           requestAnimationFrame(this.updateProgress);
         }
+        this._isLoadingSong = false;
         return;
       }
-
+    
       console.log("🔄 Cargando nueva canción...");
-
-      // Guardamos el volumen actual antes de limpiar
+    
+   
       const currentVolume = this.sound ? this.sound.volume() : this.volume;
-
-      // Limpiar el reproductor anterior completamente
+    
+     
       if (this.sound) {
         this.sound.off(); 
         this.sound.stop();
         this.sound.unload();
         this.sound = null;
       }
-
+    
       this.progress = 0;
       this.currentSong = song;
       
@@ -79,8 +90,9 @@ export const usePlayerStore = defineStore("player", {
           this.isPlaying = true;
           requestAnimationFrame(this.updateProgress);
           
-          // Registrar último escuchado cuando se carga completamente una canción
+        
           this.registrarUltimoEscuchado();
+          this._isLoadingSong = false; e
         },
         onplay: () => {
           console.log(" En reproducción:", song.id);
@@ -88,11 +100,11 @@ export const usePlayerStore = defineStore("player", {
           requestAnimationFrame(this.updateProgress);
         },
         onpause: () => {
-          // Capturamos la posición exacta en el momento de la pausa
+          
           const exactPosition = this.sound.seek();
           console.log(" Pausada en:", exactPosition);
           
-          // Guardamos la posición actual en nuestro estado
+         
           this.progress = exactPosition;
           this.isPlaying = false;
         },
@@ -100,38 +112,47 @@ export const usePlayerStore = defineStore("player", {
           console.log(" Detenida");
           this.isPlaying = false;
         },
+        onerror: () => {
+          console.error("Error al cargar la canción");
+          this._isLoadingSong = false;
+        }
       });
-
+    
       this._setupMediaListeners();
     },
 
-    // Nuevo método para registrar último escuchado
+    
     async registrarUltimoEscuchado() {
       try {
-          const payload = {};
-          
+       
+        if (this._lastRegistroTime && (Date.now() - this._lastRegistroTime) < 5000) {
+          console.log("⏱️ Evitando registro duplicado (muy seguido)");
+          return;
+        }
         
-          if (this.currentPlaylistType && this.currentPlaylistId) {
-              if (this.currentPlaylistType === 'album') {
-                  payload.id_album = this.currentPlaylistId; 
-              } else if (this.currentPlaylistType === 'lista') {
-                  payload.id_lista = this.currentPlaylistId; 
-              }
-          } 
-         
-          else if (this.currentSong?.album_id) {
-              payload.id_album = this.currentSong.album_id; // Album de la canción individual
+        const payload = {};
+        
+        if (this.currentPlaylistType && this.currentPlaylistId) {
+          if (this.currentPlaylistType === 'album') {
+            payload.id_album = this.currentPlaylistId; 
+          } else if (this.currentPlaylistType === 'lista') {
+            payload.id_lista = this.currentPlaylistId; 
           }
-          else{
-            return;
-          }
-              await axios.post('/api/ultimo_escuchado', payload);
-              console.log('✅ Registrado:', payload);
-         
+        } 
+        else if (this.currentSong?.album_id) {
+          payload.id_album = this.currentSong.album_id;
+        }
+        else {
+          return;
+        }
+        
+        this._lastRegistroTime = Date.now();
+        await axios.post('/api/ultimo_escuchado', payload);
+        console.log('✅ Registrado:', payload);
       } catch (error) {
-          console.error('Error al registrar:', error);
+        console.error('Error al registrar:', error);
       }
-  },
+    },
 
     togglePlay() {
       if (!this.sound) return;
