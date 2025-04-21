@@ -145,3 +145,6 @@ Route::post('admin/canciones', [CancionController::class, 'store']);
 Route::post('admin/canciones/{id}', [CancionController::class, 'update']);
 Route::delete('admin/canciones/{id}', [CancionController::class, 'destroy']);
 Route::post('admin/canciones/updateaudio', [CancionController::class, 'updateAudio']);
+
+
+Route::post('/albumes', [AlbumController::class, 'store'])->middleware('auth:sanctum');
