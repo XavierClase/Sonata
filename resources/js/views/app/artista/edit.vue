@@ -70,7 +70,7 @@
             <div class="flex items-center gap-4 mb-4">
               <FloatLabel variant="on">
                 <Dropdown class="dialog_input" id="albumTipo" v-model="selectedAlbum.tipo" :options="albumTipos"
-                  optionLabel="label" optionValue="value" />
+                  optionLabel="label" optionValue="value"  :style="{ color: 'white' }"  />
                 <label for="albumTipo">Tipo</label>
               </FloatLabel>
             </div>
@@ -87,27 +87,27 @@
             </div>
           </div>
         </div>
-
         <div class="album-songs-section mt-6" @dragover="manejarArrasterSobreLaCancion" @dragleave="manejarArrastreSalirCancion"
           @drop="manejarSoltarCancion" :class="{ 'drag-over': arrastarAreaCanciones }">
           <h3 class="songs-title">Canciones del álbum</h3>
-
           <div v-if="albumCanciones.length === 0" class="sin_canciones">
             <p>Este álbum no tiene canciones.</p>
             <p class="text-sm mt-2">Arrastra archivos de audio aquí para añadirlos al álbum</p>
           </div>
-
           <div v-else class="songs-list">
-            <div v-for="(song, index) in albumCanciones" :key="index" class="song-item">
-              <div class="song-info">
-                <p class="song-number">{{ index + 1 }}</p>
-                <p class="song-name">{{ song.nombre }}</p>
-                <p class="song-duration"><i class="pi pi-clock"></i> {{ formatDuration(song.duracion) }}</p>
+          <div v-for="(song, index) in albumCanciones" :key="index" class="song-item">
+            <div class="song-info">
+              <p class="song-number">{{ index + 1 }}</p>
+              <div class="song-name-edit">
+                <InputText v-model="song.nombre" class="song-name-input" @blur="actualizarNombreCancion(song)" placeholder="Nombre de la canción" />
               </div>
+              <p class="song-duration"><i class="pi pi-clock"></i> {{ formatDuration(song.duracion) }}</p>
+            </div>
+            <div class="song-actions">
               <Button icon="pi pi-trash" class="p-button-rounded boton_eliminar" @click="removeSong(song)"></Button>
             </div>
           </div>
-
+        </div>
           <div class="añadir_Canciones_Seccion mt-4">
             <h4>Añadir canciones</h4>
             <div class="add-songs-controls">
@@ -118,13 +118,11 @@
             </div>
           </div>
         </div>
-
         <div class="flex justify-end gap-2 mt-4">
           <Button type="button" label="Cancelar" class="boton_cancelar" @click="MostrarPopupEditar = false"></Button>
           <Button type="button" label="Guardar" @click="saveAlbumChanges"></Button>
         </div>
       </Dialog>
-
       <Dialog v-model:visible="MostrarConfirmacionEliminar" modal header="Confirmar eliminación" class="dialog_estilo">
         <p>¿Estás seguro de que quieres eliminar el álbum "{{ selectedAlbum?.nombre }}"?</p>
         <p class="text-red-500">Esta acción no se puede deshacer.</p>
@@ -134,7 +132,6 @@
           <Button type="button" label="Eliminar" class="boton_eliminar" @click="deleteAlbum"></Button>
         </div>
       </Dialog>
-
       <Toast />
     </section>
   </section>
@@ -186,6 +183,35 @@ const albumTipos = [
   { label: 'EP', value: 'ep' },
   { label: 'Sencillo', value: 'sencillo' }
 ];
+
+const actualizarNombreCancion = (cancion) => {
+  if (!cancion.nombre || cancion.nombre.trim() === '') {
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error', 
+      detail: 'El nombre de la canción no puede estar vacío', 
+      life: 3000 
+    });
+    const original = cancionesOriginales.value.find(c => c.id === cancion.id);
+    if (original) {
+      cancion.nombre = original.nombre;
+    } else {
+      cancion.nombre = "Sin título";
+    }
+    return;
+  }
+  if (cancion.isNew) {
+    const pendiente = CancionesPendientes.value.find(c => c.id === cancion.id);
+    if (pendiente) {
+      pendiente.nombre = cancion.nombre;
+    }
+    return;
+  }
+
+  if (!cancion.nombreModificado) {
+    cancion.nombreModificado = true;
+  }
+};
 
 const manejarArrasterSobreLaImagen = (event) => {
   event.preventDefault();
@@ -403,7 +429,7 @@ const saveAlbumChanges = async () => {
       return;
     }
     
-    // Eliminar canciones que ya no están en el álbum
+
     const currentSongIds = albumCanciones.value.filter(s => !s.isNew).map(s => s.id);
     const deletedSongs = cancionesOriginales.value.filter(song => !currentSongIds.includes(song.id));
 
@@ -422,7 +448,40 @@ const saveAlbumChanges = async () => {
       }
     }
 
-    // Agregar nuevas canciones al álbum
+    const cancionesModificadas = albumCanciones.value.filter(s => !s.isNew && s.nombreModificado);
+    for (const cancion of cancionesModificadas) {
+      try {
+
+        const response = await fetch(`/api/canciones/${cancion.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            nombre: cancion.nombre,
+            duracion: cancion.duracion,
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Error al actualizar el nombre de la canción: ${cancion.nombre}`);
+        }
+        
+        console.log(`Nombre de canción actualizado: ${cancion.nombre}`);
+      } catch (error) {
+        console.error(`Error al actualizar el nombre de la canción ${cancion.nombre}:`, error);
+        toast.add({ 
+          severity: 'error', 
+          summary: 'Error', 
+          detail: `Error al actualizar el nombre: ${cancion.nombre}`, 
+          life: 3000 
+        });
+      }
+    }
+
+ 
     const newSongIds = [];
     for (const song of CancionesPendientes.value) {
       try {
@@ -439,7 +498,7 @@ const saveAlbumChanges = async () => {
       }
     }
     
-    // Actualizar portada si hay una nueva
+
     let portadaUrl = null;
     if (imagenArchivo.value) {
       portadaUrl = await actualizarPortadaAlbum(selectedAlbum.value.id, imagenArchivo.value);
@@ -448,7 +507,7 @@ const saveAlbumChanges = async () => {
       }
     }
     
-    // Actualizar información del álbum
+
     const songIds = [
       ...albumCanciones.value.filter(s => !s.isNew).map(s => s.id),
       ...newSongIds
@@ -683,7 +742,7 @@ p {
   border: 1px solid purple !important;
   color: white !important;
   max-width: 700px !important;
-  width: 90% !important; /* Cambiado de width fijo a porcentaje */
+  width: 90% !important; 
 }
 
 .dialog_input {
@@ -894,7 +953,7 @@ p {
     margin: 0 auto !important;
   }
 
-  /* Ajustar layout para pantallas pequeñas */
+  
   .dialog_estilo .row {
     flex-direction: column !important;
   }
@@ -904,11 +963,9 @@ p {
     margin-bottom: 15px !important;
   }
   
-  /* Fijar botones inferiores */
   .dialog_estilo .flex.justify-end {
     flex-wrap: nowrap !important;
   }
-  
   .dialog_estilo .flex.justify-end button {
     flex: 1 !important;
     padding: 0.5rem !important;
@@ -916,16 +973,133 @@ p {
   }
 }
 
-/* Estilos adicionales para garantizar que el botón de eliminar se vea bien */
 .boton_eliminar .p-button-icon {
   font-size: 1rem !important;
 }
 
-/* Mejorar visualización de canciones */
 .song-duration {
   display: flex !important;
   align-items: center !important;
   min-width: 70px !important;
   justify-content: flex-end !important;
+}
+
+.song-name-edit {
+  flex: 1;
+  padding: 0 8px;
+}
+
+.song-name-input {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.3) !important;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  padding: 6px 8px !important;
+  border-radius: 4px !important;
+  margin: 0 !important;
+}
+
+.song-name-input:hover, .song-name-input:focus {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid #A855F7 !important;
+  outline: none;
+  box-shadow: none !important;
+}
+
+
+.song-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  gap: 12px;
+}
+
+.song-info {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.song-number {
+  min-width: 25px;
+  text-align: center;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.song-duration {
+  display: flex !important;
+  align-items: center !important;
+  min-width: 80px !important;
+  justify-content: flex-end !important;
+  margin-right: 8px; 
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.song-duration i {
+  margin-right: 5px;
+}
+
+.song-actions {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 40px;
+}
+
+
+.song-item .boton_eliminar {
+  min-width: 2.3rem !important;
+  width: 2.3rem !important;
+  height: 2.3rem !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  background-color: rgba(239, 68, 68, 0.8) !important;
+  transition: all 0.2s ease;
+}
+
+.song-item .boton_eliminar:hover {
+  background-color: #EF4444 !important;
+  transform: scale(1.05);
+}
+
+
+@media (max-width: a500px) {
+  .song-name-input {
+    font-size: 13px;
+    padding: 4px 6px !important;
+  }
+  
+  .song-info {
+    gap: 6px !important;  
+  }
+  
+  .song-duration {
+    min-width: 65px !important;
+    font-size: 12px;
+  }
+  
+  .song-number {
+    min-width: 20px;
+  }
+  
+  .song-item {
+    padding: 8px 6px !important;
+  }
+}
+
+.dialog_input > * {
+  color: white !important;
 }
 </style>

@@ -15,7 +15,7 @@
           class="imagen_caja"
         >
         <p class="titulos_album">{{ item.nombre }}</p>
-        <p class="text-sm text-gray-400">{{ item.tipo === 'album' ? item.artista : item.creador }}</p>
+        <p class="text-sm colorNombreArtista">{{ item.tipo === 'album' ? item.artista : item.creador }}</p>
       </div>
     </div>
 
@@ -35,7 +35,7 @@
           class="imagen_caja"
         >
         <p class="titulos_album">{{ lista.nombre }}</p>
-        <p class="text-sm text-gray-400">{{ lista.creador }}</p>
+        <p class="text-sm colorNombreArtista">{{ lista.creador }}</p>
       </div>
     </div>
 
@@ -54,7 +54,7 @@
           class="imagen_caja"
         >
         <p class="titulos_album">{{ album.nombre }}</p>
-        <p class="text-sm text-gray-400">{{ album.artista }}</p>
+        <p class="text-sm colorNombreArtista">{{ album.artista }}</p>
       </div>
     </div>
 
@@ -110,12 +110,14 @@ onMounted(() => {
 });
 </script>
 
-
-
 <style scoped>
 
 #recientes-titulo {
   margin-top: 40px;
+}
+
+.colorNombreArtista{
+  color: rgb(158, 158, 158);
 }
 .home-content {
   width: 100%;
@@ -224,8 +226,6 @@ p {
   margin-bottom: 10px; 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
-
-
 
 .artista_radius {
   border-radius: 50%;

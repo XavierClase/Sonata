@@ -1,5 +1,6 @@
 <template>
-  <div class="grupo-entrada contenedor-buscador">
+ <div class="grupo-entrada contenedor-buscador">
+  <div class="busqueda-contenedor">
     <InputText 
       v-model="consultaBusqueda" 
       placeholder="¿Qué quieres encontrar?" 
@@ -8,6 +9,8 @@
       @focus="mostrarResultados = true"
       @keydown.esc="mostrarResultados = false"
     />
+    <i class="pi pi-search icono-busqueda"></i>
+  </div>
    
     <div v-if="mostrarResultados && consultaBusqueda.length >= 3" class="contenedor-resultados">
       <div class="resultados-busqueda">
@@ -133,20 +136,32 @@ const irAUsuario = (usuario) => {
   position: relative;
 }
 
+
+.busqueda-contenedor {
+  position: relative;
+  width: 500px;
+}
+
 .buscador {
   height: 4vh;
-  width: 500px;
+  width: 100%;
   background-color: #100E28;
   border-bottom: 1px solid #F472B6;
   border-right: 1px solid #F472B6;
   border-radius: 13px;
   color: rgb(255, 215, 215);
-  background: url('images/lupa.svg')
-      no-repeat 10px center;
-      background-size: 25px;
-      padding-left: 40px;
+  padding-left: 40px;
 }
 
+.icono-busqueda {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #F472B6;
+  font-size: 20px;
+  pointer-events: none;
+}
 .buscador:focus {
   box-shadow: 0 0 0 1px #E289F2 !important;
   outline: none !important;
