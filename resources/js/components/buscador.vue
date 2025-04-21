@@ -2,17 +2,15 @@
   <div class="grupo-entrada contenedor-buscador">
     <InputText 
       v-model="consultaBusqueda" 
-      placeholder="¿Que quieres encontrar?" 
+      placeholder="¿Qué quieres encontrar?" 
       class="buscador" 
       @input="alBuscar" 
       @focus="mostrarResultados = true"
       @keydown.esc="mostrarResultados = false"
     />
    
-    <!-- Resultados de búsqueda -->
     <div v-if="mostrarResultados && consultaBusqueda.length >= 3" class="contenedor-resultados">
       <div class="resultados-busqueda">
-        <!-- Sección de álbumes -->
         <div class="seccion-resultado">
           <h3>Álbumes</h3>
           <div v-if="cargando" class="contenedor-carga">
@@ -35,7 +33,6 @@
           </ul>
         </div>
         
-        <!-- Sección de listas -->
         <div class="seccion-resultado">
           <h3>Listas</h3>
           <div v-if="cargando" class="contenedor-carga">
@@ -56,7 +53,7 @@
             </li>
           </ul>
         </div>
-        <!-- sección de usuarios  -->
+        
         <div class="seccion-resultado">
           <h3>Usuarios</h3>
           <div v-if="cargando" class="contenedor-carga">
@@ -83,28 +80,23 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-
+import { useBuscador } from '@/composables/useBuscador';
 import InputText from 'primevue/inputtext';
 import ProgressSpinner from 'primevue/progressspinner';
-import axios from 'axios';
 
 const router = useRouter();
-const consultaBusqueda = ref('');
-const albumes = ref([]);
-const listasReproduccion = ref([]);
-const usuarios = ref([]);
-const cargando = ref(false);
-const mostrarResultados = ref(false);
-const busquedaRetrasada = usarRetraso(consultaBusqueda, 500);
-
-const manejarClicExterno = (evento) => {
-  const contenedorBusqueda = document.querySelector('.contenedor-buscador');
-  if (contenedorBusqueda && !contenedorBusqueda.contains(evento.target)) {
-    mostrarResultados.value = false;
-  }
-};
+const {
+  consultaBusqueda,
+  albumes,
+  listasReproduccion,
+  usuarios,
+  cargando,
+  mostrarResultados,
+  alBuscar,
+  manejarClicExterno
+} = useBuscador();
 
 onMounted(() => {
   document.addEventListener('click', manejarClicExterno);
@@ -113,52 +105,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', manejarClicExterno);
 });
-
-const hayResultados = computed(() => {
-  return albumes.value.length > 0 || listasReproduccion.value.length > 0 || usuarios.value.length > 0;
-});
-
-watch(busquedaRetrasada, (nuevoValor) => {
-  if (nuevoValor && nuevoValor.length >= 3) {
-    realizarBusqueda(nuevoValor);
-  } else {
-    limpiarResultados();
-  }
-});
-
-const limpiarResultados = () => {
-  albumes.value = [];
-  listasReproduccion.value = [];
-  usuarios.value = [];
-};
-
-const alBuscar = () => {
-  if (consultaBusqueda.value.length < 3) {
-    limpiarResultados();
-  }
-};
-
-const realizarBusqueda = async (consulta) => {
-  if (!consulta || consulta.length < 3) return;
-  
-  cargando.value = true;
-  limpiarResultados();
-  
-  try {
-    const respuesta = await axios.get('/api/buscador', {
-      params: { query: consulta }
-    });
-    
-    albumes.value = respuesta.data.albums || [];
-    listasReproduccion.value = respuesta.data.listaReproduccion || [];
-    usuarios.value = respuesta.data.usuario || [];
-    
-  } catch (error) {
-    console.error('Error en la búsqueda:', error);
-  } finally {
-    cargando.value = false;
-  }
-};
 
 const irAAlbum = (album) => {
   mostrarResultados.value = false;
@@ -180,21 +126,6 @@ const irAUsuario = (usuario) => {
     params: { id: usuario?.id || 0 }
   });
 };
-
-function usarRetraso(valor, retraso = 300) {
-  const valorRetrasado = ref(valor.value);
-  
-  let temporizador;
-  
-  watch(valor, (nuevoValor) => {
-    clearTimeout(temporizador);
-    temporizador = setTimeout(() => {
-      valorRetrasado.value = nuevoValor;
-    }, retraso);
-  });
-  
-  return valorRetrasado;
-}
 </script>
 
 <style scoped>

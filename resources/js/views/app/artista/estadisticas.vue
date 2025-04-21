@@ -6,7 +6,15 @@
     <section class="contenidoEstadisticas">
       <h1 class="titulo_estadisticas_h1">Estadísticas de tus canciones</h1>
       
-      <div class="tabla_estadisticas">
+      <div v-if="cargando" class="cargando">
+        Cargando estadísticas...
+      </div>
+      
+      <div v-else-if="error" class="error-mensaje">
+        {{ error }}
+      </div>
+      
+      <div v-else class="tabla_estadisticas">
         <table>
           <thead>
             <tr>
@@ -31,23 +39,22 @@
 </template>
 
 <script setup>
-  import { ref, onMounted, computed } from 'vue';
-  import axios from 'axios';
+  import { onMounted, computed } from 'vue';
   import AppPanel from '@/layouts/AppPanel.vue';
   import { authStore } from "@/store/auth.js";
-  const canciones = ref([]);
+  import { useFuncionesArtista } from '@/composables/funcionesArtista.js';
+  
   const userPropio = authStore().user;
+  
+  const { canciones, cargando, error, getCancionesUsuario } = useFuncionesArtista();
+  
   const cancionesOrdenadas = computed(() => {
     return [...canciones.value].sort((a, b) => b.reproducciones - a.reproducciones);
   });
 
   onMounted(async () => {
-    try {
-      const userID = userPropio.id
-      const response = await axios.get(`/api/canciones/usuario/${userID}`);
-      canciones.value = response.data;
-    } catch (error) {
-      console.error('Error al cargar las canciones:', error);
+    if (userPropio && userPropio.id) {
+      await getCancionesUsuario(userPropio.id);
     }
   });
 </script>

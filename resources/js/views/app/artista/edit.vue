@@ -145,7 +145,6 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { authStore } from "@/store/auth.js";
 import AppPanel from '@/layouts/AppPanel.vue';
-import axios from 'axios';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
@@ -153,13 +152,24 @@ import Dropdown from 'primevue/dropdown';
 import FloatLabel from 'primevue/floatlabel';
 import Toast from 'primevue/toast';
 import { useToast } from 'primevue/usetoast';
+import { useFuncionesArtista } from '@/composables/funcionesArtista';
 
 const router = useRouter();
 const toast = useToast();
 const user = authStore().user;
-const albums = ref([]);
-const cargando = ref(true);
-const error = ref(null);
+const {
+  albums,
+  cargando,
+  error,
+  getAlbumesUsuario,
+  getCancionesAlbum,
+  eliminarAlbum,
+  eliminarCancion,
+  agregarCancion,
+  actualizarPortadaAlbum,
+  actualizarAlbum
+} = useFuncionesArtista();
+
 const MostrarPopupEditar = ref(false);
 const MostrarConfirmacionEliminar = ref(false);
 const selectedAlbum = ref(null);
@@ -229,19 +239,7 @@ const manejarSoltarCancion = (event) => {
 };
 
 const cargarAlbums = async () => {
-  cargando.value = true;
-  error.value = null;
-  try {
-    const userId = user.id;
-    const response = await axios.get(`/api/albumes/${userId}`);
-    albums.value = response.data.data;
-  } catch (err) {
-    console.error('Error al cargar álbumes:', err);
-    error.value = 'Error al cargar los álbumes. Por favor, intenta de nuevo más tarde.';
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar los álbumes', life: 3000 });
-  } finally {
-    cargando.value = false;
-  }
+  await getAlbumesUsuario(user.id);
 };
 
 function conseguirImagenURL(album) {
@@ -250,7 +248,6 @@ function conseguirImagenURL(album) {
 }
 
 const editarAlbum = async (album) => {
- 
   selectedAlbum.value = { 
     id: album.id,
     nombre: album.nombre || '',
@@ -269,11 +266,9 @@ const editarAlbum = async (album) => {
 
 const cargarCancionesAlbum = async (albumId) => {
   try {
-    const response = await axios.get(`/api/albumes/${albumId}/canciones`);
-    albumCanciones.value = Array.isArray(response.data.data) ? response.data.data : [];
+    albumCanciones.value = await getCancionesAlbum(albumId);
     cancionesOriginales.value = JSON.parse(JSON.stringify(albumCanciones.value));
   } catch (err) {
-    console.error('Error al cargar canciones del álbum:', err);
     albumCanciones.value = [];
     toast.add({ severity: 'error', summary: 'Error', detail: 'Error al cargar canciones del álbum', life: 3000 });
   }
@@ -335,7 +330,6 @@ const calculateTotalDuration = () => {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
   
- 
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
@@ -389,10 +383,13 @@ const confirmDeleteAlbum = (album) => {
 const deleteAlbum = async () => {
   if (!selectedAlbum.value) return;
   try {
-    await axios.delete(`/api/albumes/${selectedAlbum.value.id}`);
-    albums.value = albums.value.filter(album => album.id !== selectedAlbum.value.id);
-    MostrarConfirmacionEliminar.value = false;
-    toast.add({ severity: 'success', summary: 'Éxito', detail: 'Álbum eliminado correctamente', life: 3000 });
+    const resultado = await eliminarAlbum(selectedAlbum.value.id);
+    if (resultado) {
+      MostrarConfirmacionEliminar.value = false;
+      toast.add({ severity: 'success', summary: 'Éxito', detail: 'Álbum eliminado correctamente', life: 3000 });
+    } else {
+      toast.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar el álbum', life: 3000 });
+    }
   } catch (err) {
     console.error('Error al eliminar el álbum:', err);
     toast.add({ severity: 'error', summary: 'Error', detail: 'Error al eliminar el álbum', life: 3000 });
@@ -401,17 +398,18 @@ const deleteAlbum = async () => {
 
 const saveAlbumChanges = async () => {
   try {
-
     if (!selectedAlbum.value.nombre?.trim()) {
       toast.add({ severity: 'error', summary: 'Error', detail: 'Nombre requerido', life: 3000 });
       return;
     }
+    
+    // Eliminar canciones que ya no están en el álbum
     const currentSongIds = albumCanciones.value.filter(s => !s.isNew).map(s => s.id);
     const deletedSongs = cancionesOriginales.value.filter(song => !currentSongIds.includes(song.id));
 
     for (const song of deletedSongs) {
       try {
-        await axios.delete(`/api/canciones/${song.id}`);
+        await eliminarCancion(song.id);
         console.log(`Canción ${song.nombre} eliminada correctamente`);
       } catch (error) {
         console.error(`Error al eliminar canción ${song.nombre}:`, error);
@@ -424,42 +422,33 @@ const saveAlbumChanges = async () => {
       }
     }
 
+    // Agregar nuevas canciones al álbum
     const newSongIds = [];
     for (const song of CancionesPendientes.value) {
-      const songFormData = new FormData();
-      songFormData.append('archivo', song.file);
-      songFormData.append('album_id', selectedAlbum.value.id);
-      songFormData.append('nombre', song.nombre);
-      songFormData.append('duracion', song.duracion);
-      songFormData.append('orden', albumCanciones.value.findIndex(s => s.id === song.id) + 1);
-
       try {
-        const response = await axios.post('/api/canciones', songFormData);
-        newSongIds.push(response.data.cancion.id);
+        const nuevaCancion = await agregarCancion(
+          song, 
+          selectedAlbum.value.id, 
+          albumCanciones.value.findIndex(s => s.id === song.id) + 1
+        );
+        if (nuevaCancion) {
+          newSongIds.push(nuevaCancion.id);
+        }
       } catch (error) {
-        console.error('Error al guardar canción:', error);
         toast.add({ severity: 'error', summary: 'Error', detail: `Error al guardar canción: ${song.nombre}`, life: 3000 });
       }
     }
     
-
+    // Actualizar portada si hay una nueva
     let portadaUrl = null;
     if (imagenArchivo.value) {
-      const imageFormData = new FormData();
-      imageFormData.append('portada', imagenArchivo.value);
-      imageFormData.append('album_id', selectedAlbum.value.id);
-      
-      try {
-        
-        const imageResponse = await axios.post(`/api/albumes/${selectedAlbum.value.id}/portada`, imageFormData);
-        portadaUrl = imageResponse.data.portada_url; 
-      } catch (error) {
-        console.error('Error al subir la portada:', error);
+      portadaUrl = await actualizarPortadaAlbum(selectedAlbum.value.id, imagenArchivo.value);
+      if (!portadaUrl) {
         toast.add({ severity: 'error', summary: 'Error', detail: 'Error al subir la portada', life: 3000 });
       }
     }
     
-
+    // Actualizar información del álbum
     const songIds = [
       ...albumCanciones.value.filter(s => !s.isNew).map(s => s.id),
       ...newSongIds
@@ -473,16 +462,20 @@ const saveAlbumChanges = async () => {
       canciones: JSON.stringify(songIds)
     };
 
-    
-    
-   
-    const response = await axios.put(`/api/albumes/${selectedAlbum.value.id}`, albumData);
-    
-
-    await cargarAlbums();
-    CancionesPendientes.value = [];
-    MostrarPopupEditar.value = false;
-    toast.add({ severity: 'success', summary: 'Éxito', detail: 'Álbum actualizado', life: 3000 });
+    const resultado = await actualizarAlbum(selectedAlbum.value.id, albumData);
+    if (resultado) {
+      await cargarAlbums();
+      CancionesPendientes.value = [];
+      MostrarPopupEditar.value = false;
+      toast.add({ severity: 'success', summary: 'Éxito', detail: 'Álbum actualizado', life: 3000 });
+    } else {
+      toast.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: error.value || 'Error al actualizar el álbum', 
+        life: 3000 
+      });
+    }
   } catch (err) {
     console.error('Error:', err.response?.data);
     toast.add({ 

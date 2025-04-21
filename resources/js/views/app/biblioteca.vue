@@ -70,28 +70,31 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2">
-                <Button type="button" label="Guardar" @click="enviarFormulario" :disabled="!esFormularioValido"></Button>
+                <Button type="button" label="Guardar" @click="enviarYCerrar" :disabled="!esFormularioValido"></Button>
             </div>
         </form>
     </Dialog>
 </template>
 
 <script setup>
-    import { ref, reactive, computed, onMounted } from 'vue';
-    import { useRoute } from 'vue-router';
-    import axios from 'axios';
+    import { ref, computed, onMounted } from 'vue';
     import { datosBiblioteca } from "@/composables/biblioteca.js";
 
-    
-    const { getListasUsuario, listas, getListasFavs, listasFavoritas, getAlbumesFavs, albumesFavoritos } = datosBiblioteca();
-
-
+    const {
+        getListasUsuario,
+        listas,
+        getListasFavs,
+        listasFavoritas,
+        getAlbumesFavs,
+        albumesFavoritos,
+        enviarFormulario,
+        resetFormulario,
+        listaData,
+        PreviewImagenLista
+    } = datosBiblioteca();
 
     const visible = ref(false);
-    const isHovered = ref(false);    
-    const PreviewImagenLista = ref(null); 
-
-    const imagenDataPerfil = reactive({ portada: null });
+    const isHovered = ref(false);
 
     onMounted(async () => {
         await getListasUsuario();
@@ -104,79 +107,30 @@
         return new URL(image, import.meta.url).href;
     }
 
-    const listaData = reactive({
-        nombre: '',
-        descripcion: '',
-        portada: null,
-        duracion_total: '00:00:00' 
-    });
-
-
-
     const manejarImagenLista = (event) => {
         const file = event.target.files[0];
         if (file) {
             if (PreviewImagenLista.value) {
                 URL.revokeObjectURL(PreviewImagenLista.value);
             }
-            listaData.portada = file;  
+            listaData.value.portada = file;
             PreviewImagenLista.value = URL.createObjectURL(file);
         }
     };
 
-
-    const resetFormulario = () => {
-        listaData.nombre = '';
-        listaData.descripcion = '';
-        listaData.portada = null;
-        listaData.duracion_total = '00:00:00';
-        PreviewImagenLista.value = null;
-    };
-
-
-
     const esFormularioValido = computed(() => {
-        return listaData.nombre.trim() !== '' && listaData.portada;
+        return listaData.value.nombre.trim() !== '' && listaData.value.portada;
     });
 
-
-    const enviarFormulario = async () => {
-        try {
-            const listaFormData = new FormData();
-            listaFormData.append('nombre', listaData.nombre);
-            listaFormData.append('portada', listaData.portada);
-            listaFormData.append('duracion_total', listaData.duracion_total);
-
-            if (listaData.descripcion.trim() !== '') {
-                listaFormData.append('descripcion', listaData.descripcion);
-            }
-
-            const response = await axios.post('/api/listas', listaFormData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-
-            console.log('Lista creada exitosamente', response.data);
-
-            if (response.data.lista) {
-                listas.value.push(response.data.lista); 
-            } else {
-                console.error('Error: la respuesta no contiene la lista esperada.', response.data);
-            }
-
-            visible.value = false;  
-            resetFormulario();     
-
-        } catch (error) {
-            console.error('Error:', error.response?.data);
+    const enviarYCerrar = async () => {
+        const success = await enviarFormulario();
+        if (success) {
+            await getListasUsuario();
+            visible.value = false;
         }
     };
-
-
-
-
-
-
 </script>
+
 
 
 <style scoped>
@@ -350,6 +304,7 @@
         background-color: #A855F7 !important;
         border: none !important;
         color: white !important;
+        
     }
 
     .crearLista-imagene {

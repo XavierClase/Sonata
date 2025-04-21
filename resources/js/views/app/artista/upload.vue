@@ -61,8 +61,8 @@
 import { ref, reactive, computed } from 'vue';
 import { authStore } from "@/store/auth.js";
 import AppPanel from '@/layouts/AppPanel.vue';
-import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
+import { useFuncionesArtista } from '@/composables/funcionesArtista';
 
 const toast = useToast();
 const user = authStore().user;
@@ -70,6 +70,7 @@ const archivoImagen = ref(null);
 const archivoAudio = ref(null);
 const PreviewImagen = ref(null);
 const canciones = ref([]);
+const { cargando, error, subirAlbumCompleto } = useFuncionesArtista();
 
 const albumData = reactive({
   nombre: '',
@@ -141,14 +142,12 @@ const manejarAudio = async (event) => {
   event.target.value = '';
 };
 
-
 const borrarTodo = () => {
   albumData.nombre = '';
   albumData.tipo = 'Album';
   albumData.portada = null;
   PreviewImagen.value = null;
   canciones.value = [];
-  
   
   if (archivoImagen.value) archivoImagen.value.value = '';
   if (archivoAudio.value) archivoAudio.value.value = '';
@@ -223,12 +222,10 @@ const validarFormulario = () => {
   return errores;
 };
 
-
-const manejarSubmit = () => {
+const manejarSubmit = async () => {
   const errores = validarFormulario();
   
   if (errores.length > 0) {
-   
     toast.removeGroup('validacion');
     
     errores.forEach(error => {
@@ -248,41 +245,15 @@ const manejarSubmit = () => {
 
 const enviarFormulario = async () => {
   try {
-    const albumFormData = new FormData();
-    albumFormData.append('nombre', albumData.nombre);
-    albumFormData.append('tipo', albumData.tipo);
-    albumFormData.append('portada', albumData.portada);
-    albumFormData.append('num_canciones', canciones.value.length.toString());
-   
-    albumFormData.append('duracion_total', duracionTotalFormateada.value);
-
-    const albumResponse = await axios.post('/api/albums', albumFormData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }
-    });
-
-    const albumId = albumResponse.data.album.id;
-    
-    
-    for (let i = 0; i < canciones.value.length; i++) {
-      const cancion = canciones.value[i];
-      
-      const cancionFormData = new FormData();
-      cancionFormData.append('nombre', cancion.nombre);
-     
-      cancionFormData.append('duracion', cancion.duracion);
-      cancionFormData.append('archivo', cancion.archivo);
-      cancionFormData.append('album_id', albumId);
-      cancionFormData.append('orden', (i + 1).toString());
-
-      await axios.post('/api/canciones', cancionFormData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      });
-    }
-    
+    await subirAlbumCompleto(
+      {
+        nombre: albumData.nombre,
+        tipo: albumData.tipo,
+        portada: albumData.portada,
+        duracionTotal: duracionTotalFormateada.value
+      },
+      canciones.value
+    );
     
     toast.add({
       severity: 'success',
@@ -293,7 +264,7 @@ const enviarFormulario = async () => {
     borrarTodo();
     
   } catch (error) {
-    console.error('Error:', error.response?.data);
+    console.error('Error:', error);
     toast.add({
       severity: 'error',
       summary: 'Error al guardar',

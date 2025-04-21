@@ -89,21 +89,20 @@
 <script setup>
     import { ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
-    import axios from 'axios';
     import { useLikeAlbum, useLikeCancion } from "@/composables/likes.js";
     import { usePlayer } from "@/composables/usePlayer.js";
+    import { mostrarMusica } from "@/composables/mostrarMusica.js";
     import ListaCanciones from '@/components/listaCanciones.vue';
 
     const cancionParaCompartir = ref(null);
     const route = useRoute();
     const albumId = ref(route.params.id);
-    const album = ref(null);
-    const canciones = ref(null);
 
     const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
 
     const { favoritos, toggleLike, esFavorito } = useLikeAlbum();
     const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
+    const { album, getAlbumData, canciones, getCancionesAlbum} = mostrarMusica(albumId);
     const esFavoritoAlbum = ref(false);
 
     const likeAlbum = async (idAlbum, event) => {
@@ -135,13 +134,9 @@
     
     onMounted(async () => {
         try {
-            const [albumResponse, cancionesResponse] = await Promise.all([
-                axios.get(`/api/album/${albumId.value}`),
-                axios.get(`/api/albumes/${albumId.value}/canciones`)
-            ]);
-            
-            album.value = albumResponse.data.data;
-            canciones.value = cancionesResponse.data.data;
+            await getAlbumData();
+            await getCancionesAlbum();
+        
             
             esFavoritoAlbum.value = await esFavorito(albumId.value);
             await cargarFavoritosCanciones();

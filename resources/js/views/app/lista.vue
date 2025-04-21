@@ -1,376 +1,382 @@
 <template>
-     <ListaCanciones 
-                v-if="cancionParaCompartir" 
-                :cancion="cancionParaCompartir"
-                @close="cancionParaCompartir = null"
-            />
-    <div class="showDialog"></div>
-    <div class="lista-banner">
-        <div class="detalles-lista">
-            <div class="lista-banner-img">
-                <img :src="getImageUrl(lista)"/>
-            </div>
-            <div class="datos-detalles-lista">
-                <p> {{ lista?.tipo }}</p>
-                <h1>
-                    {{ lista?.nombre }}
-                </h1>
-                <span>
-                    <router-link  class="banner-creador-nombre" :key="lista?.id_creador"   :to="{ 
-                        name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
-                        params: {id: lista?.id_creador} }">{{ lista?.creador }}
-                    </router-link>
+    <ListaCanciones 
+               v-if="cancionParaCompartir" 
+               :cancion="cancionParaCompartir"
+               @close="cancionParaCompartir = null"
+           />
+   <div class="showDialog"></div>
+   <div class="lista-banner">
+       <div class="detalles-lista">
+           <div class="lista-banner-img">
+               <img :src="getImageUrl(lista)"/>
+           </div>
+           <div class="datos-detalles-lista">
+               <p> {{ lista?.tipo }}</p>
+               <h1>
+                   {{ lista?.nombre }}
+               </h1>
+               <span>
+                   <router-link  class="banner-creador-nombre" :key="lista?.id_creador"   :to="{ 
+                       name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
+                       params: {id: lista?.id_creador} }">{{ lista?.creador }}
+                   </router-link>
 
-                    
-                    <p>{{  new Date(lista?.created_at).getFullYear() }}</p>
-                    <p>·</p>
-                    <p>{{ lista?.num_canciones }} canciones</p>
-                    <p>·</p>
-                    <p>{{ lista?.duracion_total }}</p>
-                </span>
-                <p class="lista-descripcion">{{ lista?.descripcion }}</p>
-            </div>
-            <i
-                id="iconoBanner"
-                v-if="userPropio?.name !== lista?.creador"
-                :class="esFavoritoLista ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                @click="likeLista(lista?.id, $event)"
-            ></i>
-            <i 
-                :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
-                id="iconoBanner"
-                @mouseover="isHovered = true"
-                @mouseleave="isHovered = false"
-                v-if="userPropio?.name === lista?.creador" 
-                @click="visible = true"
-            ></i>
-        </div>
-        <div class="lista-banner-play" @click="toggleListaPlayback">
-            <svg  v-if="!isPlaying" viewBox="0 0 100 100">
-                <defs>
-                    <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#F472B6" />
-                    <stop offset="100%" stop-color="#A855F7" />
-                    </linearGradient>
-                </defs>
-                
-                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
-                
-                <path d="M35 25 L35 75 L75 50 Z" fill="white"/>
-            </svg>
-            <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-                 Definición del degradado 
-                <defs>
-                    <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#F472B6" />
-                    <stop offset="100%" stop-color="#A855F7" />
-                    </linearGradient>
-                </defs>
-                
-                 Círculo de fondo con degradado 
-                <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
-                
-                 Barras de pausa (dos rectángulos) 
-                <rect x="35" y="30" width="10" height="40" fill="white" rx="2"/>
-                <rect x="55" y="30" width="10" height="40" fill="white" rx="2"/>
-            </svg> 
-        </div>
-        
-    </div>
-        
-    <div class="lista-canciones-container">
-        <div class="row lista-canciones-categorias">
-            <p class="col-md-1">#</p>
-            <p class="col-md-5">Título</p>
-            <p class="col-md-3">Reproducciones</p>
-            <p class="col-md-2">Duración</p>
-        </div>
-        <div class="lista-canciones-detalles">
-            <div class="row cancion-lista" v-for="(cancion, index) in canciones" :key="cancion.id"
-            @click="reproducirCancion(cancion)">
-                <div>
-                    <p class="col-md-1 num-cancion-lista">{{ index + 1 }}</p> 
-                    <p class="col-md-5 cancion-lista-nombre">{{ cancion.nombre }}</p>
-                    <p class="col-md-3 cancion-lista-reproducciones">{{ cancion.reproducciones }}</p>
-                    <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
-                    <span class="cancion-lista-span">
-                        <i
-                            :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                            @click="likeCancion(cancion.id, $event)"
-                            title="Añadir la canción a favoritos"
-                        ></i>
-                        <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)" title="Añadir la canción a una lista"></i>
-                    </span>
-                </div>
-                
-                <i 
-                    v-if="userPropio?.name === lista?.creador" 
-                    class="pi pi-times-circle" 
-                    style="cursor: pointer;" 
-                    @click="prepararEliminarCancion(cancion)"
-                    title="Eliminar canción de la lista"
-                ></i>
-            </div>
-        </div>
-    </div>
-    
-    <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Editar lista" appendTo=".showDialog">
-        <form @submit.prevent="enviarFormulario">
-            <div class="row">
-                <div class="config-imagenes col-md-4">
-                    <div class="imagen-crear-lista">
-                        <img :src="PreviewImagenLista || getImageUrl(lista) || '/images/placeholder1.jpg'" class="estilo_imagen">
-                        <input type="file" @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="flex items-center gap-4 mb-4">
-                        <FloatLabel variant="on">
-                            <InputText class="crearLista-input" id="username" v-model="nombreListaMod" />
-                            <label for="username">Nombre de la lista</label>
-                        </FloatLabel>
-                    </div>
-                    <div class="flex items-center gap-4 mb-8">
-                        <FloatLabel variant="on">
-                            <Textarea class="crearLista-input" id="config-descripcion" rows="5" cols="30" style="resize: none" v-model="descripcionListaMod" />
-                            <label for="descripcion">Descripción</label>
-                        </FloatLabel>
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2">
-                <Button type="button" id="cancelarButton" label="Guardar" @click="enviarFormulario"></Button>
-                <Button 
-                    type="button" 
-                    id="eliminarButton" 
-                    label="Eliminar" 
-                    severity="danger" 
-                    @click="prepararEliminarLista"
-                    title="Eliminar la lista permanentemente"
-                ></Button>
-            </div>
-        </form>
-    </Dialog>
+                   
+                   <p>{{  new Date(lista?.created_at).getFullYear() }}</p>
+                   <p>·</p>
+                   <p>{{ lista?.num_canciones }} canciones</p>
+                   <p>·</p>
+                   <p>{{ lista?.duracion_total }}</p>
+               </span>
+               <p class="lista-descripcion">{{ lista?.descripcion }}</p>
+           </div>
+           <i
+               id="iconoBanner"
+               v-if="userPropio?.name !== lista?.creador"
+               :class="esFavoritoLista ? 'pi pi-heart-fill' : 'pi pi-heart'"
+               @click="likeLista(lista?.id, $event)"
+           ></i>
+           <i 
+               :class="{'pi pi-cog': true, 'pi-spin': isHovered}" 
+               id="iconoBanner"
+               @mouseover="isHovered = true"
+               @mouseleave="isHovered = false"
+               v-if="userPropio?.name === lista?.creador" 
+               @click="visible = true"
+           ></i>
+       </div>
+       <div class="lista-banner-play" @click="toggleListaPlayback">
+           <svg  v-if="!isPlaying" viewBox="0 0 100 100">
+               <defs>
+                   <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
+                   <stop offset="0%" stop-color="#F472B6" />
+                   <stop offset="100%" stop-color="#A855F7" />
+                   </linearGradient>
+               </defs>
+               
+               <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
+               
+               <path d="M35 25 L35 75 L75 50 Z" fill="white"/>
+           </svg>
+           <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                Definición del degradado 
+               <defs>
+                   <linearGradient id="gradiente" x1="0%" y1="0%" x2="100%" y2="0%">
+                   <stop offset="0%" stop-color="#F472B6" />
+                   <stop offset="100%" stop-color="#A855F7" />
+                   </linearGradient>
+               </defs>
+               
+                Círculo de fondo con degradado 
+               <circle cx="50" cy="50" r="45" fill="url(#gradiente)" stroke="none"/>
+               
+                Barras de pausa (dos rectángulos) 
+               <rect x="35" y="30" width="10" height="40" fill="white" rx="2"/>
+               <rect x="55" y="30" width="10" height="40" fill="white" rx="2"/>
+           </svg> 
+       </div>
+       
+   </div>
+       
+   <div class="lista-canciones-container">
+       <div class="row lista-canciones-categorias">
+           <p class="col-md-1">#</p>
+           <p class="col-md-5">Título</p>
+           <p class="col-md-3">Reproducciones</p>
+           <p class="col-md-2">Duración</p>
+       </div>
+       <div class="lista-canciones-detalles">
+           <div class="row cancion-lista" v-for="(cancion, index) in canciones" :key="cancion.id"
+           @click="reproducirCancion(cancion)">
+               <div>
+                   <p class="col-md-1 num-cancion-lista">{{ index + 1 }}</p> 
+                   <p class="col-md-5 cancion-lista-nombre">{{ cancion.nombre }}</p>
+                   <p class="col-md-3 cancion-lista-reproducciones">{{ cancion.reproducciones }}</p>
+                   <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
+                   <span class="cancion-lista-span">
+                       <i
+                           :class="esFavoritaCancion(cancion.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                           @click="likeCancion(cancion.id, $event)"
+                           title="Añadir la canción a favoritos"
+                       ></i>
+                       <i class="pi pi-plus" @click="mostrarListaCanciones(cancion)" title="Añadir la canción a una lista"></i>
+                   </span>
+               </div>
+               
+               <i 
+                   v-if="userPropio?.name === lista?.creador" 
+                   class="pi pi-times-circle" 
+                   style="cursor: pointer;" 
+                   @click="prepararEliminarCancion(cancion)"
+                   title="Eliminar canción de la lista"
+               ></i>
+           </div>
+       </div>
+   </div>
+   
+   <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Editar lista" appendTo=".showDialog">
+       <form @submit.prevent="enviarFormulario">
+           <div class="row">
+               <div class="config-imagenes col-md-4">
+                   <div class="imagen-crear-lista">
+                       <img :src="PreviewImagenLista || getImageUrl(lista) || '/images/placeholder1.jpg'" class="estilo_imagen">
+                       <input type="file" @change="manejarImagenLista" accept="image/*" ref="archivoImagen" class="añadir_archivo">  
+                   </div>
+               </div>
+               <div class="col-md-6">
+                   <div class="flex items-center gap-4 mb-4">
+                       <FloatLabel variant="on">
+                           <InputText class="crearLista-input" id="username" v-model="nombreListaMod" />
+                           <label for="username">Nombre de la lista</label>
+                       </FloatLabel>
+                   </div>
+                   <div class="flex items-center gap-4 mb-8">
+                       <FloatLabel variant="on">
+                           <Textarea class="crearLista-input" id="config-descripcion" rows="5" cols="30" style="resize: none" v-model="descripcionListaMod" />
+                           <label for="descripcion">Descripción</label>
+                       </FloatLabel>
+                   </div>
+               </div>
+           </div>
+           <div class="flex justify-end gap-2">
+               <Button type="button" id="cancelarButton" label="Guardar" @click="enviarFormulario"></Button>
+               <Button 
+                   type="button" 
+                   id="eliminarButton" 
+                   label="Eliminar" 
+                   severity="danger" 
+                   @click="prepararEliminarLista"
+                   title="Eliminar la lista permanentemente"
+               ></Button>
+           </div>
+       </form>
+   </Dialog>
 
-    <Dialog 
-        v-model:visible="mostrarConfirmacionEliminarCancion" 
-        modal 
-        header="Confirmar eliminación" 
-        class="confirmarEliminacion"
-    >
-        <p>¿Estás seguro de que quieres eliminar la canción "{{ selectedCancion?.nombre }}" de la lista?</p>
-        <p class="text-red-500">Esta acción no se puede deshacer.</p>
-        <div class="flex justify-end gap-2 mt-4">
-            <Button 
-                type="button" 
-                label="Cancelar" 
-                id="cancelarButton"
-                @click="mostrarConfirmacionEliminarCancion = false"
-            ></Button>
-            <Button 
-                type="button" 
-                label="Eliminar" 
-                id="eliminarButton" 
-                @click="confirmarEliminarCancion"
-            ></Button>
-        </div>
-    </Dialog>
+   <Dialog 
+       v-model:visible="mostrarConfirmacionEliminarCancion" 
+       modal 
+       header="Confirmar eliminación" 
+       class="confirmarEliminacion"
+   >
+       <p>¿Estás seguro de que quieres eliminar la canción "{{ selectedCancion?.nombre }}" de la lista?</p>
+       <p class="text-red-500">Esta acción no se puede deshacer.</p>
+       <div class="flex justify-end gap-2 mt-4">
+           <Button 
+               type="button" 
+               label="Cancelar" 
+               id="cancelarButton"
+               @click="mostrarConfirmacionEliminarCancion = false"
+           ></Button>
+           <Button 
+               type="button" 
+               label="Eliminar" 
+               id="eliminarButton" 
+               @click="confirmarEliminarCancion"
+           ></Button>
+       </div>
+   </Dialog>
 
-    <Dialog 
-        v-model:visible="mostrarConfirmacionEliminarLista" 
-        modal 
-        header="Confirmar eliminación de lista" 
-        class="confirmarEliminacion"
-    >
-        <p>¿Estás seguro de que quieres eliminar la lista "{{ lista?.nombre }}"?</p>
-        <p class="text-red-500">Esta acción no se puede deshacer y eliminará permanentemente la lista.</p>
-        <div class="flex justify-end gap-2 mt-4">
-            <Button 
-                type="button" 
-                label="Cancelar" 
-                class="boton_cancelar" 
-                @click="mostrarConfirmacionEliminarLista = false"
-            ></Button>
-            <Button 
-                type="button" 
-                label="Eliminar" 
-                severity="danger"
-                id="eliminarButton"  
-                @click="confirmarEliminarLista"
-            ></Button>
-        </div>
-    </Dialog>
+   <Dialog 
+       v-model:visible="mostrarConfirmacionEliminarLista" 
+       modal 
+       header="Confirmar eliminación de lista" 
+       class="confirmarEliminacion"
+   >
+       <p>¿Estás seguro de que quieres eliminar la lista "{{ lista?.nombre }}"?</p>
+       <p class="text-red-500">Esta acción no se puede deshacer y eliminará permanentemente la lista.</p>
+       <div class="flex justify-end gap-2 mt-4">
+           <Button 
+               type="button" 
+               label="Cancelar" 
+               class="boton_cancelar" 
+               @click="mostrarConfirmacionEliminarLista = false"
+           ></Button>
+           <Button 
+               type="button" 
+               label="Eliminar" 
+               severity="danger"
+               id="eliminarButton"  
+               @click="confirmarEliminarLista"
+           ></Button>
+       </div>
+   </Dialog>
 
-    <Toast />
+   <Toast />
 </template>
 
 <script setup>
-    import { ref, reactive, onMounted } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
-    import axios from 'axios';
-    import { authStore } from "@/store/auth.js";
-    import { useLikeLista, useLikeCancion } from "@/composables/likes.js";
-    import ListaCanciones from '@/components/listaCanciones.vue'
-    import { usePlayer } from "@/composables/usePlayer.js"; // Importamos el composable
-    import { useToast } from 'primevue/usetoast';
+   import { ref, reactive, onMounted } from 'vue';
+   import { useRoute, useRouter } from 'vue-router';
+   import { authStore } from "@/store/auth.js";
+   import { useLikeLista, useLikeCancion } from "@/composables/likes.js";
+   import ListaCanciones from '@/components/listaCanciones.vue'
+   import { usePlayer } from "@/composables/usePlayer.js";
+   import { mostrarMusica } from "@/composables/mostrarMusica.js"; 
+   import { useToast } from 'primevue/usetoast';
 
-    const toast = useToast();
-    const router = useRouter();
-    const route = useRoute(); 
+   const toast = useToast();
+   const router = useRouter();
+   const route = useRoute(); 
 
-    const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
+   const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
 
-    const cancionParaCompartir = ref(null);
-    const PreviewImagenLista = ref(null);
-    const visible = ref(false);
-    const isHovered = ref(false);
-    const userPropio = authStore().user;
-    const listaId = ref(route.params.id);
-    const lista = ref(null);
-    const canciones = ref(null);
-    const nombreListaMod = ref('');
-    const descripcionListaMod = ref('');
-    const nuevaImagenLista = reactive({ portada: null });
-    const mostrarConfirmacionEliminarLista = ref(false);
-    const mostrarConfirmacionEliminarCancion = ref(false);
-    const selectedCancion = ref(null);
+   const cancionParaCompartir = ref(null);
+   const PreviewImagenLista = ref(null);
+   const visible = ref(false);
+   const isHovered = ref(false);
+   const userPropio = authStore().user;
+   const listaId = ref(route.params.id);
 
-    const { favoritos, toggleLike, esFavorito } = useLikeLista();
-    const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
-    const esFavoritoLista = ref(false);
+   const { 
+       lista, 
+       canciones,
+       getListaData, 
+       getCancionesLista,
+       updateLista,
+       updateListaImagen,
+       eliminarLista,
+       eliminarCancionDeLista
+   } = mostrarMusica(listaId);
 
-    const toggleListaPlayback = () => {
-        playPlaylist(canciones.value, 'lista', lista.value.id);
-    };
-    
-    const reproducirCancion = (cancion) => {
-     playSong(cancion, canciones.value, 'lista', lista.value.id);
-    };
+   const nombreListaMod = ref('');
+   const descripcionListaMod = ref('');
+   const nuevaImagenLista = reactive({ portada: null });
+   const mostrarConfirmacionEliminarLista = ref(false);
+   const mostrarConfirmacionEliminarCancion = ref(false);
+   const selectedCancion = ref(null);
 
-    const mostrarListaCanciones = (cancion) => {
-        event.stopPropagation();
-        cancionParaCompartir.value = cancion;
-    };
+   const { favoritos, toggleLike, esFavorito } = useLikeLista();
+   const { cancionesFavoritas, cargarFavoritosCanciones, toggleLikeCancion, esFavoritaCancion } = useLikeCancion();
+   const esFavoritoLista = ref(false);
 
-    const likeLista = async (idLista, event) => {
-        event.stopPropagation();
-        await toggleLike(idLista);
-        esFavoritoLista.value = !esFavoritoLista.value;
-    };
+   const toggleListaPlayback = () => {
+       playPlaylist(canciones.value, 'lista', lista.value.id);
+   };
+   
+   const reproducirCancion = (cancion) => {
+    playSong(cancion, canciones.value, 'lista', lista.value.id);
+   };
 
-    const likeCancion = async (idCancion, event) => {
-        event.stopPropagation();
-        await toggleLikeCancion(idCancion);
-        await cargarFavoritosCanciones();
-    };
+   const mostrarListaCanciones = (cancion) => {
+       event.stopPropagation();
+       cancionParaCompartir.value = cancion;
+   };
 
-    const getImageUrl = (lista) => {
-        const image = lista?.portada;
-        return new URL(image, import.meta.url).href;
-    };
+   const likeLista = async (idLista, event) => {
+       event.stopPropagation();
+       await toggleLike(idLista);
+       esFavoritoLista.value = !esFavoritoLista.value;
+   };
 
-    const manejarImagenLista = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (PreviewImagenLista.value) {
-                URL.revokeObjectURL(PreviewImagenLista.value);
-            }
-            nuevaImagenLista.portada = file;  
-            PreviewImagenLista.value = URL.createObjectURL(file);
-        }
-    };
+   const likeCancion = async (idCancion, event) => {
+       event.stopPropagation();
+       await toggleLikeCancion(idCancion);
+       await cargarFavoritosCanciones();
+   };
 
-    const enviarFormulario = async () => {
-        try {
-            await axios.post(`/api/listas/update/${listaId.value}`, {
-                nombre: nombreListaMod.value,
-                descripcion: descripcionListaMod.value
-            });
+   const getImageUrl = (lista) => {
+       const image = lista?.portada;
+       return new URL(image, import.meta.url).href;
+   };
 
-            if (nuevaImagenLista.portada) {
-                let formData = new FormData();
-                formData.append('idLista', listaId.value);
-                formData.append('portada', nuevaImagenLista.portada);
+   const manejarImagenLista = (event) => {
+       const file = event.target.files[0];
+       if (file) {
+           if (PreviewImagenLista.value) {
+               URL.revokeObjectURL(PreviewImagenLista.value);
+           }
+           nuevaImagenLista.portada = file;  
+           PreviewImagenLista.value = URL.createObjectURL(file);
+       }
+   };
 
-                await axios.post('/api/listas/updateimg', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-            }
+   const enviarFormulario = async () => {
+       try {
+           await updateLista(listaId.value, {
+               nombre: nombreListaMod.value,
+               descripcion: descripcionListaMod.value
+           });
 
-            lista.value.nombre = nombreListaMod.value;
-            lista.value.descripcion = descripcionListaMod.value;
-            if (nuevaImagenLista.portada) {
-                lista.value.portada = URL.createObjectURL(nuevaImagenLista.portada);
-            }
+           if (nuevaImagenLista.portada) {
+               let formData = new FormData();
+               formData.append('idLista', listaId.value);
+               formData.append('portada', nuevaImagenLista.portada);
 
-            visible.value = false;
-            toast.add({ severity: 'success', summary: 'Éxito', detail: 'Lista actualizada correctamente', life: 3000 });
-        } catch (error) {
-            console.error("Error al actualizar la lista:", error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar la lista', life: 3000 });
-        }
-    };
+               await updateListaImagen(formData);
+           }
 
-    const prepararEliminarLista = () => {
-        visible.value = false;
-        mostrarConfirmacionEliminarLista.value = true;
-    };
+           lista.value.nombre = nombreListaMod.value;
+           lista.value.descripcion = descripcionListaMod.value;
+           if (nuevaImagenLista.portada) {
+               lista.value.portada = URL.createObjectURL(nuevaImagenLista.portada);
+           }
 
-    const confirmarEliminarLista = async () => {
-        try {
-            await axios.delete(`/api/listas/del/${listaId.value}`);
-            
-            mostrarConfirmacionEliminarLista.value = false;
-            toast.add({ severity: 'success', summary: 'Éxito', detail: 'Lista eliminada correctamente', life: 3000 });
-            router.push('/app/biblioteca');
-        } catch (error) {
-            console.error("Error al eliminar la lista:", error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar la lista', life: 3000 });
-            visible.value = true;
-        }
-    };
+           visible.value = false;
+           toast.add({ severity: 'success', summary: 'Éxito', detail: 'Lista actualizada correctamente', life: 3000 });
+       } catch (error) {
+           console.error("Error al actualizar la lista:", error);
+           toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar la lista', life: 3000 });
+       }
+   };
 
-    const prepararEliminarCancion = (cancion) => {
-        event.stopPropagation();
-        selectedCancion.value = cancion;
-        mostrarConfirmacionEliminarCancion.value = true;
-    };
+   const prepararEliminarLista = () => {
+       visible.value = false;
+       mostrarConfirmacionEliminarLista.value = true;
+   };
 
-    const confirmarEliminarCancion = async () => {
-        if (!selectedCancion.value) return;
+   const confirmarEliminarLista = async () => {
+       try {
+           await eliminarLista(listaId.value);
+           
+           mostrarConfirmacionEliminarLista.value = false;
+           toast.add({ severity: 'success', summary: 'Éxito', detail: 'Lista eliminada correctamente', life: 3000 });
+           router.push('/app/biblioteca');
+       } catch (error) {
+           console.error("Error al eliminar la lista:", error);
+           toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar la lista', life: 3000 });
+           visible.value = true;
+       }
+   };
 
-        try {
-            await axios.delete(`/api/listas/${listaId.value}/cancion/${selectedCancion.value.id}`);
-            
-            canciones.value = canciones.value.filter(c => c.id !== selectedCancion.value.id);
-            mostrarConfirmacionEliminarCancion.value = false;
-            toast.add({ severity: 'success', summary: 'Éxito', detail: 'Canción eliminada correctamente', life: 3000 });
-        } catch (error) {
-            console.error("Error al eliminar la canción:", error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar la canción', life: 3000 });
-        }
+   const prepararEliminarCancion = (cancion) => {
+       event.stopPropagation();
+       selectedCancion.value = cancion;
+       mostrarConfirmacionEliminarCancion.value = true;
+   };
 
-        selectedCancion.value = null;
-    };
+   const confirmarEliminarCancion = async () => {
+       if (!selectedCancion.value) return;
 
-    onMounted(async () => {
-        try {
-            const [listaResponse, cancionesResponse] = await Promise.all([
-                axios.get(`/api/lista/${listaId.value}`),
-                axios.get(`/api/listas/${listaId.value}/canciones`)
-            ]);
-            
-            lista.value = listaResponse.data.data;
-            canciones.value = cancionesResponse.data.data;
-            nombreListaMod.value = lista.value.nombre;
-            descripcionListaMod.value = lista.value.descripcion;
-            
-            esFavoritoLista.value = await esFavorito(listaId.value);
-            await cargarFavoritosCanciones();
-        } catch (error) {
-            console.error('Error cargando datos:', error);
-        }
-    });
+       try {
+           await eliminarCancionDeLista(listaId.value, selectedCancion.value.id);
+           
+           canciones.value = canciones.value.filter(c => c.id !== selectedCancion.value.id);
+           mostrarConfirmacionEliminarCancion.value = false;
+           toast.add({ severity: 'success', summary: 'Éxito', detail: 'Canción eliminada correctamente', life: 3000 });
+       } catch (error) {
+           console.error("Error al eliminar la canción:", error);
+           toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar la canción', life: 3000 });
+       }
+
+       selectedCancion.value = null;
+   };
+
+   onMounted(async () => {
+       try {
+           const [listaData, cancionesData] = await Promise.all([
+               getListaData(listaId.value),
+               getCancionesLista(listaId.value)
+           ]);
+           
+           nombreListaMod.value = lista.value.nombre;
+           descripcionListaMod.value = lista.value.descripcion;
+           
+           esFavoritoLista.value = await esFavorito(listaId.value);
+           await cargarFavoritosCanciones();
+       } catch (error) {
+           console.error('Error cargando datos:', error);
+       }
+   });
 </script>
 
 <style scoped>

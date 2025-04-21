@@ -93,7 +93,6 @@
 <script setup>
     import { ref, onMounted, computed } from 'vue';
     import { useRoute } from 'vue-router';
-    import axios from 'axios';
     import { authStore } from "@/store/auth.js";
     import { datosUser, useEditarUsuario } from "@/composables/datosUser.js";
     import { mostrarMusica } from "@/composables/mostrarMusica.js";
@@ -126,12 +125,6 @@
             await getListasFavsUser();
             nombreUsuarioMod.value = user.value?.name;
             
-            
-            
-            // if (esMiPerfil.value) {
-            //     const listasGuardadasResponse = await axios.get('/api/mostrar/lista/likes');
-            //     listasGuardadas.value = listasGuardadasResponse.data.data;
-            // }
         } catch (error) {
             console.error('Error fetching user or albums:', error);
         }
