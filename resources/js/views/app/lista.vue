@@ -5,6 +5,8 @@
                @close="cancionParaCompartir = null"
            />
    <div class="showDialog"></div>
+   <div class="show"></div>
+   <div class="showEliminar"></div>
    <div class="lista-banner">
        <div class="detalles-lista">
            <div class="lista-banner-img">
@@ -157,6 +159,7 @@
        modal 
        header="Confirmar eliminación" 
        class="confirmarEliminacion"
+       appendTo=".show" 
    >
        <p>¿Estás seguro de que quieres eliminar la canción "{{ selectedCancion?.nombre }}" de la lista?</p>
        <p class="text-red-500">Esta acción no se puede deshacer.</p>
@@ -181,6 +184,7 @@
        modal 
        header="Confirmar eliminación de lista" 
        class="confirmarEliminacion"
+       appenTo=".showEliminar"
    >
        <p>¿Estás seguro de que quieres eliminar la lista "{{ lista?.nombre }}"?</p>
        <p class="text-red-500">Esta acción no se puede deshacer y eliminará permanentemente la lista.</p>

@@ -1,4 +1,6 @@
 <template>
+  <div class="show"></div>
+  <div class="show2"></div>
   <section class="layout">
     <div class="appPanel">
       <app-panel></app-panel>
@@ -46,7 +48,7 @@
         </div>
       </div>
 
-      <Dialog class="dialog_estilo" v-model:visible="MostrarPopupEditar" modal header="Editar Álbum">
+      <Dialog class="dialog_estilo" v-model:visible="MostrarPopupEditar" modal header="Editar Álbum" appendTo=".show">
         <div class="row">
           <div class="config_imagenes col-md-6">
             <div class="imagen_config_perfil" @dragover="manejarArrasterSobreLaImagen" @dragleave="manejarArrastreSalirImagen"
@@ -123,7 +125,7 @@
           <Button type="button" label="Guardar" @click="saveAlbumChanges"></Button>
         </div>
       </Dialog>
-      <Dialog v-model:visible="MostrarConfirmacionEliminar" modal header="Confirmar eliminación" class="dialog_estilo">
+      <Dialog v-model:visible="MostrarConfirmacionEliminar" modal header="Confirmar eliminación" class="dialog_estilo" appendTo=".show2">
         <p>¿Estás seguro de que quieres eliminar el álbum "{{ selectedAlbum?.nombre }}"?</p>
         <p class="text-red-500">Esta acción no se puede deshacer.</p>
         <div class="flex justify-end gap-2 mt-4">

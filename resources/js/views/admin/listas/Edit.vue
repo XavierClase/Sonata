@@ -1,4 +1,5 @@
 <template>
+    <div class="show"></div>
     <div class="grid">
         <div class="col-12">
             <div class="card">
@@ -203,7 +204,7 @@
     </div>
 
     <!-- Diálogo de confirmación -->
-    <Dialog v-model:visible="dialogVisible" header="Confirmar eliminación" :style="{width: '450px'}" :modal="true">
+    <Dialog v-model:visible="dialogVisible" header="Confirmar eliminación" :style="{width: '450px'}" :modal="true" appendTo=".show">
         <div class="flex align-items-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem; color: var(--yellow-500)"></i>
             <span>¿Estás seguro de que quieres eliminar <strong>{{ cancionSeleccionada?.titulo }}</strong> de esta lista?</span>

@@ -1,4 +1,5 @@
 <template>
+    <div class="show"></div>
     <div class="biblioteca-top">
         <h1>Tu Biblioteca</h1>
 
@@ -45,7 +46,7 @@
     </div>
 
 
-    <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Crea una lista">
+    <Dialog class="crearLista-modal" v-model:visible="visible" modal header="Crea una lista" appendTo=".show">
         <form @submit.prevent="enviarFormulario">
             <div class="row">
                 <div class="config-imagenes col-md-4">

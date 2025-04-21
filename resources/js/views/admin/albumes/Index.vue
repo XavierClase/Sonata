@@ -1,4 +1,5 @@
 <template>
+    <div class="show"></div>
     <div class="grid">
         <div class="col-12">
             <div class="card">
@@ -69,7 +70,7 @@
 
                 </DataTable>
 
-                <Dialog v-model:visible="deleteDialog" :style="{ width: '450px' }" header="Confirmar" :modal="true">
+                <Dialog v-model:visible="deleteDialog" :style="{ width: '450px' }" header="Confirmar" :modal="true" appendTo=".show" >
                     <div class="confirmation-content">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
                         <span>¿Estás seguro de que quieres eliminar este álbum?</span>

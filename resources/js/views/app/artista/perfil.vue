@@ -24,7 +24,7 @@
       ></i>
   </div>
 
-  <i class="pi pi-share-alt"></i>
+  <i class="pi pi-share-alt" @click="copiarUrl"></i>
 
   <div class="row perfil-artista-medio">
       <div class="col-md-7 perfil-artista-medio-populares">
@@ -133,7 +133,9 @@ import { usePlayer } from "@/composables/usePlayer.js";
 import { mostrarMusica } from "@/composables/mostrarMusica.js";
 import { datosUser, useEditarUsuario } from "@/composables/datosUser.js";
 import ListaCanciones from '@/components/listaCanciones.vue';
+import { useToast } from 'primevue/usetoast';
 
+const toast = useToast();
 const { isPlaying, playPlaylist, playSong, togglePlay } = usePlayer();
 
 const cancionParaCompartir = ref(null);
@@ -147,6 +149,17 @@ const userId = ref(route.params.id);
 const { populares, getPopulares, albumes, getAlbumesUser } = mostrarMusica(userId);
 const { user, getUser } = datosUser(userId);
 
+
+const copiarUrl = () => {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      toast.add({ severity: 'success', summary: 'Enlace copiado', life: 3000 });
+    })
+    .catch(err => {
+      toast.add({ severity: 'error', summary: 'Error al copiar', detail: err.message, life: 3000 });
+    });
+};
 const esMiPerfil = computed(() => {
   return userPropio && user.value && parseInt(userPropio.id) === parseInt(userId.value);
 });

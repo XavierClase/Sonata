@@ -1,11 +1,12 @@
 <template>
-
+<div class="show"></div>
 <Toast position="top-right" />
   <Dialog 
     v-model:visible="dialogVisible" 
     header="Añadir a Lista" 
     modal
     class="lista-canciones-dialog"
+    appendTo=".show"
   >
   <div class="lista-canciones-container">
     <div class="crear-lista-y-busqueda">

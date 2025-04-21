@@ -13,19 +13,19 @@ export const usePlayerStore = defineStore("player", {
     duration: 0,
     isShuffle: false,
     isLoop: false,
-    volume: 0.2, // Mantener un estado de volumen consistente
+    volume: 0.2, 
     _mediaListenerActive: false,
-    currentPlaylistType: null, // 'album' o 'lista'
+    currentPlaylistType: null, 
     currentPlaylistId: null,
-    _isLoadingSong: false, //  controlar carga
-    _lastRegistroTime: null, // controlar tiempo entre registros
+    _isLoadingSong: false,
+    _lastRegistroTime: null, 
   }),
 
   actions: {
     async playSong(song, index = null) {
 
       if (this._isLoadingSong) {
-        console.log("⚠️ Evitando carga repetida de canción");
+       
         return;
       }
       
@@ -35,13 +35,13 @@ export const usePlayerStore = defineStore("player", {
         this.currentIndex = index;
       }
     
-      console.log("🎵 Intentando reproducir:", song.id);
+    
     
  
       if (this.currentSong?.id === song.id && this.sound) {
         if (!this.sound.playing()) {
           const currentPosition = this.progress > 0 ? this.progress : 0;
-          console.log(" Reanudando en:", currentPosition);
+        
           
         
           this.sound.seek(currentPosition);
@@ -53,7 +53,7 @@ export const usePlayerStore = defineStore("player", {
         return;
       }
     
-      console.log("🔄 Cargando nueva canción...");
+   
     
    
       const currentVolume = this.sound ? this.sound.volume() : this.volume;
@@ -74,17 +74,13 @@ export const usePlayerStore = defineStore("player", {
         html5: true,
         volume: currentVolume,
         onend: () => {
-          console.log('Evento onend disparado', {
-            isPlaying: this.isPlaying,
-            currentTime: this.sound?.seek(),
-            duration: this.sound?.duration()
-          });
+        
           if (this.isPlaying) {
             this.nextSong();
           }
         },
         onload: () => {
-          console.log(" Canción cargada:", song.id);
+      
           this.duration = this.sound.duration();
           this.sound.play();
           this.isPlaying = true;
@@ -95,25 +91,25 @@ export const usePlayerStore = defineStore("player", {
           this._isLoadingSong = false; e
         },
         onplay: () => {
-          console.log(" En reproducción:", song.id);
+        
           this.isPlaying = true;
           requestAnimationFrame(this.updateProgress);
         },
         onpause: () => {
           
           const exactPosition = this.sound.seek();
-          console.log(" Pausada en:", exactPosition);
+       
           
          
           this.progress = exactPosition;
           this.isPlaying = false;
         },
         onstop: () => {
-          console.log(" Detenida");
+       
           this.isPlaying = false;
         },
         onerror: () => {
-          console.error("Error al cargar la canción");
+        
           this._isLoadingSong = false;
         }
       });
@@ -126,7 +122,7 @@ export const usePlayerStore = defineStore("player", {
       try {
        
         if (this._lastRegistroTime && (Date.now() - this._lastRegistroTime) < 5000) {
-          console.log("⏱️ Evitando registro duplicado (muy seguido)");
+        
           return;
         }
         
@@ -148,45 +144,38 @@ export const usePlayerStore = defineStore("player", {
         
         this._lastRegistroTime = Date.now();
         await axios.post('/api/ultimo_escuchado', payload);
-        console.log('✅ Registrado:', payload);
+       
       } catch (error) {
-        console.error('Error al registrar:', error);
+       
       }
     },
 
     togglePlay() {
       if (!this.sound) return;
 
-      console.log("🎵 Estado actual:", {
-        isPlaying: this.isPlaying,
-        soundExists: !!this.sound,
-        soundPlaying: this.sound.playing(),
-        currentSeek: this.sound.seek(),
-        storedProgress: this.progress
-      });
+    
 
       if (this.sound.playing()) {
-        // Guardar posición antes de pausar
+      
         const exactPosition = this.sound.seek();
         this.progress = exactPosition;
-        console.log(" Pausando en:", exactPosition);
+      
         this.sound.pause();
         this.isPlaying = false;
       } else {
-        // Al reanudar, usar la posición guardada de manera explícita
-        console.log(" Reanudando desde:", this.progress);
+       
+      
         
-        // CLAVE: Primero hacer seek, luego reproducir
-        // Verificamos si this.progress es válido
+        
         if (this.progress > 0 && this.progress < this.duration) {
           this.sound.seek(this.progress);
         } else {
-          // Si no es válido, iniciamos desde 0
+        
           this.progress = 0;
           this.sound.seek(0);
         }
         
-        // Ahora reproducimos
+ 
         this.sound.play();
         this.isPlaying = true;
         requestAnimationFrame(this.updateProgress);
@@ -199,18 +188,18 @@ export const usePlayerStore = defineStore("player", {
       if (this.isShuffle) {
         let newIndex;
         do {
-          console.log("Canción aleatoria");
+      
           newIndex = Math.floor(Math.random() * this.playlist.length);
         } while (newIndex === this.currentIndex && this.playlist.length > 1);
     
         this.currentIndex = newIndex;
       } else {
         if (this.currentIndex < this.playlist.length - 1) {
-          console.log("Canción siguiente");
+          
           this.currentIndex++;
         } else {
           if (this.isLoop) {
-            console.log("🔄 Reiniciando playlist...");
+           
             this.currentIndex = 0;
           } else {
             if (this.sound) this.sound.stop();
@@ -236,17 +225,17 @@ export const usePlayerStore = defineStore("player", {
 
     toggleShuffle() {
       this.isShuffle = !this.isShuffle;
-      console.log(" Modo aleatorio:", this.isShuffle ? "Activado" : "Desactivado");
+    
     },
 
     toggleLoop() {
       this.isLoop = !this.isLoop;
-      console.log(" Modo bucle:", this.isLoop ? "Activado" : "Desactivado");
+      
     },
 
     updateProgress() {
       if (this.sound && this.sound.playing()) {
-        // Actualizar progress solo si estamos reproduciendo
+     
         this.progress = this.sound.seek();
         requestAnimationFrame(this.updateProgress);
       }
@@ -254,17 +243,17 @@ export const usePlayerStore = defineStore("player", {
 
     setSeek(time) {
       if (this.sound) {
-        // Aseguramos que time sea un valor válido dentro del rango de la canción
+ 
         const validTime = Math.max(0, Math.min(time, this.duration));
         
-        // Almacenamos el valor en el estado antes de aplicarlo
+      
         this.progress = validTime;
         
-        // Aplicamos el seek al audio
+       
         this.sound.seek(validTime);
         
         if (!this.isPlaying) {
-          // Si está pausado, mantener el estado de pausa
+      
           this.sound.pause();
         } else {
           requestAnimationFrame(this.updateProgress);
@@ -273,7 +262,7 @@ export const usePlayerStore = defineStore("player", {
     },
 
     setPlaylist(tracks, playlistType = null, playlistId = null) {
-      // Comparación profunda para evitar actualizaciones innecesarias
+      
       if (JSON.stringify(this.playlist) !== JSON.stringify(tracks)) {
         this.playlist = [...tracks];
         this.currentIndex = 0;
@@ -288,10 +277,10 @@ export const usePlayerStore = defineStore("player", {
     },
 
     setVolume(vol) {
-      // Guardamos el valor en el estado
+   
       this.volume = vol;
       
-      // Si hay un sonido activo, aplicamos el volumen
+   
       if (this.sound) {
         this.sound.volume(vol);
       }

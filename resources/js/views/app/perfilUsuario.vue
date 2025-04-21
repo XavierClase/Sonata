@@ -19,7 +19,7 @@
         ></i>
     </div>
 
-    <i class="pi pi-share-alt"></i>
+    <i class="pi pi-share-alt" @click="copiarUrl"></i>
 
     <div class="perfil-artista-listas">
         <h2>Listas Creadas</h2>
@@ -96,7 +96,9 @@
     import { authStore } from "@/store/auth.js";
     import { datosUser, useEditarUsuario } from "@/composables/datosUser.js";
     import { mostrarMusica } from "@/composables/mostrarMusica.js";
+    import { useToast } from 'primevue/usetoast';
 
+    const toast = useToast();
     const visible = ref(false);
     const userPropio = authStore().user;
     const isHovered = ref(false);
@@ -129,6 +131,17 @@
             console.error('Error fetching user or albums:', error);
         }
     });
+
+    const copiarUrl = () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url)
+            .then(() => {
+            toast.add({ severity: 'success', summary: 'Enlace copiado', life: 3000 });
+            })
+            .catch(err => {
+            toast.add({ severity: 'error', summary: 'Error al copiar', detail: err.message, life: 3000 });
+            });
+    };
 
     function getImageListaUrl(album) {
         let image = album.portada;
