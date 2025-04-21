@@ -77,9 +77,11 @@ Route::get('admin/albumes', [AlbumController::class, 'obtenerTodosLosAlbumes']);
 Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 Route::post('canciones', [CancionController::class, 'store']);
 Route::get('canciones/{id}', [CancionController::class, 'getCancionesUsuario']);
+Route::put('canciones/{id}', [CancionController::class, 'update']);
 Route::get('/canciones/usuario/{id}', [CancionController::class, 'getCancionesArtistaEstadisticas']);
 Route::delete('canciones/{id}', [CancionController::class, 'destroy']);
 Route::post('reproducciones/{id}', [CancionController::class, 'sumarRepro']);
+
 
 Route::get('user/{id}', [UserController::class, 'getUser']);
 Route::post('users/cambiarRol', [UserController::class, 'cambiarRol']);
@@ -119,6 +121,7 @@ Route::get('/mostrar/lista/likes/{idUser}', [LikeController::class, 'getListasFa
 Route::post('/like/lista/{idLista}', [LikeController::class, 'toggleLikeLista']);
 Route::get('/lista/favorito/{idLista}', [LikeController::class, 'esListaFavorita']);
 
+//admin listas
 Route::get('admin/listas', [ListaController::class, 'index']);
 Route::post('admin/listas', [ListaController::class, 'store']);
 Route::get('admin/listas/{id}', [ListaController::class, 'show']);
@@ -127,4 +130,18 @@ Route::delete('admin/listas/{id}', [ListaController::class, 'destroy']);
 Route::post('admin/listas/updateimg', [ListaController::class, 'updateimg']);
 Route::delete('listas/{lista_id}/cancion/{cancion_id}', [ListaController::class, 'eliminarCancionDeLista']);
 
+//admin album
 Route::post('admin/albumes', [AlbumController::class, 'store']);
+Route::get('admin/albumes/{id}', [AlbumController::class, 'show']); 
+Route::put('admin/albumes/{id}', [AlbumController::class, 'update']); 
+Route::delete('admin/albumes/{id}', [AlbumController::class, 'destroy']);
+Route::post('admin/albumes/update-portada', [AlbumController::class, 'updatePortada']);
+
+
+//admin cancione
+Route::get('admin/canciones/{id}', [CancionController::class, 'show']);
+Route::get('admin/canciones', [CancionController::class, 'index']);
+Route::post('admin/canciones', [CancionController::class, 'store']);
+Route::post('admin/canciones/{id}', [CancionController::class, 'update']);
+Route::delete('admin/canciones/{id}', [CancionController::class, 'destroy']);
+Route::post('admin/canciones/updateaudio', [CancionController::class, 'updateAudio']);

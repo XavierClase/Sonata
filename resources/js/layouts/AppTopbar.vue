@@ -45,7 +45,7 @@
                             <a class="dropdown-item" href="#" @click="router.push({ name: 'admin.index' })">Panel Admin</a>
                         </li>
                         <li v-if="esAdmin">
-                            <a class="dropdown-item" href="#" @click="router.push({ name: 'app' })">Panel Usuario</a>
+                            <a class="dropdown-item"  @click="router.push({ name: 'app.index' })">Panel Usuario</a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
@@ -170,7 +170,7 @@ const goToAdmin = () => {
 };
 
 const goToUser = () => {
-    router.push({ name: 'app' });
+    router.push({ name: 'app.index' });
     mobileMenuActive.value = false;
 };
 

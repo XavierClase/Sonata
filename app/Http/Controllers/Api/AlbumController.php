@@ -207,34 +207,52 @@ class AlbumController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        try {
-            $album = Album::findOrFail($id);
-            
-            if ($album->id_usuario !== auth()->id()) {
-                return response()->json([
-                    'message' => 'No tienes permiso para eliminar este álbum'
-                ], 403);
-            }
-      
-            foreach ($album->getMedia() as $media) {
-                $media->delete();
-            }
-            
-            $album->delete();
+   /**
+ * Remove the specified resource from storage.
+ */
 
-            return response()->json([
-                'message' => 'Álbum eliminado correctamente'
-            ], 200);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error al eliminar el álbum',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
+ public function destroy(string $id)
+ {
+     try {
+         $album = Album::findOrFail($id);
+         
+         if (auth()->id() !== $album->id_usuario && !auth()->user()->hasRole('admin')) {
+             return response()->json([
+                 'message' => 'No tienes permiso para eliminar este álbum'
+             ], 403);
+         }
+ 
+        
+         $canciones = $album->canciones;
+         
+      
+         foreach ($canciones as $cancion) {
+          
+             foreach ($cancion->getMedia() as $media) {
+                 $media->delete();
+             }
+             $cancion->delete();
+         }
+       
+        
+         foreach ($album->getMedia() as $media) {
+             $media->delete();
+         }
+         
+        
+         $album->delete();
+ 
+         return response()->json([
+             'message' => 'Álbum y sus canciones eliminados correctamente'
+         ], 200);
+         
+     } catch (\Exception $e) {
+         return response()->json([
+             'message' => 'Error al eliminar el álbum',
+             'error' => $e->getMessage()
+         ], 500);
+     }
+ }
 
     public function obtenerAlbumsAleatorios()
     {

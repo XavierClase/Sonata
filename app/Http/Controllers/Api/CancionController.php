@@ -15,7 +15,7 @@ class CancionController extends Controller
      */
     public function index()
     {
-        $canciones = Cancion::with(['album', 'artista']) 
+        $canciones = Cancion::with(['albums', 'user']) 
         ->orderBy('created_at', 'desc')
         ->get();
         return CancionResource::collection($canciones);
@@ -76,7 +76,17 @@ class CancionController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $cancion = Cancion::with(['albums', 'user'])->findOrFail($id);
+            return response()->json([
+                'data' => new CancionResource($cancion)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Canción no encontrada',
+                'error' => $e->getMessage()
+            ], 404);
+        }
     }
 
     public function getPopulares($userId)
@@ -106,8 +116,62 @@ class CancionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string',
+            'duracion' => 'required|string',
+            'archivo' => 'nullable|file|mimes:mp3,wav',
+            'album_id' => 'nullable|exists:albums,id',
+            'orden' => 'nullable|integer'
+        ]);
+
+        try {
+            $cancion = Cancion::findOrFail($id);
+            
+            if ($cancion->id_usuario !== auth()->id() && !auth()->user()->hasRole('admin')) {
+                return response()->json([
+                    'message' => 'No tienes permiso para editar esta canción'
+                ], 403);
+            }
+
+            $duracionPartes = explode(':', $request->duracion);
+            $duracionFormateada = '00:' . str_pad($duracionPartes[0], 2, '0', STR_PAD_LEFT) . ':' . 
+                                str_pad(isset($duracionPartes[1]) ? $duracionPartes[1] : '00', 2, '0', STR_PAD_LEFT);
+
+            $cancion->nombre = $request->nombre;
+            $cancion->duracion = $duracionFormateada;
+            $cancion->save();
+
+         
+            if ($request->hasFile('archivo')) {
+                $cancion->clearMediaCollection('audio/canciones');
+                $cancion->addMediaFromRequest('archivo')
+                    ->toMediaCollection('audio/canciones');
+            }
+
+          
+            if ($request->has('album_id')) {
+                $cancion->albums()->detach();
+                
+                if ($request->album_id) {
+                    $orden = $request->orden ?? 1;
+                    $album = Album::findOrFail($request->album_id);
+                    $album->canciones()->attach($cancion->id, ['orden' => $orden]);
+                }
+            }
+
+            return response()->json([
+                'message' => 'Canción actualizada correctamente',
+                'data' => new CancionResource($cancion)
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar la canción',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     public function sumarRepro($cancionId)
     {
@@ -130,7 +194,7 @@ class CancionController extends Controller
         try {
             $cancion = Cancion::findOrFail($id);
         
-            if ($cancion->id_usuario !== auth()->id()) {
+            if ($cancion->id_usuario !== auth()->id() && !auth()->user()->hasRole('admin')) {
                 return response()->json([
                     'message' => 'No tienes permiso para eliminar esta canción'
                 ], 403);

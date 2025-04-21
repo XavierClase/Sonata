@@ -76,7 +76,51 @@
                                 </div>
                             </div>
                         </div>
-
+                        <div class="col-12 my-3">
+                        <div class="card p-3 border-1 border-300">
+                            <h6 class="mb-3">Añadir canciones a la lista</h6>
+                            <div class="grid">
+                                <div class="col-12 md:col-8">
+                                    <Dropdown 
+                                        v-model="cancionSeleccionada" 
+                                        :options="cancionesDisponibles" 
+                                        optionLabel="nombre" 
+                                        placeholder="Buscar canción..." 
+                                        class="w-full"
+                                        filter 
+                                        filterPlaceholder="Buscar por nombre..."
+                                    >
+                                        <template #option="slotProps">
+                                            <div class="flex align-items-center">
+                                                <img 
+                                                    v-if="slotProps.option.portada" 
+                                                    :src="slotProps.option.portada" 
+                                                    :alt="slotProps.option.nombre" 
+                                                    class="mr-2" 
+                                                    style="width: 32px; height: 32px; object-fit: cover; border-radius: 4px;"
+                                                />
+                                                <span v-else class="pi pi-image text-gray-400 mr-2" style="font-size: 1.25rem;"></span>
+                                                <div>
+                                                    <span class="font-medium">{{ slotProps.option.nombre }}</span>
+                                                    <div class="text-sm text-gray-500">{{ slotProps.option.duracion }}</div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </Dropdown>
+                                </div>
+                                <div class="col-12 md:col-4">
+                                    <Button 
+                                        label="Añadir a la lista" 
+                                        icon="pi pi-plus" 
+                                        class="w-full" 
+                                        @click="añadirCancion" 
+                                        :disabled="!cancionSeleccionada || añadiendoCancion"
+                                        :loading="añadiendoCancion"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                         <!-- Sección de canciones -->
                         <div class="col-12 mt-4">
                             <div class="card p-0">
@@ -86,6 +130,7 @@
                                         <span class="font-medium text-500">Total: {{ canciones.length }} canciones</span>
                                     </div>
                                 </div>
+
                                 
                                 <DataTable 
                                     :value="canciones" 
@@ -175,17 +220,22 @@ import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import useListas from "@/composables/listasAdmin";
 import { useToast } from 'primevue/usetoast';
+import useCanciones from "@/composables/cancionesAdmin";
+import Dropdown from 'primevue/dropdown';
 
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
-const { getLista, updateLista, updatePortada, getCancionesLista, eliminarCancionDeLista, errors: listaErrors, loading } = useListas();
+const { getLista, updateLista, updatePortada, getCancionesLista, eliminarCancionDeLista, añadirCancionALista, errors: listaErrors, loading } = useListas();
 const errors = ref({});
 const previewImage = ref(null);
 const canciones = ref([]);
 const isSubmitting = ref(false);
 const dialogVisible = ref(false);
 const cancionSeleccionada = ref(null);
+const { canciones: todasCanciones, getCanciones, loading: loadingCanciones } = useCanciones();
+const cancionesDisponibles = ref([]);
+const añadiendoCancion = ref(false);
 
 const form = ref({
     nombre: '',
@@ -193,6 +243,66 @@ const form = ref({
     portada: null,
     nuevaPortada: null
 });
+
+const actualizarCancionesDisponibles = () => {
+   
+    const cancionesYaAñadidas = canciones.value.map(c => c.id);
+    
+   
+    cancionesDisponibles.value = todasCanciones.value.data.filter(
+        cancion => !cancionesYaAñadidas.includes(cancion.id)
+    );
+};
+
+const añadirCancion = async () => {
+    if (!cancionSeleccionada.value) return;
+    
+    añadiendoCancion.value = true;
+    
+    try {
+        await añadirCancionALista(route.params.id, cancionSeleccionada.value.id);
+        
+        toast.add({
+            severity: 'success',
+            summary: 'Éxito',
+            detail: `"${cancionSeleccionada.value.nombre}" se ha añadido a la lista`,
+            life: 3000
+        });
+        
+        cancionSeleccionada.value = null;
+        
+        await fetchCanciones();
+        
+        actualizarCancionesDisponibles();
+    } catch (error) {
+        console.error("Error al añadir canción:", error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudo añadir la canción a la lista',
+            life: 3000
+        });
+    } finally {
+        añadiendoCancion.value = false;
+    }
+};
+
+const cargarCanciones = async () => {
+    try {
+        await getCanciones();
+        
+      
+        actualizarCancionesDisponibles();
+    } catch (error) {
+        console.error("Error al cargar canciones:", error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudieron cargar las canciones disponibles',
+            life: 3000
+        });
+    }
+};
 
 const fetchData = async () => {
     try {
@@ -335,5 +445,6 @@ const submitForm = async () => {
 
 onMounted(() => {
     fetchData();
+    cargarCanciones();
 });
 </script>
