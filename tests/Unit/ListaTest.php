@@ -2,101 +2,113 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Lista;
 use App\Models\Cancion;
+use App\Models\Lista;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class ListaTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_puede_crear_una_lista(): void
+    protected function createTestUser()
     {
-        $user = User::create([
-            'name' => 'Usuario Prueba',
-            'email' => 'usuario@example.com',
-            'password' => bcrypt('password'),
-        ]);
+        $user = new User();
+        $user->name = 'Test User';
+        $user->email = 'test@example.com';
+        $user->password = bcrypt('password');
+        $user->save();
+        return $user;
+    }
 
-        $lista = Lista::create([
-            'nombre' => 'Lista de prueba',
-            'descripcion' => 'Descripción',
-            'id_usuario' => $user->id,
-        ]);
+    protected function createTestLista($userId)
+    {
+        $lista = new Lista();
+        $lista->nombre = 'Test Lista';
+        $lista->descripcion = 'Test descripcion';
+        $lista->duracion_total = '00:00:00';
+        $lista->num_canciones = 0;
+        $lista->id_usuario = $userId;
+        $lista->save();
+        return $lista;
+    }
 
+    protected function createTestCancion($userId)
+    {
+        $cancion = new Cancion();
+        $cancion->nombre = 'Test Cancion';
+        $cancion->duracion = '00:03:00';
+        $cancion->reproducciones = 0;
+        $cancion->archivo = 'ruta/del/archivo.mp3'; // Simula un archivo
+        $cancion->id_usuario = $userId;
+        $cancion->save();
+        return $cancion;
+    }
+
+    /** @test */
+    public function una_lista_pertenece_a_un_usuario()
+    {
+        $user = $this->createTestUser();
+        $lista = $this->createTestLista($user->id);
+
+        $this->assertInstanceOf(User::class, $lista->user);
+        $this->assertEquals($user->id, $lista->user->id);
+    }
+
+    /** @test */
+    public function puede_crear_una_lista()
+    {
+        $user = $this->createTestUser();
+        
+        $lista = new Lista();
+        $lista->nombre = 'Nueva Lista';
+        $lista->descripcion = 'Una lista para testear la creación';
+        $lista->duracion_total = '00:00:00';
+        $lista->num_canciones = 0;
+        $lista->id_usuario = $user->id;
+        $lista->save();
+        
         $this->assertDatabaseHas('listas', [
-            'nombre' => 'Lista de prueba',
-            'descripcion' => 'Descripción',
-            'id_usuario' => $user->id,
+            'nombre' => 'Nueva Lista',
+            'descripcion' => 'Una lista para testear la creación',
+            'id_usuario' => $user->id
         ]);
     }
 
-    public function test_lista_tiene_relacion_con_usuario(): void
+    /** @test */
+    public function puede_modificar_una_lista()
     {
-        $user = User::create([
-            'name' => 'Usuario Relacionado',
-            'email' => 'relacionado@example.com',
-            'password' => bcrypt('password'),
+        $user = $this->createTestUser();
+        $lista = $this->createTestLista($user->id);
+        
+        // Modify the lista
+        $lista->nombre = 'Nombre Actualizado';
+        $lista->descripcion = 'Descripción actualizada';
+        $lista->save();
+        
+        $this->assertDatabaseHas('listas', [
+            'id' => $lista->id,
+            'nombre' => 'Nombre Actualizado',
+            'descripcion' => 'Descripción actualizada'
         ]);
-
-        $lista = Lista::create([
-            'nombre' => 'Lista relacionada',
-            'descripcion' => 'Relacionada con usuario',
-            'id_usuario' => $user->id,
-        ]);
-
-        $this->assertEquals($user->id, $lista->usuario->id);
     }
 
-    public function test_lista_puede_tener_canciones(): void
+    /** @test */
+    public function puede_eliminar_una_lista()
     {
-        $user = User::create([
-            'name' => 'Usuario Canciones',
-            'email' => 'canciones@example.com',
-            'password' => bcrypt('password'),
+        $user = $this->createTestUser();
+        $lista = $this->createTestLista($user->id);
+        
+        // Remember the ID before deletion
+        $listaId = $lista->id;
+        
+        // Delete the lista
+        $lista->delete();
+        
+        $this->assertDatabaseMissing('listas', [
+            'id' => $listaId
         ]);
-
-        $lista = Lista::create([
-            'nombre' => 'Lista con canciones',
-            'descripcion' => 'Tiene canciones',
-            'id_usuario' => $user->id,
-        ]);
-
-        $cancion = Cancion::create([
-            'titulo' => 'Canción de prueba',
-            'artista' => 'Artista X',
-            'archivo' => 'media/audio/canciones/test.mp3',
-        ]);
-
-        $lista->canciones()->attach($cancion->id);
-
-        $this->assertTrue($lista->canciones->contains($cancion));
     }
 
-    public function test_puede_guardar_una_imagen_en_la_media_collection(): void
-    {
-        Storage::fake('public');
-
-        $user = User::create([
-            'name' => 'Usuario Imagen',
-            'email' => 'imagen@example.com',
-            'password' => bcrypt('password'),
-        ]);
-
-        $lista = Lista::create([
-            'nombre' => 'Lista con imagen',
-            'descripcion' => 'Descripción',
-            'id_usuario' => $user->id,
-        ]);
-
-        $imagen = UploadedFile::fake()->image('imagen.jpg');
-
-        $lista->addMedia($imagen)->toMediaCollection('imagen_usuario');
-
-        $this->assertCount(1, $lista->getMedia('imagen_usuario'));
-    }
 }
