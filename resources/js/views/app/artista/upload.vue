@@ -128,7 +128,7 @@ const manejarAudio = async (event) => {
     const duracion = await obtenerDuracionAudio(file);
     canciones.value.push({  
       nombre: file.name.replace(/\.[^/.]+$/, ""),
-      archivo: file,
+      file: file,
       duracion
     });
   }

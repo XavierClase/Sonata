@@ -117,7 +117,7 @@ export function useFuncionesArtista() {
             songFormData.append('album_id', albumId);
             songFormData.append('nombre', cancion.nombre);
             songFormData.append('duracion', cancion.duracion);
-            songFormData.append('orden', orden.toString());
+            songFormData.append('orden', orden);
 
             const response = await axios.post('/api/canciones', songFormData);
             return response.data.cancion;
@@ -181,13 +181,14 @@ export function useFuncionesArtista() {
             albumFormData.append('portada', portada);
             albumFormData.append('num_canciones', albumData.num_canciones);
             albumFormData.append('duracion_total', albumData.duracion_total);
-
+    
+           
             const albumResponse = await axios.post('/api/albums', albumFormData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-
+    
             return albumResponse.data.album;
         } catch (err) {
             console.error('Error al crear el álbum:', err.response?.data);

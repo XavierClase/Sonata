@@ -114,12 +114,12 @@ const users = ref([]);
 const { onMenuToggle } = useLayout();
 const { processing, logout } = useAuth();
 const topbarMenuActive = ref(false);
-const mobileMenuActive = ref(false); // Nuevo: estado del menú hamburguesa
-const perfilMenuActive = ref(false); // Nuevo: estado del menú de perfil
+const mobileMenuActive = ref(false); 
+const perfilMenuActive = ref(false); 
 const router = useRouter();
 const dialogArtistaVisible = ref(false);
 
-// Funcionalidad existente
+
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -154,7 +154,6 @@ const userRole = computed(() => {
     return authStore().user?.roles?.length > 0 ? authStore().user.roles[0].name : '';
 });
 
-// Funcionalidad existente
 const mostrarDialogArtista = () => {
     dialogArtistaVisible.value = true;
 };

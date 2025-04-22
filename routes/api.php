@@ -73,9 +73,8 @@ Route::post('/albumes/{id}/portada', [AlbumController::class, 'updatePortada']);
 Route::get('albums/aleatorios', [AlbumController::class, 'obtenerAlbumsAleatorios']);    
 Route::get('admin/albumes', [AlbumController::class, 'obtenerTodosLosAlbumes']);
 
-
-Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 Route::post('canciones', [CancionController::class, 'store']);
+Route::get('canciones/populares/{id}', [CancionController::class, 'getPopulares']);
 Route::get('canciones/{id}', [CancionController::class, 'getCancionesUsuario']);
 Route::put('canciones/{id}', [CancionController::class, 'update']);
 Route::get('/canciones/usuario/{id}', [CancionController::class, 'getCancionesArtistaEstadisticas']);
