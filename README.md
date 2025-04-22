@@ -1,5 +1,7 @@
 ============================================================
+
         SONATA - APLICACIÓ DE STREAMING DE MÚSICA
+        
 ============================================================
 
 Desenvolupament d'una aplicació web tipus spotify per escoltar música en streaming, creada amb Laravel 10 (backend) i Vue 3 (frontend). 
