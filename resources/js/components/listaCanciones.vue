@@ -234,7 +234,7 @@ const crearNuevaLista = async () => {
         life: 3000,
       
       });
-      
+      await fetchListasUsuario(userID);
       mostrarModalCrearLista.value = false;
       listasSeleccionadas.value.push(nuevaListaCreada.id);
       nuevaLista.value = { nombre: '', descripcion: '', portada: null }; 
