@@ -269,6 +269,10 @@ const irAUsuario = (usuario) => {
     width: 100%;
   }
 
+  .busqueda-contenedor {
+    position: relative;
+    width: auto;
+  }
     
 }
 </style>

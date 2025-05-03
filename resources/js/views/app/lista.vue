@@ -83,16 +83,31 @@
    <div class="lista-canciones-container">
        <div class="row lista-canciones-categorias">
            <p class="col-md-1">#</p>
-           <p class="col-md-5">Título</p>
+           <p id="categoria-titulo" class="col-md-5">Título</p>
            <p class="col-md-3">Reproducciones</p>
            <p class="col-md-2">Duración</p>
        </div>
        <div class="lista-canciones-detalles">
            <div class="row cancion-lista" v-for="(cancion, index) in canciones" :key="cancion.id"
            @click="reproducirCancion(cancion)">
-               <div>
-                   <p class="col-md-1 num-cancion-lista">{{ index + 1 }}</p> 
-                   <p class="col-md-5 cancion-lista-nombre">{{ cancion.nombre }}</p>
+               <div class="cancion-div">
+                    <span class="col-md-1 cancion-num-span">
+                        <p class="num-cancion-lista">{{ index + 1 }}</p> 
+                        <div class="album-img">
+                            <img :src="getImageUrl(cancion)" alt="Album cover" />
+                        </div>
+                    </span>
+                   <span class="col-md-5 cancion-nombre-span">
+                        <p class="cancion-lista-nombre">{{ cancion.nombre }}</p>
+                        <router-link 
+                            class="cancion-lista-autor" :key="cancion.autor_id"
+                            :to="{ 
+                                name: user?.roles?.[0]?.name.toLowerCase() === 'artista' ? 'artista.perfil' : 'app.perfil', 
+                                params: {id: cancion.autor_id} 
+                            }" @click.stop>
+                            {{ cancion.autor }}
+                        </router-link>
+                   </span>
                    <p class="col-md-3 cancion-lista-reproducciones">{{ cancion.reproducciones }}</p>
                    <p class="col-md-2 duracion-cancion">{{ cancion.duracion }}</p>
                    <span class="cancion-lista-span">
@@ -505,6 +520,11 @@
     .lista-canciones-categorias p {
         font-size: 1.3rem;
         color: rgba(255, 255, 255, 0.709);
+        padding-left: 20px !important;
+    }
+
+    #categoria-titulo {
+        padding-left: 45px !important;
     }
 
     .lista-canciones-detalles {
@@ -522,8 +542,8 @@
         align-items: center;
     }
 
-    .cancion-lista div{
-        min-height: 60px;
+    .cancion-div {
+        min-height: 50px;
         width: 96%;
         display: flex;
         align-items: center;
@@ -534,7 +554,7 @@
         box-shadow: 3px 1px 20px 0px rgb(44, 0, 73);
     }
 
-    .cancion-lista div:hover {
+    .cancion-div:hover {
         background: linear-gradient(to right, #7e10e59e, #da3bf688);
     }
 
@@ -542,17 +562,66 @@
         margin-left: 5px;
     }
 
-    .num-cancion-lista {
-        font-size: 1.5rem;
-        margin: 0 !important;
-        border-right: 2px solid rgba(48, 0, 54, 0.594);
+    .cancion-num-span {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 20px;
     }
 
+    .album-img {
+        width: 47px;
+        height: 47px;
+        overflow: hidden;
+        position: relative;
+        border-radius: 5px;
+    }
+
+    .album-img img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .num-cancion-lista {
+        font-size: 1.2rem;
+        font-weight: bold;
+        min-width: 25px;
+        text-align: center;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .cancion-nombre-span {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 35px;
+    }
     .cancion-lista-nombre {
         font-size: 1.3rem;
         white-space: nowrap; 
         overflow: hidden; 
         text-overflow: ellipsis; 
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .cancion-lista-autor {
+        font-size: 1rem;
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis;
+        color: rgba(209, 202, 193, 0.555);
+    }
+    
+    .cancion-lista-autor:hover {
+        cursor: pointer;
+        color: #A855F7;
     }
 
     .cancion-lista-reproducciones {
@@ -605,7 +674,7 @@
             gap: 10px;
             width: 100%;
             position: relative;
-            padding-bottom: 20px; /* Reduced from 70px */
+            padding-bottom: 20px; 
         }
         
         .lista-banner-img {
@@ -653,22 +722,20 @@
 
         }
 
-        /* Posicionar el ícono de favorito o configuración */
         #iconoBanner {
             position: absolute;
-            right: 15px; /* Position from right instead of left */
-            top: 10px; /* Position from top */
+            right: 15px; 
+            top: 10px; 
             font-size: 2rem;
         }
 
-        /* Botón de reproducción */
         .lista-banner-play {
             height: 70px;
             width: 70px;
-            margin: 0; /* Remove margin */
+            margin: 0; 
             position: absolute;
-            right: 15px; /* Position from right */
-            bottom: 0; /* Position from bottom instead of top */
+            right: 15px; 
+            bottom: 0; 
         }
 
         /* Contenedor de canciones */
@@ -709,7 +776,7 @@
             grid-template-columns: 0.5fr 5fr 1fr 1fr 1fr 0.5fr;
             min-height: 50px;
             padding: 8px 0;
-            width: auto;
+            width: 89% !important;
         }
 
         .num-cancion-lista {
@@ -718,9 +785,26 @@
             padding-left: 10px !important;
         }
 
+        .cancion-num-span {
+            max-width: 5px !important;
+        }
+
+        .album-img {
+            display: none !important;
+        }
+
+        .cancion-nombre-span {
+            max-width: 200px !important;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 15px !important;
+        }
+
+
         .cancion-lista-nombre {
             font-size: 1rem;
-            padding-left: 8px !important;
         }
 
         .cancion-lista-reproducciones {
@@ -748,7 +832,6 @@
 
     }
 
-/* Ajustes específicos para pantallas muy pequeñas */
 @media (max-width: 360px) {
     .lista-canciones-categorias {
         grid-template-columns: 0.5fr 2fr 1fr 1fr;

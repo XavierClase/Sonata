@@ -22,6 +22,7 @@ class CancionResource extends JsonResource
             'reproducciones' => $this->reproducciones,
             'duracion' => $this->getDuracionFormateadaAttribute(),
             'autor' => optional($this->user)->name,
+            'autor_id' => optional($this->user)->id,
             'portada' => $this->albums->first()?->getMedia('*')->isNotEmpty() ? $this->albums->first()->getMedia('*')[0]->getUrl() : null,
             'album_id' => $this->albums->first()->id ?? null,
             'created_at' => $this->created_at?->toDateTimeString(),
