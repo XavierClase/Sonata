@@ -1,0 +1,1 @@
+import{b as e,o}from"./app-BArZ-JoB.js";import{_ as c}from"./_plugin-vue_export-helper-DlAUqK2U.js";const r={},t={class:"grid"};function s(n,_){return o(),e("div",t)}const d=c(r,[["render",s]]);export{d as default};

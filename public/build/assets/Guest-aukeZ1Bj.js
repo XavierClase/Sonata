@@ -1,0 +1,1 @@
+import{o as n,b as a,k as e,f as o}from"./app-BArZ-JoB.js";const m={__name:"Guest",setup(c){return(s,_)=>{const t=o("Navbar"),r=o("router-view");return n(),a("div",null,[e(t),e(r)])}}};export{m as default};

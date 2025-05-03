@@ -1,0 +1,895 @@
+{
+  "_AppFooter-DRZBUV_0.js": {
+    "file": "assets/AppFooter-DRZBUV_0.js",
+    "name": "AppFooter",
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/AppFooter-DcppPHWM.css"
+    ]
+  },
+  "_AppFooter-DcppPHWM.css": {
+    "file": "assets/AppFooter-DcppPHWM.css",
+    "src": "_AppFooter-DcppPHWM.css"
+  },
+  "_AppTopbar-Bll2YKxL.js": {
+    "file": "assets/AppTopbar-Bll2YKxL.js",
+    "name": "AppTopbar",
+    "imports": [
+      "resources/js/app.js",
+      "_AppFooter-DRZBUV_0.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/AppTopbar-DgHZg0IP.css"
+    ]
+  },
+  "_AppTopbar-DgHZg0IP.css": {
+    "file": "assets/AppTopbar-DgHZg0IP.css",
+    "src": "_AppTopbar-DgHZg0IP.css"
+  },
+  "_DropZone-CW4zSXa_.js": {
+    "file": "assets/DropZone-CW4zSXa_.js",
+    "name": "DropZone",
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/DropZone-D8ed24Bc.css"
+    ]
+  },
+  "_DropZone-D8ed24Bc.css": {
+    "file": "assets/DropZone-D8ed24Bc.css",
+    "src": "_DropZone-D8ed24Bc.css"
+  },
+  "__plugin-vue_export-helper-DlAUqK2U.js": {
+    "file": "assets/_plugin-vue_export-helper-DlAUqK2U.js",
+    "name": "_plugin-vue_export-helper"
+  },
+  "_albumesAdmin-wFGr6eia.js": {
+    "file": "assets/albumesAdmin-wFGr6eia.js",
+    "name": "albumesAdmin",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_cancionesAdmin-DfvjdQrT.js": {
+    "file": "assets/cancionesAdmin-DfvjdQrT.js",
+    "name": "cancionesAdmin",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_categories-DriGmbN6.js": {
+    "file": "assets/categories-DriGmbN6.js",
+    "name": "categories",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_datosUser-Ca7kkzz-.js": {
+    "file": "assets/datosUser-Ca7kkzz-.js",
+    "name": "datosUser",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_funcionesArtista-Bm8O1XxS.js": {
+    "file": "assets/funcionesArtista-Bm8O1XxS.js",
+    "name": "funcionesArtista",
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/funcionesArtista-CopCFrnX.css"
+    ]
+  },
+  "_funcionesArtista-CopCFrnX.css": {
+    "file": "assets/funcionesArtista-CopCFrnX.css",
+    "src": "_funcionesArtista-CopCFrnX.css"
+  },
+  "_index-DBkJWd5m.js": {
+    "file": "assets/index-DBkJWd5m.js",
+    "name": "index",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_listaCanciones-BgB1a3n7.js": {
+    "file": "assets/listaCanciones-BgB1a3n7.js",
+    "name": "listaCanciones",
+    "imports": [
+      "resources/js/app.js"
+    ],
+    "css": [
+      "assets/listaCanciones-DehrExKT.css"
+    ]
+  },
+  "_listaCanciones-DehrExKT.css": {
+    "file": "assets/listaCanciones-DehrExKT.css",
+    "src": "_listaCanciones-DehrExKT.css"
+  },
+  "_listasAdmin-DBsvEFmU.js": {
+    "file": "assets/listasAdmin-DBsvEFmU.js",
+    "name": "listasAdmin",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_mostrarMusica-BSXilRiR.js": {
+    "file": "assets/mostrarMusica-BSXilRiR.js",
+    "name": "mostrarMusica",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_permissions-B18b2wrV.js": {
+    "file": "assets/permissions-B18b2wrV.js",
+    "name": "permissions",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_player-Czj22g4O.js": {
+    "file": "assets/player-Czj22g4O.js",
+    "name": "player",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_posts-CssQX8fK.js": {
+    "file": "assets/posts-CssQX8fK.js",
+    "name": "posts",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_roles-MIxV2xZW.js": {
+    "file": "assets/roles-MIxV2xZW.js",
+    "name": "roles",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_rules-DZFuAMSf.js": {
+    "file": "assets/rules-DZFuAMSf.js",
+    "name": "rules",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_usePlayer-BvTy7vg6.js": {
+    "file": "assets/usePlayer-BvTy7vg6.js",
+    "name": "usePlayer",
+    "imports": [
+      "resources/js/app.js",
+      "_player-Czj22g4O.js"
+    ]
+  },
+  "_users-CRyOK5FS.js": {
+    "file": "assets/users-CRyOK5FS.js",
+    "name": "users",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "node_modules/primeicons/fonts/primeicons.eot": {
+    "file": "assets/primeicons-DMOk5skT.eot",
+    "src": "node_modules/primeicons/fonts/primeicons.eot"
+  },
+  "node_modules/primeicons/fonts/primeicons.svg": {
+    "file": "assets/primeicons-Dr5RGzOO.svg",
+    "src": "node_modules/primeicons/fonts/primeicons.svg"
+  },
+  "node_modules/primeicons/fonts/primeicons.ttf": {
+    "file": "assets/primeicons-MpK4pl85.ttf",
+    "src": "node_modules/primeicons/fonts/primeicons.ttf"
+  },
+  "node_modules/primeicons/fonts/primeicons.woff": {
+    "file": "assets/primeicons-WjwUDZjB.woff",
+    "src": "node_modules/primeicons/fonts/primeicons.woff"
+  },
+  "node_modules/primeicons/fonts/primeicons.woff2": {
+    "file": "assets/primeicons-C6QP2o4f.woff2",
+    "src": "node_modules/primeicons/fonts/primeicons.woff2"
+  },
+  "node_modules/quill/quill.js": {
+    "file": "assets/quill-W3wefjfh.js",
+    "name": "quill",
+    "src": "node_modules/quill/quill.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BArZ-JoB.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/layouts/Authenticated.vue",
+      "resources/js/layouts/AuthenticatedUser.vue",
+      "resources/js/layouts/Guest.vue",
+      "resources/js/views/admin/posts/Index.vue",
+      "resources/js/views/admin/posts/Create.vue",
+      "resources/js/views/admin/posts/Edit.vue",
+      "resources/js/views/home/index.vue",
+      "resources/js/views/posts/index.vue",
+      "resources/js/views/posts/details.vue",
+      "resources/js/views/category/posts.vue",
+      "resources/js/views/login/Login.vue",
+      "resources/js/views/register/index.vue",
+      "resources/js/views/auth/passwords/Email.vue",
+      "resources/js/views/auth/passwords/Reset.vue",
+      "resources/js/views/app/index.vue",
+      "resources/js/views/app/biblioteca.vue",
+      "resources/js/views/app/album.vue",
+      "resources/js/views/app/lista.vue",
+      "resources/js/views/app/likes.vue",
+      "resources/js/views/app/perfilUsuario.vue",
+      "resources/js/views/app/artista/perfil.vue",
+      "resources/js/views/app/artista/estadisticas.vue",
+      "resources/js/views/app/artista/upload.vue",
+      "resources/js/views/app/artista/edit.vue",
+      "resources/js/views/admin/index.vue",
+      "resources/js/views/admin/profile/index.vue",
+      "resources/js/views/admin/categories/Index.vue",
+      "resources/js/views/admin/categories/Create.vue",
+      "resources/js/views/admin/categories/Edit.vue",
+      "resources/js/views/admin/permissions/Index.vue",
+      "resources/js/views/admin/permissions/Create.vue",
+      "resources/js/views/admin/permissions/Edit.vue",
+      "resources/js/views/admin/users/Index.vue",
+      "resources/js/views/admin/users/Create.vue",
+      "resources/js/views/admin/users/Edit.vue",
+      "resources/js/views/admin/listas/Index.vue",
+      "resources/js/views/admin/listas/Create.vue",
+      "resources/js/views/admin/listas/Edit.vue",
+      "resources/js/views/admin/canciones/Index.vue",
+      "resources/js/views/admin/canciones/Create.vue",
+      "resources/js/views/admin/canciones/Edit.vue",
+      "resources/js/views/admin/albumes/Index.vue",
+      "resources/js/views/admin/albumes/Create.vue",
+      "resources/js/views/admin/albumes/Edit.vue",
+      "resources/js/views/admin/roles/Index.vue",
+      "resources/js/views/admin/roles/Create.vue",
+      "resources/js/views/admin/roles/Edit.vue",
+      "resources/js/views/errors/404.vue",
+      "resources/js/lang/bn.json",
+      "resources/js/lang/en.json",
+      "resources/js/lang/es.json",
+      "resources/js/lang/fr.json",
+      "resources/js/lang/pt-BR.json",
+      "resources/js/lang/zh-CN.json",
+      "node_modules/quill/quill.js"
+    ],
+    "css": [
+      "assets/app-BIOs9YOo.css"
+    ],
+    "assets": [
+      "assets/primeicons-DMOk5skT.eot",
+      "assets/primeicons-C6QP2o4f.woff2",
+      "assets/primeicons-WjwUDZjB.woff",
+      "assets/primeicons-MpK4pl85.ttf",
+      "assets/primeicons-Dr5RGzOO.svg"
+    ]
+  },
+  "resources/js/lang/bn.json": {
+    "file": "assets/bn-KnGNElpf.js",
+    "name": "bn",
+    "src": "resources/js/lang/bn.json",
+    "isDynamicEntry": true
+  },
+  "resources/js/lang/en.json": {
+    "file": "assets/en-D87uBGbs.js",
+    "name": "en",
+    "src": "resources/js/lang/en.json",
+    "isDynamicEntry": true
+  },
+  "resources/js/lang/es.json": {
+    "file": "assets/es-DCnbzMz2.js",
+    "name": "es",
+    "src": "resources/js/lang/es.json",
+    "isDynamicEntry": true
+  },
+  "resources/js/lang/fr.json": {
+    "file": "assets/fr-DgvTilLm.js",
+    "name": "fr",
+    "src": "resources/js/lang/fr.json",
+    "isDynamicEntry": true
+  },
+  "resources/js/lang/pt-BR.json": {
+    "file": "assets/pt-BR-D8Ljg2e8.js",
+    "name": "pt-BR",
+    "src": "resources/js/lang/pt-BR.json",
+    "isDynamicEntry": true
+  },
+  "resources/js/lang/zh-CN.json": {
+    "file": "assets/zh-CN-CB7n1xh9.js",
+    "name": "zh-CN",
+    "src": "resources/js/lang/zh-CN.json",
+    "isDynamicEntry": true
+  },
+  "resources/js/layouts/Authenticated.vue": {
+    "file": "assets/Authenticated-6nHFkr-K.js",
+    "name": "Authenticated",
+    "src": "resources/js/layouts/Authenticated.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_AppTopbar-Bll2YKxL.js",
+      "_AppFooter-DRZBUV_0.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/Authenticated-zIeryRN4.css"
+    ]
+  },
+  "resources/js/layouts/AuthenticatedUser.vue": {
+    "file": "assets/AuthenticatedUser-DxfYX6SC.js",
+    "name": "AuthenticatedUser",
+    "src": "resources/js/layouts/AuthenticatedUser.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_AppTopbar-Bll2YKxL.js",
+      "_AppFooter-DRZBUV_0.js",
+      "_player-Czj22g4O.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/AuthenticatedUser-B7ZuNSrX.css"
+    ]
+  },
+  "resources/js/layouts/Guest.vue": {
+    "file": "assets/Guest-aukeZ1Bj.js",
+    "name": "Guest",
+    "src": "resources/js/layouts/Guest.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/views/admin/albumes/Create.vue": {
+    "file": "assets/Create-DDIA5CXf.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/albumes/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_albumesAdmin-wFGr6eia.js"
+    ]
+  },
+  "resources/js/views/admin/albumes/Edit.vue": {
+    "file": "assets/Edit-CiutpyDz.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/albumes/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_albumesAdmin-wFGr6eia.js"
+    ]
+  },
+  "resources/js/views/admin/albumes/Index.vue": {
+    "file": "assets/Index-B342-oZ-.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/albumes/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_albumesAdmin-wFGr6eia.js"
+    ]
+  },
+  "resources/js/views/admin/canciones/Create.vue": {
+    "file": "assets/Create-f53vxRhv.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/canciones/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_cancionesAdmin-DfvjdQrT.js",
+      "_albumesAdmin-wFGr6eia.js",
+      "_index-DBkJWd5m.js"
+    ]
+  },
+  "resources/js/views/admin/canciones/Edit.vue": {
+    "file": "assets/Edit-CV4Wio4q.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/canciones/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_cancionesAdmin-DfvjdQrT.js"
+    ]
+  },
+  "resources/js/views/admin/canciones/Index.vue": {
+    "file": "assets/Index-f7V3KUIO.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/canciones/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_cancionesAdmin-DfvjdQrT.js"
+    ]
+  },
+  "resources/js/views/admin/categories/Create.vue": {
+    "file": "assets/Create-6znH5d20.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/categories/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_categories-DriGmbN6.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/categories/Edit.vue": {
+    "file": "assets/Edit-A9N58SQE.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/categories/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_categories-DriGmbN6.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/categories/Index.vue": {
+    "file": "assets/Index-DqfjiLh4.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/categories/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_categories-DriGmbN6.js"
+    ]
+  },
+  "resources/js/views/admin/index.vue": {
+    "file": "assets/index-RucpsPUp.js",
+    "name": "index",
+    "src": "resources/js/views/admin/index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ]
+  },
+  "resources/js/views/admin/listas/Create.vue": {
+    "file": "assets/Create-QOojgXfZ.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/listas/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_listasAdmin-DBsvEFmU.js"
+    ]
+  },
+  "resources/js/views/admin/listas/Edit.vue": {
+    "file": "assets/Edit-DCjKxeCM.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/listas/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_listasAdmin-DBsvEFmU.js",
+      "_cancionesAdmin-DfvjdQrT.js",
+      "_index-DBkJWd5m.js"
+    ]
+  },
+  "resources/js/views/admin/listas/Index.vue": {
+    "file": "assets/Index-DcJUWuxR.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/listas/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_listasAdmin-DBsvEFmU.js"
+    ]
+  },
+  "resources/js/views/admin/permissions/Create.vue": {
+    "file": "assets/Create-N90xMiJT.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/permissions/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_permissions-B18b2wrV.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/permissions/Edit.vue": {
+    "file": "assets/Edit-BK_X6G5S.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/permissions/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_permissions-B18b2wrV.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/permissions/Index.vue": {
+    "file": "assets/Index-D9MluXqh.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/permissions/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_permissions-B18b2wrV.js"
+    ]
+  },
+  "resources/js/views/admin/posts/Create.vue": {
+    "file": "assets/Create-C7KfHhG0.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/posts/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_DropZone-CW4zSXa_.js",
+      "_categories-DriGmbN6.js",
+      "_posts-CssQX8fK.js",
+      "_rules-DZFuAMSf.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ]
+  },
+  "resources/js/views/admin/posts/Edit.vue": {
+    "file": "assets/Edit-DcbYZ0gU.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/posts/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_categories-DriGmbN6.js",
+      "_posts-CssQX8fK.js",
+      "_rules-DZFuAMSf.js",
+      "_DropZone-CW4zSXa_.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ]
+  },
+  "resources/js/views/admin/posts/Index.vue": {
+    "file": "assets/Index-BZd0_jLq.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/posts/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_posts-CssQX8fK.js",
+      "_categories-DriGmbN6.js"
+    ]
+  },
+  "resources/js/views/admin/profile/index.vue": {
+    "file": "assets/index-Ueg4cSik.js",
+    "name": "index",
+    "src": "resources/js/views/admin/profile/index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/roles/Create.vue": {
+    "file": "assets/Create-Oelq3poy.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/roles/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_roles-MIxV2xZW.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/roles/Edit.vue": {
+    "file": "assets/Edit-ubx4LH56.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/roles/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_roles-MIxV2xZW.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/roles/Index.vue": {
+    "file": "assets/Index-Dq6HS17E.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/roles/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_roles-MIxV2xZW.js"
+    ]
+  },
+  "resources/js/views/admin/users/Create.vue": {
+    "file": "assets/Create-DDmbuOag.js",
+    "name": "Create",
+    "src": "resources/js/views/admin/users/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_roles-MIxV2xZW.js",
+      "_users-CRyOK5FS.js",
+      "_rules-DZFuAMSf.js"
+    ]
+  },
+  "resources/js/views/admin/users/Edit.vue": {
+    "file": "assets/Edit-Ng7OkrzN.js",
+    "name": "Edit",
+    "src": "resources/js/views/admin/users/Edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_roles-MIxV2xZW.js",
+      "_users-CRyOK5FS.js",
+      "_rules-DZFuAMSf.js"
+    ],
+    "css": [
+      "assets/Edit-DrBAHPdj.css"
+    ]
+  },
+  "resources/js/views/admin/users/Index.vue": {
+    "file": "assets/Index-C9xCF3ex.js",
+    "name": "Index",
+    "src": "resources/js/views/admin/users/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_users-CRyOK5FS.js"
+    ]
+  },
+  "resources/js/views/app/album.vue": {
+    "file": "assets/album-dYiWlBkB.js",
+    "name": "album",
+    "src": "resources/js/views/app/album.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_listaCanciones-BgB1a3n7.js",
+      "_usePlayer-BvTy7vg6.js",
+      "_mostrarMusica-BSXilRiR.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js",
+      "_player-Czj22g4O.js"
+    ],
+    "css": [
+      "assets/album-BsAHOevV.css"
+    ]
+  },
+  "resources/js/views/app/artista/edit.vue": {
+    "file": "assets/edit-DRqXKeUg.js",
+    "name": "edit",
+    "src": "resources/js/views/app/artista/edit.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_funcionesArtista-Bm8O1XxS.js",
+      "_index-DBkJWd5m.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/edit-CJQTLPw_.css"
+    ]
+  },
+  "resources/js/views/app/artista/estadisticas.vue": {
+    "file": "assets/estadisticas-BlYoKv_P.js",
+    "name": "estadisticas",
+    "src": "resources/js/views/app/artista/estadisticas.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_funcionesArtista-Bm8O1XxS.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/estadisticas-DB4UqGaU.css"
+    ]
+  },
+  "resources/js/views/app/artista/perfil.vue": {
+    "file": "assets/perfil-BO0aHOLf.js",
+    "name": "perfil",
+    "src": "resources/js/views/app/artista/perfil.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_listaCanciones-BgB1a3n7.js",
+      "_usePlayer-BvTy7vg6.js",
+      "_mostrarMusica-BSXilRiR.js",
+      "_datosUser-Ca7kkzz-.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js",
+      "_player-Czj22g4O.js"
+    ],
+    "css": [
+      "assets/perfil-DUXRB7HZ.css"
+    ]
+  },
+  "resources/js/views/app/artista/upload.vue": {
+    "file": "assets/upload-UjG_5BRY.js",
+    "name": "upload",
+    "src": "resources/js/views/app/artista/upload.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_funcionesArtista-Bm8O1XxS.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/upload-BAKOzHgl.css"
+    ]
+  },
+  "resources/js/views/app/biblioteca.vue": {
+    "file": "assets/biblioteca-DbeaaKcy.js",
+    "name": "biblioteca",
+    "src": "resources/js/views/app/biblioteca.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/biblioteca-C3dgJKxY.css"
+    ]
+  },
+  "resources/js/views/app/index.vue": {
+    "file": "assets/index-CdHlSEPL.js",
+    "name": "index",
+    "src": "resources/js/views/app/index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/index-CL5rUZ0V.css"
+    ]
+  },
+  "resources/js/views/app/likes.vue": {
+    "file": "assets/likes-Bgb5wHcA.js",
+    "name": "likes",
+    "src": "resources/js/views/app/likes.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_listaCanciones-BgB1a3n7.js",
+      "_player-Czj22g4O.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/likes-CM8z5HhZ.css"
+    ]
+  },
+  "resources/js/views/app/lista.vue": {
+    "file": "assets/lista-CqoinAVc.js",
+    "name": "lista",
+    "src": "resources/js/views/app/lista.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_listaCanciones-BgB1a3n7.js",
+      "_usePlayer-BvTy7vg6.js",
+      "_mostrarMusica-BSXilRiR.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js",
+      "_player-Czj22g4O.js"
+    ],
+    "css": [
+      "assets/lista-BreioEOj.css"
+    ]
+  },
+  "resources/js/views/app/perfilUsuario.vue": {
+    "file": "assets/perfilUsuario-DgzxcnaN.js",
+    "name": "perfilUsuario",
+    "src": "resources/js/views/app/perfilUsuario.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_datosUser-Ca7kkzz-.js",
+      "_mostrarMusica-BSXilRiR.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/perfilUsuario-DioXUf9Z.css"
+    ]
+  },
+  "resources/js/views/auth/passwords/Email.vue": {
+    "file": "assets/Email-DtHhT2mx.js",
+    "name": "Email",
+    "src": "resources/js/views/auth/passwords/Email.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/views/auth/passwords/Reset.vue": {
+    "file": "assets/Reset-C35V0T5Y.js",
+    "name": "Reset",
+    "src": "resources/js/views/auth/passwords/Reset.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/views/category/posts.vue": {
+    "file": "assets/posts-C9_Gt9Fw.js",
+    "name": "posts",
+    "src": "resources/js/views/category/posts.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/views/errors/404.vue": {
+    "file": "assets/404-ByJg4OYX.js",
+    "name": "404",
+    "src": "resources/js/views/errors/404.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ]
+  },
+  "resources/js/views/home/index.vue": {
+    "file": "assets/index-DKEhJFMO.js",
+    "name": "index",
+    "src": "resources/js/views/home/index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_AppFooter-DRZBUV_0.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/index-elvcRaLl.css"
+    ]
+  },
+  "resources/js/views/login/Login.vue": {
+    "file": "assets/Login-B6St5Mm1.js",
+    "name": "Login",
+    "src": "resources/js/views/login/Login.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/Login-CueAVwe2.css"
+    ]
+  },
+  "resources/js/views/posts/details.vue": {
+    "file": "assets/details-CFFVksr7.js",
+    "name": "details",
+    "src": "resources/js/views/posts/details.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/views/posts/index.vue": {
+    "file": "assets/index-Bzwg65W5.js",
+    "name": "index",
+    "src": "resources/js/views/posts/index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/views/register/index.vue": {
+    "file": "assets/index-a7XT8ZcA.js",
+    "name": "index",
+    "src": "resources/js/views/register/index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "__plugin-vue_export-helper-DlAUqK2U.js"
+    ],
+    "css": [
+      "assets/index-rGJjgVk7.css"
+    ]
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-ZysLgYfQ.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}
