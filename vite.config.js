@@ -34,5 +34,15 @@ export default defineConfig({
             }
         }
     },
-    base: '/', 
+    base: '/build/',
+    build: {
+        manifest: true,
+        outDir: 'public/build',
+        rollupOptions: {
+            input: [
+                'resources/sass/app.scss',
+                'resources/js/app.js',
+            ],
+        },
+    },
 });
