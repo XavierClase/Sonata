@@ -88,7 +88,7 @@ export const usePlayerStore = defineStore("player", {
           
         
           this.registrarUltimoEscuchado();
-          this._isLoadingSong = false; e
+          this._isLoadingSong = false;
         },
         onplay: () => {
         
@@ -97,9 +97,7 @@ export const usePlayerStore = defineStore("player", {
         },
         onpause: () => {
           
-          const exactPosition = this.sound.seek();
-       
-          
+          const exactPosition = this.sound.seek();  
          
           this.progress = exactPosition;
           this.isPlaying = false;

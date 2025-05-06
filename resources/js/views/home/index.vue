@@ -56,7 +56,7 @@
         <div class="preguntaf_caja">
           <div class="preguntaf_pregunta">¿Cómo puedo crear una lista de reproducción en Sonata?</div>
           <div class="preguntaf_respuesta">
-            Crear una lista de reproducción en Sonata es fácil y divertido. Simplemente busca tus canciones favoritas, haz clic en el botón "Agregar a lista de reproducción" y selecciona o crea una nueva lista. Personaliza el nombre y el orden de las canciones para tener la música perfecta para cada ocasión.
+            Crear una lista de reproducción en Sonata es fácil y divertido. Solo tienes que ir a tu biblioteca y hacer clic en el botón "+" para empezar. También puedes buscar tus canciones favoritas, pulsar el mismo botón y elegir una lista existente o crear una nueva. Personaliza el nombre y el orden de las canciones para tener la música perfecta en cada ocasión.
           </div>
         </div>
 
@@ -88,7 +88,7 @@ import AppFooter from '@/layouts/AppFooter.vue';
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Inter var";
+  font-family: "Inter var", sans-serif;
 }
 
 .banner {

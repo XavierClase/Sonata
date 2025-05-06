@@ -1,0 +1,19 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definición de gradientes -->
+  <defs>
+    <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E94BBB" />
+      <stop offset="100%" stop-color="#9D4EE0" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Círculos pequeños alrededor -->
+  <circle cx="15" cy="15" r="5" fill="#E94BBB" />
+  <circle cx="105" cy="15" r="7" fill="#9D4EE0" />
+  
+  <!-- Círculo principal exterior -->
+  <circle cx="60" cy="60" r="45" fill="url(#circleGradient)" />
+  
+  <!-- Círculo interior oscuro/morado -->
+  <circle cx="60" cy="60" r="20" fill="#333366" />
+</svg>

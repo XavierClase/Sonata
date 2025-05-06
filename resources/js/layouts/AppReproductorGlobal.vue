@@ -251,6 +251,7 @@
         overflow-wrap: break-word;
         white-space: normal;
         text-overflow: ellipsis; 
+        text-align: center !important;
     }
 
     .cancion-detalles p {
@@ -545,6 +546,7 @@
             display: flex;
             flex-direction: column;
             max-width: 140px !important;
+            
         }
         
         .cancion-detalles p {
